@@ -97,7 +97,8 @@ module.exports = {
                         break;
                         default:
                         // TODO: verify this rolls back branch
-                        require('child_process').execSync(`git clean -f`).toString()
+                        require('child_process').execSync(`git reset --hard`).toString()
+                        require('child_process').execSync(`git clean -fd`).toString()
                         require('child_process').execSync(`git checkout -`).toString()
                         require('child_process').execSync(`git branch -d ${branch}`).toString()
                         log(`Cleaned up and stopping. Option ${res} is not recognised.`)
