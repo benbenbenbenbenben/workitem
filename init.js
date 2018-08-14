@@ -33,11 +33,15 @@ module.exports = {
                 }
                 // check git status before changing anything
                 log('checking git status')
-                let gitstatus = require('child_process').execSync("git status --porcelain").toString();
+                let gitstatus = require('child_process').execSync("git status --porcelain").toString()
                 if (gitstatus.length > 0) {
                     log(`You have uncommited changes in this repository. Use 'git status' to view these. Once resolved you can initialise this workitem repository.`)
                     process.exit('3')
                 }
+                // branch to a randomised branch
+                const rand = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+                const branch = `workitem_init_${rand}`
+                require('child_process').execSync(`git checkout -b ${branch}`).toString()
                 //
                 log('created .workitem directory')                
                 prompt.ask("Which workflow would you like?\n"+
