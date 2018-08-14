@@ -81,6 +81,12 @@ module.exports = {
                         } else {
                             fs.writeFileSync('.gitignore', '# workitem secrets path\r\n.workitem/.secrets', 'utf8')
                         }
+                        prompt.ask("Would you like to install a git commit hook for workitem?\n"+
+                        "[Y]es, let's do that\n"+
+                        "[N]o\n"+
+                        "[W]hat does the hook do?", function(err, res) {
+                            
+                        })
                         break;
                         case "2":
                         log(2)
