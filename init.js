@@ -85,7 +85,15 @@ module.exports = {
                         "[Y]es, let's do that\n"+
                         "[N]o\n"+
                         "[W]hat does the hook do?", function(err, res) {
-                            
+                            switch (res.toLowerCase()){
+                                case "y":
+                                break;
+                                case "n":
+                                break;
+                                default:
+                                log(chalk`{bgBlue.white About the Commit Hook}\nThe commit hook makes sure that git commit messages reference a workitem.\n\nFor example;\n\ngit commit -a -m "[workitem:2992:close] fixed pesky bug"\n\nIf you try to commit without a workitem reference like this one, workitem will prevent the commit from succeeding.`)
+                                break;
+                            }
                         })
                         break;
                         case "2":
