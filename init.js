@@ -26,6 +26,9 @@ class Init {
     isinitialised() {
         return fs.existsSync('./.workitem/workitem.json')
     }
+    hasworkitemdir() {
+        return fs.existsSync('./.workitem')
+    }
     isgitclean() {
         return require('child_process').execSync("git status --porcelain").toString().length > 0
     }
