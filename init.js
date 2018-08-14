@@ -9,7 +9,7 @@ const prompt = new Prompt({
     prefixTheme: Prompt.chalk.green
 });
 
-const fail = (code = -127, msg = 'unknown error') => console.error(`error ${code}: ${s}`)|code
+const fail = (code = -127, msg = 'unknown error') => console.error(`error ${code}: ${msg}`)|code
 const log = (msg) => console.log(msg)|1
 
 
