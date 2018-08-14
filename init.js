@@ -97,6 +97,7 @@ module.exports = {
                         log(3)
                         break;
                         default:
+                        // TODO: need to rollback branch
                         log(`Stopping. Option ${res} is not recognised.`)
                         break;
                     }
