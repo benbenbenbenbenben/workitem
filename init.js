@@ -12,7 +12,10 @@ const prompt = new Prompt({
 const fail = (code = -127, msg = 'unknown error') => console.error(`error ${code}: ${msg}`)|code
 const log = (msg) => console.log(msg)|1
 
-
+const promptsync = require('prompt-sync')({sigint:true})
+const readkey = () => {
+    return promptsync()
+}
 
 class Init {
     banner() {
