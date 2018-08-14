@@ -56,6 +56,7 @@ class Init {
         require('child_process').execSync(`git add --all`).toString()
         require('child_process').execSync(`git commit -m "[workitem:admin:initialised]"`).toString()
         require('child_process').execSync(`git checkout -`).toString()
+        require('child_process').execSync(`git merge ${this.branch}`).toString()
         return true
     }
     createdirectories() {
