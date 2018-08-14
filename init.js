@@ -31,6 +31,14 @@ module.exports = {
                     log('This workitem repository is broken. There is a directory structure but I cannot find the configuration file workflow.json')
                     process.exit(-2)
                 }
+                // check git status before changing anything
+                log('checking git status')
+                let gitstatus = require('child_process').execSync("git status --porcelain").toString();
+                if (gitstatus.length > 0) {
+                    log(`You have uncommited changes in this repository. Use 'git status' to view these. Once resolved you can initialise this workitem repository.`)
+                    process.exit('3')
+                }
+                //
                 log('created .workitem directory')                
                 prompt.ask("Which workflow would you like?\n"+
                 "[1]: todo -> doing -> done\n"+
@@ -40,7 +48,6 @@ module.exports = {
                     switch(res) {
                         case "1":
                         log(`[1]: todo -> doing -> done`)
-                        log(`creating a branch for `)
                         log(`creating directories`)
                         fs.mkdirSync('./.workitem')
                         fs.mkdirSync('./.workitem/.secrets')
