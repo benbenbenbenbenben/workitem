@@ -42,8 +42,7 @@ module.exports = {
                 const rand = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
                 const branch = `workitem_init_${rand}`
                 require('child_process').execSync(`git checkout -b ${branch}`).toString()
-                //
-                log('created .workitem directory')                
+                //           
                 prompt.ask("Which workflow would you like?\n"+
                 "[1]: todo -> doing -> done\n"+
                 "[2]: backlog -> analysis -> dev -> test -> review\n"+
@@ -97,8 +96,11 @@ module.exports = {
                         log(3)
                         break;
                         default:
-                        // TODO: need to rollback branch
-                        log(`Stopping. Option ${res} is not recognised.`)
+                        // TODO: verify this rolls back branch
+                        require('child_process').execSync(`git clean -f`).toString()
+                        require('child_process').execSync(`git checkout -`).toString()
+                        require('child_process').execSync(`git branch -d ${branch}`).toString()
+                        log(`Cleaned up and stopping. Option ${res} is not recognised.`)
                         break;
                     }
                 });
