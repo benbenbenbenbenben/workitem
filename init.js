@@ -39,23 +39,23 @@ class Init {
         // branch to a randomised branch
         const rand = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
         this.branch = `workitem_init_${rand}`
-        require('child_process').execSync(`git checkout -b ${this.branch}`)
+        require('child_process').execSync(`git checkout -b ${this.branch}`).toString()
         //
         return true
     }
     revert() {
         if (this.branch) {
-            require('child_process').execSync(`git reset --hard`)
-            require('child_process').execSync(`git clean -fd`)
-            require('child_process').execSync(`git checkout -`)
-            require('child_process').execSync(`git branch -d ${this.branch}`)
+            require('child_process').execSync(`git reset --hard`).toString()
+            require('child_process').execSync(`git clean -fd`).toString()
+            require('child_process').execSync(`git checkout -`).toString()
+            require('child_process').execSync(`git branch -d ${this.branch}`).toString()
         }
         return true
     }
     commit() {        
-        require('child_process').execSync(`git add .`)
-        require('child_process').execSync(`git commit -m "[workitem:admin:initialised]"`)
-        require('child_process').execSync(`git checkout -`)
+        require('child_process').execSync(`git add .`).toString()
+        require('child_process').execSync(`git commit -m "[workitem:admin:initialised]"`).toString()
+        require('child_process').execSync(`git checkout -`).toString()
         return true
     }
     createdirectories() {
@@ -174,6 +174,7 @@ class Init {
         )
         while(!this.configurehook()){}
         this.commit()
+        return true
     }
 }
 
@@ -191,7 +192,7 @@ module.exports = {
               : init.isgitclean()
                ? init.gotoworkitembranch() && init.setupworkitem()
                 ? log(chalk`{bgBlue.white Done!}`)
-                : this.revert()
+                : init.revert()
                : fail(-4, 'You have uncommited changes in this repository. Use \'git status\' to view these. Once resolved you can initialise this workitem repository.')
             : fail(-2, 'This directory is not a git repository. You can\'t initialise a workitem repository outside a git repository.')
         
