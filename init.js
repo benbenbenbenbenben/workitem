@@ -61,7 +61,7 @@ class Init {
     createdirectories() {
         const key = readkey()
         switch(key) {
-            case 1:
+            case "1":
                 log('[1]: todo -> doing -> done')
                 fs.mkdirSync('./.workitem')
                 fs.mkdirSync('./.workitem/.secrets')
@@ -79,8 +79,7 @@ class Init {
                     workbranch: this.branch
                 }, null, 2))
                 return true
-            case 2:
-            log(2)
+            case "2":
                 log('[2]: backlog -> analysis -> dev -> test -> review -> done')
                 fs.mkdirSync('./.workitem')
                 fs.mkdirSync('./.workitem/.secrets')
@@ -104,7 +103,7 @@ class Init {
                     workbranch: this.branch
                 }, null, 2))
                 return true
-            case 3:
+            case "3":
                 log("[3]: I'll create my own folders")
                 fs.mkdirSync('./.workitem')
                 fs.mkdirSync('./.workitem/.secrets')
