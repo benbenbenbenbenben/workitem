@@ -87,11 +87,17 @@ module.exports = {
                         "[W]hat does the hook do?", function(err, res) {
                             switch (res.toLowerCase()){
                                 case "y":
+                                // detect existing hooks
+                                // 1. if existing pre-commit hook, create pre-commit dir and move pre-commit hook there, renaming to pre-commit.0
+                                // 2. create a file pre-commit that calls all files (execs) in the pre-commit subdirectory that match pattern pre-commit.\d+
+                                // 3. commit changes and checkout last branch
                                 break;
                                 case "n":
+                                // TODO: done, commit changes and checkout last branch
                                 break;
                                 default:
-                                log(chalk`{bgBlue.white About the Commit Hook}\nThe commit hook makes sure that git commit messages reference a workitem.\n\nFor example;\n\ngit commit -a -m "[workitem:2992:close] fixed pesky bug"\n\nIf you try to commit without a workitem reference like this one, workitem will prevent the commit from succeeding.`)
+                                log(chalk`{bgBlue.white About the Commit Hook}\nThe commit hook makes sure that git commit messages reference a workitem.\n\nFor example: git commit -a -m "[workitem:2992:close] fixed pesky bug"\n\nIf you try to commit without a workitem reference like this one, workitem will prevent the commit from succeeding.`)
+                                // TODO: ask again
                                 break;
                             }
                         })
@@ -107,6 +113,8 @@ module.exports = {
                         fs.mkdirSync('./.workitem/review')
                         break;
                         case "3":
+                        // TODO: create .workitem directory, .secrets directory, .gitignore and workflow.json
+                        // TODO: ask about hooks
                         log(3)
                         break;
                         default:
