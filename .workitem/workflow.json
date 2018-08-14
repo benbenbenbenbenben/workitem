@@ -1,0 +1,18 @@
+{
+  "incoming": "todo",
+  "active": [
+    "doing"
+  ],
+  "completed": "done",
+  "transitions": [
+    [
+      "todo",
+      "doing"
+    ],
+    [
+      "doing",
+      "done"
+    ]
+  ],
+  "workbranch": "workitem_init_25feb40kbvpl7156txsw8r"
+}
