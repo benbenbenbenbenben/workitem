@@ -68,7 +68,7 @@ module.exports = {
                         }, null, 2))
                         log(`updating .gitignore`)
                         if (fs.existsSync('.gitignore')) {
-                            const ignore = fs.readFileSync('.gitignore', 'utf8').toString()
+                            let ignore = fs.readFileSync('.gitignore', 'utf8').toString()
                             if (!/^\.workitem\/\.secrets/mi.test(ignore)) {
                                 const eolmatch = ignore.match(/\r\n|\r|\n/)
                                 if (eolmatch) {
