@@ -53,8 +53,7 @@ class Init {
         return true
     }
     commit() {        
-        require('child_process').execSync(`git add .`).toString()
-        require('child_process').execSync(`git add .`).toString()
+        require('child_process').execSync(`git add --all`).toString()
         require('child_process').execSync(`git commit -m "[workitem:admin:initialised]"`).toString()
         require('child_process').execSync(`git checkout -`).toString()
         return true
