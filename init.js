@@ -30,7 +30,7 @@ class Init {
         return fs.existsSync('./.workitem')
     }
     isgitclean() {
-        return require('child_process').execSync("git status --porcelain").toString().length > 0
+        return require('child_process').execSync("git status --porcelain").toString().length == 0
     }
     gotoworkitembranch() {
         // branch to a randomised branch
