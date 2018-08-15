@@ -24,7 +24,7 @@ require('sywac')
     if (x.argv._.length == 0 || (x.argv._.filter(x => x == "show"))) {
       const wim = new WorkitemManager()
       let logs = wim.show()
-      let top = (x.argv._.filter(x => x == "show").length > 0 && x.argv._.filter(x => x == "more").length > 0) ? 9999 : 3
+      let top = (x.argv._.filter(x => x == "more").length > 0) ? 9999 : 3
       const dirfilter = x.argv._.filter(x => wim.config.directories.filter(y => x == y).length > 0);
       if (dirfilter.length) {
         logs = logs.filter(l => dirfilter.filter(y => y == l.stage).length > 0)
