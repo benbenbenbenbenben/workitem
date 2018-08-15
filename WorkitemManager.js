@@ -51,6 +51,7 @@ class WorkitemManager {
             fs.outputJsonSync(__dirname + `/.workitem/${dir}/${digest}/index.json`, description)
             execSync(`git add .workitem/${dir}/${digest}/index.json`)
             execSync(`git commit -m "[workitem:${digest}:add] ${description.description}"`)
+            execSync(`git branch -D __workitem__`)
         })
         return digest
     }
