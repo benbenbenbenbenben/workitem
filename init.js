@@ -37,8 +37,8 @@ class Init {
     }
     gotoworkitembranch() {
         // branch to a randomised branch
-        const rand = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-        this.branch = `workitem_init_${rand}`
+        // const rand = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+        this.branch = `__workitem__` // _init_${rand}`
         require('child_process').execSync(`git checkout -b ${this.branch}`).toString()
         //
         return true

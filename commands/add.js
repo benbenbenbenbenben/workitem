@@ -2,6 +2,7 @@ const chalk = require('chalk')
 const ProgressBar = require('./../progressbar')
 const fs = require('fs')
 const Prompt = require('prompt-improved')
+const { WorkitemManager } = require('./../workitem')
 
 const prompt = new Prompt({
     // Some options for all prompts
@@ -21,10 +22,10 @@ module.exports = {
     flags: 'add <description>',
     desc: 'Adds a work item',
     run: argv => {
-        const config = JSON.parse(fs.readFileSync(process.cwd() + '/.workitem/workitem.json', 'utf8').toString())
+        const wim = new WorkitemManager()
         console.log(argv)
-        console.log(config)
-        const witemname = argv.description
-        
+        console.log(wim.config)
+        const wiid = wim.add(argv.description)
+        log(chalk`workitem added: {bgBlue.yellow #${wiid}}: ${argv.description}`)
     }
 }
