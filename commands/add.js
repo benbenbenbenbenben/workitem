@@ -2,7 +2,7 @@ const chalk = require('chalk')
 const ProgressBar = require('./../progressbar')
 const fs = require('fs')
 const Prompt = require('prompt-improved')
-const { WorkitemManager } = require('./../workitem')
+const { WorkitemManager } = require('./../WorkitemManager')
 
 const prompt = new Prompt({
     // Some options for all prompts

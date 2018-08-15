@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/benbenbenbenbenben/workitem#readme",
   "bin": {
-    "workitem": "./cli.js"
+    "workitem": "./bin/cli"
   },
   "dependencies": {
     "chalk": "^2.4.1",
