@@ -97,7 +97,14 @@ class WorkitemManager {
         return workitem
     }
     rename(item, newname) {
-
+        let workitem = this.idToWorkitem(item)
+        if (workitem.success) {
+            workitem = workitem.workitem
+        } else {
+            return workitem
+        }
+        workitem.description = newname
+        this.save(workitem)
     }
     comment(item, comment) {
         let workitem = this.idToWorkitem(item)
@@ -107,6 +114,14 @@ class WorkitemManager {
             return workitem
         }
         this.appendItem(workitem, {type:"comment", content: comment})
+    }
+    save(workitem) {
+        this.gitDo(() => {
+            const filename = `.workitem/${workitem.stage}/${workitem.id}/index.json`
+            fs.writeJSONSync(filename, data)
+            execSync(`git add ${filename}`)
+            execSync(`git commit -m "[workitem:${workitem.id}:edit]"`)
+        })
     }
     appendItem(workitem, data) {
         // generate identity
