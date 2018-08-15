@@ -21,7 +21,7 @@ module.exports = {
     flags: 'add <description>',
     desc: 'Adds a work item',
     run: argv => {
-        const config = JSON.parse(fs.readFileSync('./../.workitem/workitem.json', 'utf8').toString())
+        const config = JSON.parse(fs.readFileSync(process.cwd() + '/.workitem/workitem.json', 'utf8').toString())
         console.log(argv)
         console.log(config)
         const witemname = argv.description

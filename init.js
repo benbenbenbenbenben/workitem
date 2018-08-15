@@ -69,7 +69,7 @@ class Init {
                 fs.mkdirSync('./.workitem/todo')
                 fs.mkdirSync('./.workitem/doing')
                 fs.mkdirSync('./.workitem/done')
-                fs.writeFileSync("./.workitem/workflow.json", JSON.stringify({
+                fs.writeFileSync("./.workitem/workitem.json", JSON.stringify({
                     incoming: "todo",
                     active: ["doing"],
                     completed: "done",
@@ -90,7 +90,7 @@ class Init {
                 fs.mkdirSync('./.workitem/test')
                 fs.mkdirSync('./.workitem/review')
                 fs.mkdirSync('./.workitem/done')
-                fs.writeFileSync("./.workitem/workflow.json", JSON.stringify({
+                fs.writeFileSync("./.workitem/workitem.json", JSON.stringify({
                     incoming: "backlog",
                     active: ["analysis", "dev", "test", "review"],
                     completed: "done",
@@ -108,7 +108,7 @@ class Init {
                 log("[3]: I'll create my own folders")
                 fs.mkdirSync('./.workitem')
                 fs.mkdirSync('./.workitem/.secrets')
-                fs.writeFileSync("./.workitem/workflow.json", JSON.stringify({
+                fs.writeFileSync("./.workitem/workitem.json", JSON.stringify({
                     incoming: "",
                     active: [],
                     completed: "",
