@@ -11,14 +11,21 @@ class WorkitemManager {
     }
     add(description) {
         console.log(description)
+        const dir = (description.location || "+" + this.config.incoming).substring(1)
+        if (!fs.existsSync(__dirname + `/.workitem/${dir}`)) {
+            return null
+        }
+        if (dir == ".secrets") {
+            return null
+        }
         const hash = crypto.createHash('sha256')
         hash.update(JSON.stringify(description))
         hash.update(execSync(`git rev-parse HEAD`).toString())
         const digest = hash.digest("hex").substring(0, 7)
 
         execSync(`git checkout -B __workitem__`)
-        fs.outputJsonSync(__dirname + `/.workitem/${digest}/index.json`, description)
-        execSync(`git add .workitem/${digest}/index.json`)
+        fs.outputJsonSync(__dirname + `/.workitem/${dir}/${digest}/index.json`, description)
+        execSync(`git add .workitem/${dir}/${digest}/index.json`)
         execSync(`git commit -m "[workitem:${digest}:add] ${description.description}"`)
         execSync(`git checkout -`)
         execSync(`git merge __workitem__`)
