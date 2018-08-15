@@ -10,7 +10,7 @@
             "name": "Launch Program",
             "program": "${workspaceFolder}\\cli.js",
             "args": [
-                "init"
+                "add test"
             ],
             "console": "externalTerminal"
         }
