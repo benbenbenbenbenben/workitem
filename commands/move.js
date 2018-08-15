@@ -31,7 +31,7 @@ module.exports = {
         //    tags: argv._.filter(x => x.indexOf("#") == 0),
         //    location: [...argv._.filter(x => x.indexOf("@") == 0), undefined][0]
         //})
-        if (!result.success) {
+        if (result.success === false) {
             fail(-10, result.message)
         }
     }

@@ -80,6 +80,9 @@ class Init {
                     ],
                     workbranch: this.branch
                 }, null, 2))
+                fs.writeFileSync("./.workitem/todo/index.json", "")
+                fs.writeFileSync("./.workitem/doing/index.json", "")
+                fs.writeFileSync("./.workitem/done/index.json", "")
                 return true
             case "2":
                 log('[2]: backlog -> analysis -> dev -> test -> review -> done')
@@ -105,6 +108,12 @@ class Init {
                     ],
                     workbranch: this.branch
                 }, null, 2))
+                fs.writeFileSync("./.workitem/todo/index.json", "backlog")
+                fs.writeFileSync("./.workitem/todo/index.json", "analysis")
+                fs.writeFileSync("./.workitem/todo/index.json", "dev")
+                fs.writeFileSync("./.workitem/todo/index.json", "test")
+                fs.writeFileSync("./.workitem/todo/index.json", "review")
+                fs.writeFileSync("./.workitem/todo/index.json", "done")
                 return true
             case "3":
                 log("[3]: I'll create my own folders")

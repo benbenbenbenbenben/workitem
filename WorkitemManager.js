@@ -50,11 +50,7 @@ class WorkitemManager {
         const workitems = this.workitems
         return workitems
     }
-    move(item, stage) {
-        let targetstage = this.workitems.filter(w => w.stage == stage)
-        if (targetstage.length == 0) {
-            return {success:false, message:`No stage named ${stage}`}
-        }
+    idToWorkitem(item) {        
         let itemid = /^(\d+\.\d+)|((?<=#)?[a-f0-9]{7})$/i.exec(item)
         if (itemid === null) {
             return {success:false, message:`Didn't recognise workitem identity pattern "${item}"`}
@@ -68,12 +64,29 @@ class WorkitemManager {
         } else {
             workitem = this.workitems.map(s => s.items.map(t => Object.assign({stage: s.stage}, t))).reduce((a, b) => a.concat(b)).find(x => x.id == itemid)
         }
+        return {success: true, workitem}
+    }
+    move(item, stage) {
+        let targetstage = this.workitems.filter(w => w.stage == stage)
+        if (targetstage.length == 0) {
+            return {success:false, message:`No stage named ${stage}`}
+        }
+        let workitem = this.idToWorkitem(item)
+        if (workitem.success) {
+            workitem = workitem.workitem
+        } else {
+            return workitem
+        }
         console.log(workitem)
         execSync(`git checkout -B __workitem__`)
         execSync(`git mv .workitem/${workitem.stage}/${workitem.id} .workitem/${stage}/${workitem.id}`)
         execSync(`git commit -m "[workitem:${workitem.id}:move] ${workitem.stage} to ${stage}"`)
         execSync(`git checkout -`)
         execSync(`git merge __workitem__`)
+        return workitem
+    }
+    rename(item, newname) {
+
     }
 }
 
