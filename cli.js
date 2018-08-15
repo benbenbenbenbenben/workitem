@@ -8,6 +8,7 @@ require('sywac')
   .usage(chalk.bgRed.white.bold("workitem 1.0.0"))
   .command(require('./init'))
   .command(require('./commands/add'))
+  .command(require('./commands/note'))
   .command(require('./commands/move'))
   .help().showHelpByDefault(!isworkitemdirectory)
   .style({

@@ -105,7 +105,25 @@ class WorkitemManager {
         } else {
             return workitem
         }
-
+        this.appendItem(workitem, {type:"comment", content: comment})
+    }
+    appendItem(workitem, data) {
+        // generate identity
+        const hash = crypto.createHash('sha256')
+        hash.update(JSON.stringify(data))
+        hash.update(execSync(`git rev-parse HEAD`).toString())
+        const digest = hash.digest("hex").substring(0, 7)
+        const stamp = this.timestamp()
+        const outfilename = `${stamp}.${digest}.${data.type}.json`
+        this.gitDo(() => {
+            const filename = `.workitem/${workitem.stage}/${workitem.id}/${outfilename}`
+            fs.writeJSONSync(filename, data)
+            execSync(`git add ${filename}`)
+            execSync(`git commit -m "[workitem:${workitem.id}:${data.type}]"`)
+        })
+    }
+    timestamp() {
+        return new Date().toISOString().replace(/[^0-9]/g,"")
     }
 }
 
