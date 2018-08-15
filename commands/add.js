@@ -25,7 +25,11 @@ module.exports = {
         const wim = new WorkitemManager()
         console.log(argv)
         console.log(wim.config)
-        const wiid = wim.add(argv.description)
+        const wiid = wim.add({
+            description: argv.description,
+            tags: argv._.filter(x => x.indexOf("#") == 0),
+            location: [...argv._.filter(x => x.indexOf("@") == 0), undefined][0]
+        })
         log(chalk`workitem added: {bgBlue.yellow #${wiid}}: ${argv.description}`)
     }
 }

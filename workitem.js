@@ -1,6 +1,5 @@
-const fs = require('fs')
+const fs = require('fs-extra')
 const crypto = require('crypto')
-const hash = crypto.createHash('sha256')
 const execSync = require('child_process').execSync
 
 class WorkitemManager {
@@ -11,10 +10,17 @@ class WorkitemManager {
         return this._config
     }
     add(description) {
-
-        hash.update(description)
+        console.log(description)
+        const hash = crypto.createHash('sha256')
+        hash.update(JSON.stringify(description))
         hash.update(execSync(`git rev-parse HEAD`).toString())
-        return hash.digest("base64").substring(0, 7)
+        const digest = hash.digest("hex").substring(0, 7)
+
+        execSync(`git checkout -B __workitem__`)
+        fs.outputJson(__dirname + `/.workitem/${digest}/index.json`, description)
+        execSync(`git add .workitem/${digest}/index.json`)
+        execSync(`git commit -m "[workitem:${digest}:add] ${description.description}"`)
+        return digest
     }
 }
 
