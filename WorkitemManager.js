@@ -70,7 +70,8 @@ class WorkitemManager {
         }
         console.log(workitem)
         // git mv ./.workitem/doing/3c4a09c ./.workitem/todo/3c4a09c
-        
+       // console.log(chalk`{red ${JSON.stringify(workitem)}}`)
+        return;
         execSync(`git checkout -B __workitem__`)
         execSync(`git mv .workitem/${workitem.stage}/${workitem.id} .workitem/${targetstage}/${workitem.id}`)
         execSync(`git commit -m "[workitem:${workitem.id}:move] ${workitem.stage} to ${targetstage}"`)
