@@ -69,12 +69,9 @@ class WorkitemManager {
             workitem = this.workitems.map(s => s.items.map(t => Object.assign({stage: s.stage}, t))).reduce((a, b) => a.concat(b)).find(x => x.id == itemid)
         }
         console.log(workitem)
-        // git mv ./.workitem/doing/3c4a09c ./.workitem/todo/3c4a09c
-       // console.log(chalk`{red ${JSON.stringify(workitem)}}`)
-        return;
         execSync(`git checkout -B __workitem__`)
-        execSync(`git mv .workitem/${workitem.stage}/${workitem.id} .workitem/${targetstage}/${workitem.id}`)
-        execSync(`git commit -m "[workitem:${workitem.id}:move] ${workitem.stage} to ${targetstage}"`)
+        execSync(`git mv .workitem/${workitem.stage}/${workitem.id} .workitem/${stage}/${workitem.id}`)
+        execSync(`git commit -m "[workitem:${workitem.id}:move] ${workitem.stage} to ${stage}"`)
         execSync(`git checkout -`)
         execSync(`git merge __workitem__`)
     }
