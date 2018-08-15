@@ -27,6 +27,12 @@ class WorkitemManager {
     get config() {
         return this._config
     }
+    gitDo(func) {        
+        execSync(`git checkout -B __workitem__`)
+        func()        
+        execSync(`git checkout -`)
+        execSync(`git merge __workitem__`)
+    }
     add(description) {
         const dir = (description.location || "+" + this.config.incoming).substring(1)
         delete description.location
@@ -41,12 +47,11 @@ class WorkitemManager {
         hash.update(execSync(`git rev-parse HEAD`).toString())
         const digest = hash.digest("hex").substring(0, 7)
 
-        execSync(`git checkout -B __workitem__`)
-        fs.outputJsonSync(__dirname + `/.workitem/${dir}/${digest}/index.json`, description)
-        execSync(`git add .workitem/${dir}/${digest}/index.json`)
-        execSync(`git commit -m "[workitem:${digest}:add] ${description.description}"`)
-        execSync(`git checkout -`)
-        execSync(`git merge __workitem__`)
+        this.gitDo(() => {
+            fs.outputJsonSync(__dirname + `/.workitem/${dir}/${digest}/index.json`, description)
+            execSync(`git add .workitem/${dir}/${digest}/index.json`)
+            execSync(`git commit -m "[workitem:${digest}:add] ${description.description}"`)
+        })
         return digest
     }
     show() {
@@ -81,14 +86,25 @@ class WorkitemManager {
             return workitem
         }
         console.log(workitem)
-        execSync(`git checkout -B __workitem__`)
-        execSync(`git mv .workitem/${workitem.stage}/${workitem.id} .workitem/${stage}/${workitem.id}`)
-        execSync(`git commit -m "[workitem:${workitem.id}:move] ${workitem.stage} to ${stage}"`)
-        execSync(`git checkout -`)
-        execSync(`git merge __workitem__`)
+        if (workitem.stage == stage) {
+            return {success:false, message:`Cannot move a workitem from ${stage} to ${stage} because it's the same stage`}
+        }
+        this.gitDo(() => {
+            execSync(`git mv .workitem/${workitem.stage}/${workitem.id} .workitem/${stage}/${workitem.id}`)
+            execSync(`git commit -m "[workitem:${workitem.id}:move] ${workitem.stage} to ${stage}"`)
+        })
         return workitem
     }
     rename(item, newname) {
+
+    }
+    comment(item, comment) {
+        let workitem = this.idToWorkitem(item)
+        if (workitem.success) {
+            workitem = workitem.workitem
+        } else {
+            return workitem
+        }
 
     }
 }
