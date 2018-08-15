@@ -1,4 +1,5 @@
 const fs = require('fs-extra')
+const path = require('path')
 const chalk = require('chalk')
 const crypto = require('crypto')
 const execSync = require('child_process').execSync
@@ -12,10 +13,12 @@ class WorkitemManager {
         const tree = dirs.map(d => {
             return {
                 stage: d,
-                items: fs.readdirSync(__dirname + `/.workitem/${d}`).map(f => {
-                    let res = fs.readJsonSync(__dirname + `/.workitem/${d}/${f}/index.json`)
-                    res.id = f
-                    return res
+                items: fs.readdirSync(__dirname + `/.workitem/${d}`)
+                    .filter(f => fs.statSync(__dirname + `/.workitem/${d}/${f}`).isDirectory())
+                    .map(f => {
+                        let res = fs.readJsonSync(__dirname + `/.workitem/${d}/${f}/index.json`)
+                        res.id = f
+                        return res
                 })
             }
         })
