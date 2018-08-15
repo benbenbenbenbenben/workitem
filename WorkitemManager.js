@@ -118,7 +118,7 @@ class WorkitemManager {
     save(workitem) {
         this.gitDo(() => {
             const filename = `.workitem/${workitem.stage}/${workitem.id}/index.json`
-            fs.writeJSONSync(filename, data)
+            fs.writeJSONSync(filename, workitem)
             execSync(`git add ${filename}`)
             execSync(`git commit -m "[workitem:${workitem.id}:edit]"`)
         })
