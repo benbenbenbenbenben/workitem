@@ -1,4 +1,5 @@
 const fs = require('fs-extra')
+const chalk = require('chalk')
 const crypto = require('crypto')
 const execSync = require('child_process').execSync
 
@@ -6,12 +7,26 @@ class WorkitemManager {
     constructor() {
         this._config = JSON.parse(fs.readFileSync(process.cwd() + '/.workitem/workitem.json', 'utf8').toString())
     }
+    get workitems() {
+        const dirs = this.config.directories
+        const tree = dirs.map(d => {
+            return {
+                stage: d,
+                items: fs.readdirSync(__dirname + `/.workitem/${d}`).map(f => {
+                    let res = fs.readJsonSync(__dirname + `/.workitem/${d}/${f}/index.json`)
+                    res.id = f
+                    return res
+                })
+            }
+        })
+        return tree
+    }
     get config() {
         return this._config
     }
     add(description) {
-        console.log(description)
         const dir = (description.location || "+" + this.config.incoming).substring(1)
+        delete description.location
         if (!fs.existsSync(__dirname + `/.workitem/${dir}`)) {
             return null
         }
@@ -30,6 +45,29 @@ class WorkitemManager {
         execSync(`git checkout -`)
         execSync(`git merge __workitem__`)
         return digest
+    }
+    show() {
+        const workitems = this.workitems
+        return workitems
+    }
+    move(item, stage) {
+        let targetstage = this.workitems.filter(w => w.stage == stage)
+        if (targetstage.length == 0) {
+            return {success:false, message:`No stage named ${stage}`}
+        }
+        let itemid = /^(\d+\.\d+)|((?<=#)?[a-f0-9]{7})$/i.exec(item)
+        if (itemid === null) {
+            return {success:false, message:`Didn't recognise workitem identity pattern "${item}"`}
+        }
+        itemid = itemid[0]
+        let workitem = null
+        if (itemid.indexOf(".") > 0) {
+            let [istage, iitem] = itemid.split('.')            
+            workitem = this.workitems[istage].items[iitem]
+        } else {
+            workitem = this.workitems.map(s => s.items).reduce((a, b) => a.concat(b)).find(x => x.id == itemid)
+        }
+        console.log(workitem)
     }
 }
 
