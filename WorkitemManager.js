@@ -32,6 +32,7 @@ class WorkitemManager {
         func()        
         execSync(`git checkout -`)
         execSync(`git merge __workitem__`)
+        execSync(`git branch -D __workitem__`)
     }
     add(description) {
         const dir = (description.location || "+" + this.config.incoming).substring(1)
@@ -51,7 +52,6 @@ class WorkitemManager {
             fs.outputJsonSync(__dirname + `/.workitem/${dir}/${digest}/index.json`, description)
             execSync(`git add .workitem/${dir}/${digest}/index.json`)
             execSync(`git commit -m "[workitem:${digest}:add] ${description.description}"`)
-            execSync(`git branch -D __workitem__`)
         })
         return digest
     }
