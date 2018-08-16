@@ -19,7 +19,7 @@ const readkey = () => {
 }
 
 module.exports = {
-    flags: 'add <description>',
+    flags: 'add <description> [#tag]',
     desc: 'Adds a work item',
     run: argv => {
         const wim = new WorkitemManager()
