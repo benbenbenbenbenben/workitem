@@ -11,6 +11,7 @@ require('sywac')
   .command(require('./commands/note'))
   .command(require('./commands/move'))
   .command(require('./commands/rename'))
+  .command(require('./commands/collate'))
   .help().showHelpByDefault(!isworkitemdirectory)
   .style({
     flags: s => chalk.bgGreen.white(s),

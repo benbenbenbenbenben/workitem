@@ -6,17 +6,17 @@ const execSync = require('child_process').execSync
 
 class WorkitemManager {
     constructor() {
-        this._config = JSON.parse(fs.readFileSync(process.cwd() + '/.workitem/workitem.json', 'utf8').toString())
+        this._config = JSON.parse(fs.readFileSync('.workitem/workitem.json', 'utf8').toString())
     }
     get workitems() {
         const dirs = this.config.directories
         const tree = dirs.map(d => {
             return {
                 stage: d,
-                items: fs.readdirSync(__dirname + `/.workitem/${d}`)
-                    .filter(f => fs.statSync(__dirname + `/.workitem/${d}/${f}`).isDirectory())
+                items: fs.readdirSync(`.workitem/${d}`)
+                    .filter(f => fs.statSync(`.workitem/${d}/${f}`).isDirectory())
                     .map(f => {
-                        let res = fs.readJsonSync(__dirname + `/.workitem/${d}/${f}/index.json`)
+                        let res = fs.readJsonSync(`.workitem/${d}/${f}/index.json`)
                         res.id = f
                         return res
                 })
@@ -37,7 +37,7 @@ class WorkitemManager {
     add(description) {
         const dir = (description.location || "+" + this.config.incoming).substring(1)
         delete description.location
-        if (!fs.existsSync(__dirname + `/.workitem/${dir}`)) {
+        if (!fs.existsSync(`.workitem/${dir}`)) {
             return null
         }
         if (dir == ".secrets") {
@@ -49,7 +49,7 @@ class WorkitemManager {
         const digest = hash.digest("hex").substring(0, 7)
 
         this.gitDo(() => {
-            fs.outputJsonSync(__dirname + `/.workitem/${dir}/${digest}/index.json`, description)
+            fs.outputJsonSync(`.workitem/${dir}/${digest}/index.json`, description)
             execSync(`git add .workitem/${dir}/${digest}/index.json`)
             execSync(`git commit -m "[workitem:${digest}:add] ${description.description}"`)
         })
