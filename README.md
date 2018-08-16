@@ -46,7 +46,7 @@ _Example:_
 
 _Outputs:_
 
-![wi](docs/wi.png)
+![wi](https://github.com/benbenbenbenbenben/workitem/raw/master/docs/wi.PNG)
 
 Shows the current work item "board" truncated enough that it fits without much scrolling around.
 
@@ -56,7 +56,7 @@ _Example:_
 
 _Outputs:_
 
-![wi](docs/wimore.png)
+![wi more](https://github.com/benbenbenbenbenben/workitem/raw/master/docs/wimore.PNG)
 
 Shows all the work items that are in your current iteration, and if you don't work in iterations, all those that are not archived.
 
