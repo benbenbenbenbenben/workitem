@@ -22,11 +22,13 @@ _Example:_
 
 `wi add "fix terrible bug"`
 
-You can optionally include as many `#tags` as you wish and specify a `~complexity` in whatever estimation language you prefer e.g. story points `~10` or t-shirt sizes `~medium` or weight in carrots `~20kg`. workitem is unit of effort agnostic in the same way that you project manager is supposed to be.
+You can optionally include as many `#tags` as you wish and specify a `~complexity` in whatever estimation language you prefer e.g. story points `~10` or t-shirt sizes `~medium` or weight in carrots `~20kg`. workitem is unit of effort agnostic in the same way that your project manager is supposed to be.
 
 If your work item is dependent on another item, you can specify that dependency with the `<` and `>` characters.
 
 `<` for example marks a work item as a child of, or smaller than, another. Adding a child item as follows, `wi add "a task that can't be completed yet" < ` _`f00b005`_, would prevent task `f00b005` being moved beyond the active stage of your newly created task in the work flow.
+
+`>` makes the item a parent of another and thus means the new item cannot be moved beyond the child work item it references. The parent-child relationships between items are many-to-many in most cases but they can be configured otherwise (see [config](#config) to learn about parenting)
 
 #### To move an item with an _`id-or-index`_ do:
 
