@@ -22,9 +22,15 @@ require('sywac')
       console.log(x.output)
       return
     }
-    console.log(chalk`{bgRed.white.bold workitem 1.0.0}`)
     if (x.argv._.length == 0 || (x.argv._.filter(x => x == "show"))) {
-      const wim = new WorkitemManager()
+      let wim
+      try {
+        wim = new WorkitemManager()
+      } catch(e) {
+        console.log(x.output)
+        return
+      }
+      console.log(chalk`{bgRed.white.bold workitem 1.0.0}`)
       let logs = wim.show()
       let top = (x.argv._.filter(x => x == "more").length > 0) ? 9999 : 3
       const dirfilter = x.argv._.filter(x => wim.config.directories.filter(y => x == y).length > 0);
