@@ -23,13 +23,10 @@ module.exports = {
     desc: 'Collates work items across local branches',
     run: argv => {
         const wim = new WorkitemManager()
-        console.log(argv)
-        console.log(wim.config)
-        const wiid = wim.add({
-            description: argv.description,
-            tags: argv._.filter(x => x.indexOf("#") == 0),
-            location: [...argv._.filter(x => x.indexOf("@") == 0), undefined][0]
-        })
-        log(chalk`workitem added: {bgBlue.yellow #${wiid}}: ${argv.description}`)
+        // log(argv)
+        // log(wim.config)
+        const collate = wim.previewcollate()
+        log(chalk`{bgGreen.white collate}`)
+        log(chalk`You are on branch {bgRed.white ${collate.here}}.`)
     }
 }
