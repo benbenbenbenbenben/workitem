@@ -128,28 +128,11 @@ class WorkitemManager {
         let here = branches.find(b => b.indexOf("*") == 0).substring(2)
         branches = branches.filter(b => b[0] == " ").map(b => b.replace(/^  /, ""))
         branches.forEach(branch => {
-            // add, del, ren: git diff --stat --diff-filter=ADR master..dcdcreadme .workitem
-            // ^ we don't actually care about deletes in secondary branches
-            // git checkout frombranch filetomove.ext
-
-            // diff we don't know how to handle: git diff --stat --diff-filter=CMTUXB master..dcdcreadme .workitem
-            /*
-            added in secondary:  .workitem/doing/36ef7ea/index.json           | 1 +
-            added in primary:    .workitem/doing/423a302/index.json           | 1 -
-            relocated:           .workitem/{todo => doing}/4c4c9a7/index.json | 0
-            */
-            let added = execSync(`git diff --stat --name-only --diff-filter=A ${here}..${branch} .workitem`).toString()
-            let renamed = execSync(`git diff --stat --diff-filter=R ${here}..${branch} .workitem`).toString()
-            if (added) {
-                added = added.split(/\r\n|\r|\n/).filter(x => x)
-                console.log(chalk`{bgYellow !} found ${added.length} files in {bgBlue.white ${branch}} that ${added.length == 1 ? "is" : "are"} missing in {bgRed.white ${here}}`)
-                console.log(added)
-            }
-            if (renamed) {
-                renamed = renamed.match(/^.*\{.*\}[^\|]*/gm).map(m => m.substring(1).replace(/.$/,""))
-                console.log(chalk`{bgYellow !} found ${renamed.length} files in {bgBlue.white ${branch}} that ${renamed.length == 1 ? "is" : "are"} moved in {bgRed.white ${here}}`)
-                console.log(renamed)
-            }
+            execSync(`git checkout ${branch}`).toString()
+            let cherry = execSync(`git cherry -v ${here}`)            
+            execSync(`git checkout ${here}`)
+            console.log(chalk`{bgBlue.white ${branch}:}`)
+            console.log(cherry)
         })
         return {
             here,
