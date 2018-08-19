@@ -47,7 +47,7 @@ class Command {
     }
     static printhelp(logger) {
         for (let reg of Command.registry) {
-            logger.log(chalk_1.default `{bgGreen.white ${reg.name}} ${reg.help}`);
+            logger.log(chalk_1.default `{bgGreen.white ${reg.name.toLowerCase()}}\t${reg.help}`);
         }
     }
 }

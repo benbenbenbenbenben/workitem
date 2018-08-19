@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tibu_1 = require("tibu");
 const { parse, rule, optional, many, either, token } = tibu_1.Tibu;
 const command_1 = require("./command");
-class Rename extends command_1.Command {
+class Collate extends command_1.Command {
     run(argsraw, logger) {
         throw new Error("Method not implemented.");
     }
@@ -11,17 +11,16 @@ class Rename extends command_1.Command {
         super(git, fs);
     }
     parse(argsraw) {
-        const rename = token("rename", "rename");
-        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i);
+        const collate = token("collate", "collate");
+        const auto = token("auto", "auto");
         let result = false;
-        parse(argsraw)(rule(rename, command_1.Command.ws, item, command_1.Command.ws, command_1.Command.msg).yields((r, c) => {
+        parse(argsraw)(rule(collate, optional(command_1.Command.ws, auto), command_1.Command.EOL).yields(r => {
             result = {
-                item: r.one("item"),
-                newname: r.one("msg"),
+                collate: true,
+                auto: r.one("auto") === "auto"
             };
         }));
-        return result;
     }
 }
-exports.Rename = Rename;
-command_1.Command.register(Rename);
+exports.Collate = Collate;
+command_1.Command.register(Collate, "collates workitems across local branches");

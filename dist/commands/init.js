@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tibu_1 = require("tibu");
 const { parse, rule, optional, many, either, token } = tibu_1.Tibu;
 const command_1 = require("./command");
-class Move extends command_1.Command {
+class Init extends command_1.Command {
     run(argsraw, logger) {
         throw new Error("Method not implemented.");
     }
@@ -11,18 +11,17 @@ class Move extends command_1.Command {
         super(git, fs);
     }
     parse(argsraw) {
-        const move = token("move", "move");
-        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i);
-        const stage = token("stage", /\w+/);
+        const init = token("init", "init");
+        const auto = token("auto", /auto/);
         let result = false;
-        parse(argsraw)(rule(move, command_1.Command.ws, item, command_1.Command.ws, optional(/to\s+/), stage).yields((r, c) => {
+        parse(argsraw)(rule(init, optional(command_1.Command.ws, auto), command_1.Command.EOL).yields(r => {
             result = {
-                item: r.one("item"),
-                stage: r.one("stage"),
+                init: true,
+                auto: r.one("auto") === "auto"
             };
         }));
         return result;
     }
 }
-exports.Move = Move;
-command_1.Command.register(Move);
+exports.Init = Init;
+command_1.Command.register(Init, "initialises a workitem repo in the current git repo");

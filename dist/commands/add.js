@@ -49,4 +49,4 @@ class Add extends command_1.Command {
     }
 }
 exports.Add = Add;
-command_1.Command.register(Add);
+command_1.Command.register(Add, "adds a workitem");

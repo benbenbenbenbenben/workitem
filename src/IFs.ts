@@ -1,3 +1,5 @@
+import { readFileSync, writeFileSync, mkdirSync } from "fs";
+
 export interface IFs {
     // process
     execSync(cmdline: string): Buffer
@@ -9,4 +11,7 @@ export interface IFs {
     existsSync(fileorfolder: string): boolean
     readdirSync(dir: string): string[]
     statSync(fileorfolder: string): any
+    readFileSync(file:string, options: any): Buffer
+    writeFileSync(file:string, content: any, options: any): any
+    mkdirSync(dirname:string): void
 }

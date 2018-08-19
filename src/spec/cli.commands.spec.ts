@@ -2,13 +2,13 @@ import { expect } from "chai"
 import "mocha"
 
 import "../src/cli"
-import { Add } from "../src/commands/add"
-import { Move } from "../src/commands/move"
-import { FakeGit } from "../src/FakeGit";
-import { FakeFs } from "../src/FakeFs";
-import { Note } from "../src/commands/note";
-import { Rename } from "../src/commands/rename";
-import { Init } from "../src/commands/init";
+import { Add } from "../commands/add"
+import { Move } from "../commands/move"
+import { FakeGit } from "../FakeGit";
+import { FakeFs } from "../FakeFs";
+import { Note } from "../commands/note";
+import { Rename } from "../commands/rename";
+import { Init } from "../commands/init";
 
 const git = new FakeGit()
 const fs = new FakeFs()

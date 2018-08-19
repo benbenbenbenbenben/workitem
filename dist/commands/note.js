@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tibu_1 = require("tibu");
 const { parse, rule, optional, many, either, token } = tibu_1.Tibu;
 const command_1 = require("./command");
-class Init extends command_1.Command {
+class Note extends command_1.Command {
     run(argsraw, logger) {
         throw new Error("Method not implemented.");
     }
@@ -11,17 +11,17 @@ class Init extends command_1.Command {
         super(git, fs);
     }
     parse(argsraw) {
-        const init = token("init", "init");
-        const auto = token("auto", /auto/);
+        const move = token("note", "note");
+        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i);
         let result = false;
-        parse(argsraw)(rule(init, optional(command_1.Command.ws, auto), command_1.Command.EOL).yields(r => {
+        parse(argsraw)(rule(move, command_1.Command.ws, item, command_1.Command.ws, command_1.Command.msg).yields((r, c) => {
             result = {
-                init: true,
-                auto: r.one("auto") === "auto"
+                item: r.one("item"),
+                comment: r.one("msg"),
             };
         }));
         return result;
     }
 }
-exports.Init = Init;
-command_1.Command.register(Init);
+exports.Note = Note;
+command_1.Command.register(Note, "adds commentary to a work item");
