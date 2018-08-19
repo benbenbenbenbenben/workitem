@@ -3,17 +3,24 @@ import crypto from "crypto";
 import { IStage, IStageCollection } from "./Stage";
 import { Success } from "./Success";
 import { IWorkitem } from "./Workitem";
-import { IFs } from "./IFs";
+import { IHost } from "./IHost";
 import { IGit } from "./IGit";
 
 export class WorkitemManager {
-    public fs: IFs;
+    public fs: IHost;
     public git: IGit
     public config: any;
-    constructor(git: IGit, fs: IFs) {
+    constructor(git: IGit, fs: IHost) {
         this.git = git
         this.fs = fs
-        this.config = fs.readJsonSync(".workitem/workitem.json")
+        try {
+            this.config = fs.readJsonSync(".workitem/workitem.json")
+        } catch(e) {
+            this.config = undefined
+        }
+    }    
+    isInitialised(): any {
+        return this.config !== undefined
     }
     public gitDo(func: () => void): void {
         this.fs.execSync(`git checkout -B __workitem__`)
@@ -154,9 +161,9 @@ export class WorkitemManager {
                     let addedarr = []
                     let renamedarr = []
                     if (added)                    
-                        addedarr = added.split(/\r\n|\r|\n/).filter(x => x)   
+                        addedarr = added.toString().split(/\r\n|\r|\n/).filter(x => x)   
                     if (renamed)             
-                        renamedarr = renamed.match(/^.*\{.*\}[^\|]*/gm)!.map(m => m.substring(1).replace(/.$/, ""))
+                        renamedarr = renamed.toString().match(/^.*\{.*\}[^\|]*/gm)!.map(m => m.substring(1).replace(/.$/, ""))
                     progress({
                         total: branches.length - 1,
                         current: i

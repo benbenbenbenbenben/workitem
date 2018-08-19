@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class FakeFs {
+class FakeHost {
+    getKey() {
+        throw new Error("Method not implemented.");
+    }
     readFileSync(file, options) {
         throw new Error("Method not implemented.");
     }
@@ -35,4 +38,4 @@ class FakeFs {
         throw new Error("Method not implemented.");
     }
 }
-exports.FakeFs = FakeFs;
+exports.FakeHost = FakeHost;

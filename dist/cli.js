@@ -21,25 +21,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // #!/usr/bin/env node
 const chalk_1 = __importDefault(require("chalk"));
 const command_1 = require("./commands/command");
-const FakeGit_1 = require("./FakeGit");
-const FakeFs_1 = require("./FakeFs");
 const ErrorCodes_1 = require("./ErrorCodes");
+const Host_1 = require("./Host");
+const Git_1 = require("./Git");
 class CLI {
-    log(message) {
-        console.log(message);
+    log(message = undefined) {
+        if (message)
+            console.log(message);
+        else
+            console.log();
     }
     fail(err, message) {
-        console.error(message);
+        if (err === ErrorCodes_1.ErrorCodes.NotInitialised) {
+            this.log(chalk_1.default `{bgYellow warning} this directory is not initialised as a repo`);
+            this.showHelp();
+        }
+        else {
+            console.error(message);
+        }
         process.exit(err);
+    }
+    showHelp() {
+        this.log(`\ncommand usage:\n`);
+        command_1.Command.printhelp(this);
+        this.log();
     }
     constructor() {
         ;
     }
     run(argsraw) {
         return __awaiter(this, void 0, void 0, function* () {
-            const git = new FakeGit_1.FakeGit();
-            const fs = new FakeFs_1.FakeFs();
+            const fs = new Host_1.Host();
+            const git = new Git_1.Git(fs);
             const commands = [
+                "show",
                 "init",
                 "add",
                 "note",
@@ -57,11 +72,10 @@ class CLI {
                     this.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, `Sorry, that command couldn't be understood`);
                 }
                 else {
-                    this.log(`Usage:`);
-                    command_1.Command.printhelp(this);
+                    this.showHelp();
                 }
             }
         });
     }
 }
-new CLI().run(process.argv.slice(2).join(" "));
+new CLI().run(process.argv.slice(2).map(s => !s.includes(" ") ? s : ['"', s.replace(/\"/g, "\\\""), '"'].join("")).join(" "));

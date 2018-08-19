@@ -2,16 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 require("mocha");
-require("../src/cli");
 const add_1 = require("../commands/add");
 const move_1 = require("../commands/move");
 const FakeGit_1 = require("../FakeGit");
-const FakeFs_1 = require("../FakeFs");
+const FakeHost_1 = require("../FakeHost");
 const note_1 = require("../commands/note");
 const rename_1 = require("../commands/rename");
 const init_1 = require("../commands/init");
+const show_1 = require("../commands/show");
 const git = new FakeGit_1.FakeGit();
-const fs = new FakeFs_1.FakeFs();
+const fs = new FakeHost_1.FakeHost();
 const add = new add_1.Add(git, fs);
 describe("add", () => {
     it("should accept add", () => {
@@ -22,6 +22,17 @@ describe("add", () => {
     });
     it("should accept add 'string'", () => {
         chai_1.expect(add.parse("add 'foo'")).to.deep.eq({
+            description: "foo",
+            tags: null,
+            type: null,
+            location: null,
+            estimate: null,
+            parent: null,
+            child: null,
+        });
+    });
+    it("should accept add \"string\"", () => {
+        chai_1.expect(add.parse("add \"foo\"")).to.deep.eq({
             description: "foo",
             tags: null,
             type: null,
@@ -152,6 +163,29 @@ describe("init", () => {
         chai_1.expect(new init_1.Init(git, fs).parse("init auto")).to.deep.eq({
             init: true,
             auto: true
+        });
+    });
+});
+describe("show", () => {
+    it("should accept show", () => {
+        chai_1.expect(new show_1.Show(git, fs).parse("show")).to.deep.eq({
+            show: true,
+            more: false,
+            item: null,
+        });
+    });
+    it("should accept more", () => {
+        chai_1.expect(new show_1.Show(git, fs).parse("more")).to.deep.eq({
+            show: true,
+            more: true,
+            item: null,
+        });
+    });
+    it("should accept show more", () => {
+        chai_1.expect(new show_1.Show(git, fs).parse("show more")).to.deep.eq({
+            show: true,
+            more: true,
+            item: null,
         });
     });
 });

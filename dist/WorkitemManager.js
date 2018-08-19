@@ -9,7 +9,15 @@ class WorkitemManager {
     constructor(git, fs) {
         this.git = git;
         this.fs = fs;
-        this.config = fs.readJsonSync(".workitem/workitem.json");
+        try {
+            this.config = fs.readJsonSync(".workitem/workitem.json");
+        }
+        catch (e) {
+            this.config = undefined;
+        }
+    }
+    isInitialised() {
+        return this.config !== undefined;
     }
     gitDo(func) {
         this.fs.execSync(`git checkout -B __workitem__`);
@@ -145,9 +153,9 @@ class WorkitemManager {
                     let addedarr = [];
                     let renamedarr = [];
                     if (added)
-                        addedarr = added.split(/\r\n|\r|\n/).filter(x => x);
+                        addedarr = added.toString().split(/\r\n|\r|\n/).filter(x => x);
                     if (renamed)
-                        renamedarr = renamed.match(/^.*\{.*\}[^\|]*/gm).map(m => m.substring(1).replace(/.$/, ""));
+                        renamedarr = renamed.toString().match(/^.*\{.*\}[^\|]*/gm).map(m => m.substring(1).replace(/.$/, ""));
                     progress({
                         total: branches.length - 1,
                         current: i

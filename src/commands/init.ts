@@ -4,17 +4,12 @@ import { WorkitemManager } from "../WorkitemManager"
 import { Command } from "./command";
 import { IGit } from "../IGit";
 import { ILogger } from "../ILogger";
-import { IFs } from "../IFs";
-import chalk from "../../node_modules/chalk";
-
-const promptsync = require('prompt-sync')({sigint:true})
-const readkey = () => {
-    return promptsync()
-}
+import { IHost } from "../IHost";
+import chalk from "chalk";
 
 export class Init extends Command {
     private logger!:ILogger
-    public run(argsraw: string, logger: ILogger): void {
+    public async run(argsraw: string, logger: ILogger): Promise<void> {
         this.logger = logger
         const result = this.parse(argsraw)
         if (result.init) {
@@ -25,14 +20,14 @@ export class Init extends Command {
                     : this.hasworkitemdir()
                      ? logger.fail(-3, 'This workitem repository is broken. There is a directory structure but I cannot find the configuration file workitem.json')
                      : this.isgitclean()
-                      ? this.gotoworkitembranch() && this.setupworkitem()
+                      ? this.gotoworkitembranch() && await this.setupworkitem()
                        ? logger.log(chalk`{bgBlue.white Done!}`)
                        : this.revert()
                       : logger.fail(-4, 'You have uncommited changes in this repository. Use \'git status\' to view these. Once resolved you can initialise this workitem repository.')
                    : logger.fail(-2, 'This directory is not a git repository. You can\'t initialise a workitem repository outside a git repository.') 
         }
     }
-    public constructor(git: IGit, fs: IFs) {
+    public constructor(git: IGit, fs: IHost) {
         super(git, fs)
     }
     public parse(argsraw: string) {
@@ -90,9 +85,9 @@ export class Init extends Command {
         require('child_process').execSync(`git merge ${this.branch}`).toString()
         return true
     }
-    createdirectories() {
-        const key = readkey()
-        switch(key) {
+    async createdirectories():Promise<boolean> {
+        const key = await this.fs.getKey()
+        switch(key.sequence) {
             case "1":
                 this.logger.log('[1]: todo -> doing -> done')
                 this.fs.mkdirSync('./.workitem')
@@ -163,7 +158,7 @@ export class Init extends Command {
             default:
                 this.logger.log('Unknown option')
                 return false
-        }
+        }            
     }
     updategitignore() {
         if (this.fs.existsSync('.gitignore')) {
@@ -182,9 +177,9 @@ export class Init extends Command {
         }
         return true
     }
-    configurehook() {
-        const key = readkey()
-        switch (key){
+    async configurehook():Promise<boolean> {
+        const key = await this.fs.getKey()
+        switch (key.sequence.toLowerCase()){
             case "y":
             // detect existing hooks
             // 1. if existing pre-commit hook, create pre-commit dir and move pre-commit hook there, renaming to pre-commit.0
@@ -201,14 +196,14 @@ export class Init extends Command {
             return false
         }
     }
-    setupworkitem() {
+    async setupworkitem() {
         this.logger.log(
             "Which workflow would you like?\n"+
             "[1]: todo -> doing -> done\n"+
             "[2]: backlog -> analysis -> dev -> test -> review -> done\n"+
             "[3]: I'll create my own folders"
         )    
-        while(!this.createdirectories()){}
+        while(!await this.createdirectories()){}
         while(!this.updategitignore){}
         this.logger.log(
             "Would you like to install a git commit hook for workitem?\n"+
@@ -216,7 +211,7 @@ export class Init extends Command {
             "[N]o\n"+
             "[W]hat does the hook do?"
         )
-        while(!this.configurehook()){}
+        while(!await this.configurehook()){}
         this.commit()
         return true
     }

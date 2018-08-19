@@ -1,27 +1,41 @@
 // #!/usr/bin/env node
 import chalk from "chalk"
 import { Command, ICommand } from "./commands/command";
-import { FakeGit } from "./FakeGit";
-import { FakeFs } from "./FakeFs";
 import { ILogger } from "./ILogger";
 import { ErrorCodes } from "./ErrorCodes";
+import { Host } from "./Host";
+import { Git } from "./Git";
 
 class CLI implements ILogger {
-    log(message: string): void {
-        console.log(message)
+    log(message: string | undefined = undefined): void {
+        if (message)
+            console.log(message)
+        else
+            console.log()
     }
     fail(err: number, message: string): void {
-        console.error(message)
+        if (err === ErrorCodes.NotInitialised) {
+            this.log(chalk`{bgYellow warning} this directory is not initialised as a repo`)
+            this.showHelp()
+        } else {
+            console.error(message)
+        }
         process.exit(err)
+    }
+    showHelp(): void {
+        this.log(`\ncommand usage:\n`)
+        Command.printhelp(this)
+        this.log()
     }
     constructor() {
         ;
     }
     public async run(argsraw: string) {
-        const git = new FakeGit()
-        const fs = new FakeFs()
+        const fs = new Host()
+        const git = new Git(fs)
 
         const commands = [
+            "show",
             "init",
             "add",
             "note",
@@ -41,11 +55,10 @@ class CLI implements ILogger {
             if (argsraw.length) {
                 this.fail(ErrorCodes.UnknownCommand, `Sorry, that command couldn't be understood`)
             } else {
-                this.log(`Usage:`)
-                Command.printhelp(this)
+                this.showHelp()
             }
         }
     }
 }
 
-new CLI().run(process.argv.slice(2).join(" "))
+new CLI().run(process.argv.slice(2).map(s => !s.includes(" ") ? s : ['"', s.replace(/\"/g, "\\\""), '"'].join("")).join(" "))

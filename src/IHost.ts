@@ -1,9 +1,9 @@
-import { readFileSync, writeFileSync, mkdirSync } from "fs";
+import { ExecException } from "child_process";
 
-export interface IFs {
+export interface IHost {
     // process
     execSync(cmdline: string): Buffer
-    exec(cmdline: string, options: any, callback: (error: Error, result: string) => void): void
+    exec(cmdline: string, options: any, callback: (error: ExecException | null, stdout: Buffer, stderr: Buffer) => void): void
     // io
     outputJsonSync(filename: string, data: any): any
     writeJsonSync(filename: string, data: any): any
@@ -14,4 +14,5 @@ export interface IFs {
     readFileSync(file:string, options: any): Buffer
     writeFileSync(file:string, content: any, options: any): any
     mkdirSync(dirname:string): void
+    getKey(): Promise<any>
 }

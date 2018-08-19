@@ -2,9 +2,10 @@ module.exports = function(wallaby) {
     return {
       files: [
         'src/**/*.ts',
+        '!src/spec/**/*.ts',
       ],
       tests: [
-        'spec/**/*.spec.ts'
+        'src/spec/**/*.spec.ts'
       ],
       debug: true,
       compilers: {

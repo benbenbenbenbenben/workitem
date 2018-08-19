@@ -4,13 +4,13 @@ import { WorkitemManager } from "../WorkitemManager"
 import { Command, ICommand } from "./command";
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
-import { IFs } from "../IFs";
+import { IHost } from "../IHost";
 
 export class Collate extends Command {
     public run(argsraw: string, logger: ILogger): void {
         throw new Error("Method not implemented.");
     }
-    public constructor(git: IGit, fs: IFs) {
+    public constructor(git: IGit, fs: IHost) {
         super(git, fs)
     }
     public parse(argsraw: string): boolean | any {

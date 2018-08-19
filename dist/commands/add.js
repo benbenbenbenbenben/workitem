@@ -11,10 +11,14 @@ const ErrorCodes_1 = require("../ErrorCodes");
 const chalk_1 = __importDefault(require("chalk"));
 class Add extends command_1.Command {
     run(argsraw, logger) {
+        console.log(argsraw);
         const result = this.parse(argsraw);
         const wim = new WorkitemManager_1.WorkitemManager(this.git, this.fs);
         if (result === false) {
             logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white add} could not proceed`);
+        }
+        if (result === true) {
+            logger.fail(ErrorCodes_1.ErrorCodes.NotImplemented, chalk_1.default `wizard not implemented`);
         }
         wim.add(result);
     }
@@ -42,7 +46,7 @@ class Add extends command_1.Command {
                 child: r.one("xsmaller"),
                 parent: r.one("xbigger"),
             };
-        }), rule(add).yields(() => {
+        }), rule(add, command_1.Command.EOL).yields(() => {
             result = true;
         }))));
         return result;

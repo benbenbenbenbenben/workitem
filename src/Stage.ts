@@ -1,7 +1,6 @@
 import { IWorkitem } from "./Workitem";
 
-interface IStageCollection {
-    [index: number]: IStage
+interface IStageCollection extends Array<IStage> {
     map(...args: any[]): any
     filter(...args: any[]): any
 }

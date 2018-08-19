@@ -1,24 +1,28 @@
 import { Input, Result, Tibu } from "tibu";
-const { parse, rule, optional, many, either, token } = Tibu
+const { parse, rule, optional, many, either, token, all } = Tibu
 import { WorkitemManager } from "../WorkitemManager"
 import { Command, ICommand } from "./command";
 import { ErrorCodes } from "../ErrorCodes";
 import chalk from "chalk"
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
-import { IFs } from "../IFs";
+import { IHost } from "../IHost";
 
 export interface Add extends Command {}
 export class Add extends Command  {
     public run(argsraw: string, logger: ILogger): void {
+        console.log(argsraw)
         const result = this.parse(argsraw)
         const wim = new WorkitemManager(this.git, this.fs)
         if (result === false) {
             logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white add} could not proceed`)
         }
+        if (result === true) {
+            logger.fail(ErrorCodes.NotImplemented, chalk`wizard not implemented`)
+        }
         wim.add(result)
     }
-    public constructor(git: IGit, fs: IFs) {
+    public constructor(git: IGit, fs: IHost) {
         super(git, fs)
     }
     public parse(argsraw: string): boolean | any {       
@@ -35,7 +39,7 @@ export class Add extends Command  {
         let result: any = false
         parse(argsraw)(
             rule(either(
-                rule(add, Command.ws, optional(type, Command.ws), Command.msg, many(xtags),
+                rule(add, Command.ws, either(all(type, Command.ws, Command.msg), Command.msg), many(xtags),
                     optional(xats), optional(xest),
                     optional(either(xbigger, xsmaller)),
                     Command.EOL).yields((r, c) => {
@@ -49,7 +53,7 @@ export class Add extends Command  {
                         parent: r.one("xbigger"),
                     }
                 }),
-                rule(add).yields(() => {
+                rule(add, Command.EOL).yields(() => {
                     result = true
                 }),
             )),

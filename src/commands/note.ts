@@ -2,7 +2,7 @@ import { Input, Result, Tibu } from "tibu";
 const { parse, rule, optional, many, either, token } = Tibu
 import { WorkitemManager } from "../WorkitemManager"
 import { Command } from "./command";
-import { IFs } from "../IFs";
+import { IHost } from "../IHost";
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
 
@@ -10,7 +10,7 @@ export class Note extends Command {
     public run(argsraw: string, logger: ILogger): void {
         throw new Error("Method not implemented.");
     }
-    public constructor(git: IGit, fs: IFs) {
+    public constructor(git: IGit, fs: IHost) {
         super(git, fs)
     }
     public parse(argsraw: string) {

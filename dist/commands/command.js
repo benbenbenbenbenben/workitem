@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const tibu_1 = require("tibu");
-const chalk_1 = __importDefault(require("../../node_modules/chalk"));
+const chalk_1 = __importDefault(require("chalk"));
 const { rule, token, either, all, many, optional } = tibu_1.Tibu;
 class Command {
     constructor(git, fs) {
@@ -52,7 +52,7 @@ class Command {
     }
 }
 Command.ws = rule(/\s*/);
-Command.msg = rule(either(rule("'", token("msg", /[^\']*/), "'"), rule('"', token("msg", /[^\"]*/), '"')));
+Command.msg = rule(either(rule("'", token("msg", /[^\']*/), "'"), rule('"', token("msg", /[^\"]*/), '"'), rule(token("msg", /[^\s\~\+\<\>\+\-\@\#][\w]*/))));
 Command.EOL = (input) => input.location === input.source.length
     ? tibu_1.Result.pass(input)
     : tibu_1.Result.fault(input);

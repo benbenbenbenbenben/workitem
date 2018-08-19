@@ -1,17 +1,17 @@
 import { expect } from "chai"
 import "mocha"
 
-import "../src/cli"
 import { Add } from "../commands/add"
 import { Move } from "../commands/move"
 import { FakeGit } from "../FakeGit";
-import { FakeFs } from "../FakeFs";
+import { FakeHost } from "../FakeHost";
 import { Note } from "../commands/note";
 import { Rename } from "../commands/rename";
 import { Init } from "../commands/init";
+import { Show } from "../commands/show";
 
 const git = new FakeGit()
-const fs = new FakeFs()
+const fs = new FakeHost()
 const add = new Add(git, fs)
 
 describe("add", () => {
@@ -20,9 +20,31 @@ describe("add", () => {
     })
     it("should not accept empty", () => {
         expect(add.parse("")).to.eq(false)
+    })    
+    it("should accept add type string", () => {
+        expect(add.parse("add type string")).to.deep.eq({
+            description: "string",
+            tags: null,
+            type: "type",
+            location: null,
+            estimate: null,
+            parent: null,
+            child: null,
+        })
     })
-    it("should accept add 'string'", () => {
-        expect(add.parse("add 'foo'")).to.deep.eq({
+    it("should accept add string", () => {
+        expect(add.parse("add string")).to.deep.eq({
+            description: "string",
+            tags: null,
+            type: null,
+            location: null,
+            estimate: null,
+            parent: null,
+            child: null,
+        })
+    })
+    it("should accept add \"string\"", () => {
+        expect(add.parse("add \"foo\"")).to.deep.eq({
             description: "foo",
             tags: null,
             type: null,
@@ -157,6 +179,31 @@ describe("init", () => {
         expect(new Init(git, fs).parse("init auto")).to.deep.eq({
             init: true,
             auto: true
+        })
+    })
+})
+
+
+describe("show", () => {
+    it("should accept show", () => {
+        expect(new Show(git, fs).parse("show")).to.deep.eq({
+            show: true,
+            more: false,
+            item: null,
+        })
+    })
+    it("should accept more", () => {
+        expect(new Show(git, fs).parse("more")).to.deep.eq({
+            show: true,
+            more: true,
+            item: null,
+        })
+    })
+    it("should accept show more", () => {
+        expect(new Show(git, fs).parse("show more")).to.deep.eq({
+            show: true,
+            more: true,
+            item: null,
         })
     })
 })
