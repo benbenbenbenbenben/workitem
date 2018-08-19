@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const tibu_1 = require("tibu");
-const { parse, rule, optional, many, either, token } = tibu_1.Tibu;
+const { parse, rule, optional, many, either, token, all } = tibu_1.Tibu;
 const WorkitemManager_1 = require("../WorkitemManager");
 const command_1 = require("./command");
 const ErrorCodes_1 = require("../ErrorCodes");
@@ -36,7 +36,7 @@ class Add extends command_1.Command {
         const xbigger = rule(command_1.Command.ws, token("xbigger", /\>\w+/));
         const xsmaller = rule(command_1.Command.ws, token("xsmaller", /\<\w+/));
         let result = false;
-        parse(argsraw)(rule(either(rule(add, command_1.Command.ws, optional(type, command_1.Command.ws), command_1.Command.msg, many(xtags), optional(xats), optional(xest), optional(either(xbigger, xsmaller)), command_1.Command.EOL).yields((r, c) => {
+        parse(argsraw)(rule(either(rule(add, command_1.Command.ws, either(all(type, command_1.Command.ws, command_1.Command.msg), command_1.Command.msg), many(xtags), optional(xats), optional(xest), optional(either(xbigger, xsmaller)), command_1.Command.EOL).yields((r, c) => {
             result = {
                 description: r.one("msg"),
                 tags: r.get("xtags"),

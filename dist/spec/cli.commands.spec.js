@@ -20,9 +20,20 @@ describe("add", () => {
     it("should not accept empty", () => {
         chai_1.expect(add.parse("")).to.eq(false);
     });
-    it("should accept add 'string'", () => {
-        chai_1.expect(add.parse("add 'foo'")).to.deep.eq({
-            description: "foo",
+    it("should accept add type string", () => {
+        chai_1.expect(add.parse("add type string")).to.deep.eq({
+            description: "string",
+            tags: null,
+            type: "type",
+            location: null,
+            estimate: null,
+            parent: null,
+            child: null,
+        });
+    });
+    it("should accept add string", () => {
+        chai_1.expect(add.parse("add string")).to.deep.eq({
+            description: "string",
             tags: null,
             type: null,
             location: null,
