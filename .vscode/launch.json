@@ -5,14 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch TS",
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}\\cli.js",
-            "args": [
-                "add test"
-            ],
-            "console": "externalTerminal"
-        }
+            "args": ["${workspaceRoot}/src/cli.ts"],
+            "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+        },
+        
     ]
 }

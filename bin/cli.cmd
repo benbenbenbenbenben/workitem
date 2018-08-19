@@ -1,1 +1,1 @@
-node cli.js
+node dist/src/cli.js

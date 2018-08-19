@@ -25,8 +25,44 @@ module.exports = {
         const wim = new WorkitemManager()
         // log(argv)
         // log(wim.config)
-        const collate = wim.previewcollate()
-        log(chalk`{bgGreen.white collate}`)
-        log(chalk`You are on branch {bgRed.white ${collate.here}}.`)
+
+        const blessed = require('blessed')
+        const screen = blessed.screen({smartCSR: true, title: "editor-widget example"})
+        var progress = blessed.progressbar({
+            parent: screen,
+            border: 'line',
+            style: {
+              fg: 'blue',
+              bg: 'default',
+              bar: {
+                bg: 'default',
+                fg: 'blue'
+              },
+              border: {
+                fg: 'default',
+                bg: 'default'
+              }
+            },
+            ch: ':',
+            width: '50%',
+            height: 3,
+            top: 3,
+            left: 3,
+            filled: 0
+          })
+          screen.render()
+//screen.destroy()
+let x  = 0
+        wim.previewcollate(update => {
+            //console.log(1)
+            progress.setProgress(100 / update.total * update.current)
+            screen.render()
+        }, () => {
+            screen.destroy()
+        })
+        //screen.destroy()
+        // log(chalk`{bgGreen.white collate}`)
+        // log(chalk`You are on branch {bgRed.white ${collate.here}}.`)
+
     }
 }

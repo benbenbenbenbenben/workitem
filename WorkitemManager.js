@@ -2,7 +2,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const chalk = require('chalk')
 const crypto = require('crypto')
-const execSync = require('child_process').execSync
+const {exec, execSync } = require('child_process')
 
 class WorkitemManager {
     constructor() {
@@ -123,11 +123,15 @@ class WorkitemManager {
             execSync(`git commit -m "[workitem:${workitem.id}:edit]"`)
         })
     }
-    previewcollate() {
+    previewcollate(progress, done) {
+        progress({
+            total: 100,
+            current: 0
+        })
         let branches = execSync('git branch').toString().split(/\r\n|\r|\n/)
         let here = branches.find(b => b.indexOf("*") == 0).substring(2)
         branches = branches.filter(b => b[0] == " ").map(b => b.replace(/^  /, ""))
-        branches.forEach(branch => {
+        branches.forEach((branch, i) => {
             // add, del, ren: git diff --stat --diff-filter=ADR master..dcdcreadme .workitem
             // ^ we don't actually care about deletes in secondary branches
             // git checkout frombranch filetomove.ext
@@ -138,23 +142,29 @@ class WorkitemManager {
             added in primary:    .workitem/doing/423a302/index.json           | 1 -
             relocated:           .workitem/{todo => doing}/4c4c9a7/index.json | 0
             */
-            let added = execSync(`git diff --stat --name-only --diff-filter=A ${here}..${branch} .workitem`).toString()
-            let renamed = execSync(`git diff --stat --diff-filter=R ${here}..${branch} .workitem`).toString()
-            if (added) {
-                added = added.split(/\r\n|\r|\n/).filter(x => x)
-                console.log(chalk`{bgYellow !} found ${added.length} files in {bgBlue.white ${branch}} that ${added.length == 1 ? "is" : "are"} missing in {bgRed.white ${here}}`)
-                console.log(added)
-            }
-            if (renamed) {
-                renamed = renamed.match(/^.*\{.*\}[^\|]*/gm).map(m => m.substring(1).replace(/.$/,""))
-                console.log(chalk`{bgYellow !} found ${renamed.length} files in {bgBlue.white ${branch}} that ${renamed.length == 1 ? "is" : "are"} moved in {bgRed.white ${here}}`)
-                console.log(renamed)
-            }
+
+            exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} .workitem`, {encoding: "utf8"}, (err,added) => {
+                exec(`git diff --stat --diff-filter=R ${here}..${branch} .workitem`, {encoding:"utf8"}, (error, renamed) => {
+                    if (added)                    
+                        added = added.split(/\r\n|\r|\n/).filter(x => x)   
+                    if (renamed)             
+                        renamed = renamed.match(/^.*\{.*\}[^\|]*/gm).map(m => m.substring(1).replace(/.$/,""))
+                    progress({
+                        total: branches.length - 1,
+                        current: i
+                    })
+                    if (branches.length - 1 == i) {
+                        done()
+                    }
+                })
+            })
+               // console.log(chalk`{bgYellow !} found ${added.length} files in {bgBlue.white ${branch}} that ${added.length == 1 ? "is" : "are"} missing in {bgRed.white ${here}}`)
+               // console.log(added)
+            
+               // console.log(chalk`{bgYellow !} found ${renamed.length} files in {bgBlue.white ${branch}} that ${renamed.length == 1 ? "is" : "are"} moved in {bgRed.white ${here}}`)
+               // console.log(renamed)            
         })
-        return {
-            here,
-            branches
-        }
+
     }
     appendItem(workitem, data) {
         // generate identity
