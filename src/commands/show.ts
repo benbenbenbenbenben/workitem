@@ -25,6 +25,7 @@ export class Show extends Command {
                 }
                 if (result.more) {
                     // load linked stuff
+                    const comments = wim.getComments(item.id)
                 }
                 if (item.tags) {
                     logger.log()

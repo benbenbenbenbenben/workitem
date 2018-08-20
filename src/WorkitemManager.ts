@@ -87,6 +87,10 @@ export class WorkitemManager {
         }
         return new Success(true, workitem)
     }
+    public getComments(item: string): any {
+        const workitem = this.idToWorkitem(item)
+
+    }
     public move(item: string, stage: string) {
         const targetstage = this.workitems.filter((w: IStage) => w.stage === stage)
         if (targetstage.length === 0) {
@@ -119,12 +123,12 @@ export class WorkitemManager {
         this.save(workitem.value)
         return new Success(true, workitem.value)
     }
-    public comment(item: string, comment: string) {
+    public comment(item: string, comment: string, who: string) {
         const workitem = this.idToWorkitem(item)
         if (!workitem.success) {
             return workitem
         }
-        this.appendItem(workitem.value, {type: "comment", content: comment})
+        this.appendItem(workitem.value, {type: "comment", content: comment, who})
     }
     public save(workitem: IWorkitem) {
         this.gitDo(() => {
@@ -182,7 +186,7 @@ export class WorkitemManager {
         })
 
     }
-    public appendItem(workitem: IWorkitem, data: { type: string, content: any }) {
+    public appendItem(workitem: IWorkitem, data: { type: string, content: any, who: string }) {
         // generate identity
         const hash = crypto.createHash("sha256")
         hash.update(JSON.stringify(data))

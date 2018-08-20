@@ -15,7 +15,7 @@ export class Note extends Command {
         if (result === false) {
             logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white add} could not proceed`)
         }
-        wim.comment(result.item, result.comment)
+        wim.comment(result.item, result.comment, this.git.getWho())
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)

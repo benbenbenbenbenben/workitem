@@ -84,6 +84,9 @@ class WorkitemManager {
         }
         return new Success_1.Success(true, workitem);
     }
+    getComments(item) {
+        const workitem = this.idToWorkitem(item);
+    }
     move(item, stage) {
         const targetstage = this.workitems.filter((w) => w.stage === stage);
         if (targetstage.length === 0) {
@@ -113,12 +116,12 @@ class WorkitemManager {
         this.save(workitem.value);
         return new Success_1.Success(true, workitem.value);
     }
-    comment(item, comment) {
+    comment(item, comment, who) {
         const workitem = this.idToWorkitem(item);
         if (!workitem.success) {
             return workitem;
         }
-        this.appendItem(workitem.value, { type: "comment", content: comment });
+        this.appendItem(workitem.value, { type: "comment", content: comment, who });
     }
     save(workitem) {
         this.gitDo(() => {

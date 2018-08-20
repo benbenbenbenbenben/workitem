@@ -21,5 +21,14 @@ class Git {
         }));
         return branch;
     }
+    getUsername() {
+        return this.git("config user.name");
+    }
+    getEmail() {
+        return this.git("config user.email");
+    }
+    getWho() {
+        return `${this.getUsername()} <${this.getEmail()}>`;
+    }
 }
 exports.Git = Git;

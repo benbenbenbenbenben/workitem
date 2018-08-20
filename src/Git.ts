@@ -25,5 +25,13 @@ export class Git implements IGit {
         )
         return branch
     }
-
+    getUsername(): string {
+        return this.git("config user.name")
+    }
+    getEmail(): string {
+        return this.git("config user.email")
+    }
+    getWho(): string {
+        return `${this.getUsername()} <${this.getEmail()}>`
+    }
 }

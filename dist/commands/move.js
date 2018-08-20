@@ -26,7 +26,7 @@ class Move extends command_1.Command {
         const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i);
         const stage = token("stage", /\w+/);
         let result = false;
-        parse(argsraw)(rule(move, command_1.Command.ws, item, command_1.Command.ws, optional(/to\s+/), stage).yields((r, c) => {
+        parse(argsraw)(rule(move, command_1.Command.ws, item, command_1.Command.ws, optional(/to\s+/), stage, command_1.Command.EOL).yields((r, c) => {
             result = {
                 item: r.one("item"),
                 stage: r.one("stage"),

@@ -16,7 +16,7 @@ class Note extends command_1.Command {
         if (result === false) {
             logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white add} could not proceed`);
         }
-        wim.comment(result.item, result.comment);
+        wim.comment(result.item, result.comment, this.git.getWho());
     }
     constructor(git, fs) {
         super(git, fs);
@@ -25,7 +25,7 @@ class Note extends command_1.Command {
         const move = token("note", "note");
         const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i);
         let result = false;
-        parse(argsraw)(rule(move, command_1.Command.ws, item, command_1.Command.ws, command_1.Command.msg).yields((r, c) => {
+        parse(argsraw)(rule(move, command_1.Command.ws, item, command_1.Command.ws, command_1.Command.msg, command_1.Command.EOL).yields((r, c) => {
             result = {
                 item: r.one("item"),
                 comment: r.one("msg"),
