@@ -1,0 +1,1 @@
+{"description":"make init perform git init + initial commit if dir is not git repo and empty","tags":null,"type":null,"estimate":null,"child":null,"parent":null}
