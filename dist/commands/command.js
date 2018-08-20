@@ -38,7 +38,7 @@ class Command {
                 const cmd = new reg.ctor(git, fs);
                 if (cmd.parse(argsraw)) {
                     parseok = true;
-                    cmd.run(argsraw, logger);
+                    yield cmd.run(argsraw, logger);
                     break;
                 }
             }

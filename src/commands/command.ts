@@ -9,7 +9,7 @@ const { rule, token, either, all, many, optional } = Tibu
 
 export type ICommand = {
     parse(argsraw: string): boolean | any
-    run(argsraw:string, logger: ILogger): void
+    run(argsraw:string, logger: ILogger): Promise<void>
 }
 
 export abstract class Command {
@@ -25,7 +25,7 @@ export abstract class Command {
         this.fs = fs
     }
     public abstract parse(argsraw: string): boolean | any
-    public abstract run(argsraw:string, logger: ILogger): void
+    public async abstract run(argsraw:string, logger: ILogger): Promise<void>
     public static ws: IRule = rule(/\s*/)
     public static msg: IRule = rule(either(
         rule("'", token("msg", /[^\']*/), "'"),
@@ -54,7 +54,7 @@ export abstract class Command {
             const cmd = new reg.ctor(git, fs)
             if (cmd.parse(argsraw)) {
                 parseok = true
-                cmd.run(argsraw, logger)
+                await cmd.run(argsraw, logger)
                 break
             }
         }

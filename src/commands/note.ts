@@ -6,16 +6,18 @@ import { IHost } from "../IHost";
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
 import { ErrorCodes } from "../ErrorCodes";
-import chalk from "../../node_modules/chalk";
+import chalk from "chalk";
 
 export class Note extends Command {
-    public run(argsraw: string, logger: ILogger): void {
+    public async run(argsraw: string, logger: ILogger): Promise<void> {
         const result = this.parse(argsraw)
         const wim = new WorkitemManager(this.git, this.fs)
         if (result === false) {
             logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white add} could not proceed`)
         }
-        wim.comment(result.item, result.comment, this.git.getWho())
+        this.git.getWho().then(who => {
+            wim.comment(result.item, result.comment, who)
+        })
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)

@@ -15,7 +15,7 @@ class CLI implements ILogger {
     }
     fail(err: number, message: string): void {
         if (err === ErrorCodes.NotInitialised) {
-            this.log(chalk`{bgYellow warning} this directory is not initialised as a repo`)
+            this.log(chalk`{bgYellow warning} NotInitialised ${message}`)
             this.showHelp()
         } else {
             console.error(message)
@@ -36,9 +36,9 @@ class CLI implements ILogger {
         const fs = new Host()
         const git = new Git(fs)
 
-        const commands = [
-            "show",
+        const commands = [            
             "init",
+            "show",
             "add",
             "note",
             "rename",
@@ -69,3 +69,5 @@ class CLI implements ILogger {
 }
 
 new CLI().run(process.argv.slice(2).map(s => !s.includes(" ") ? s : ['"', s.replace(/\"/g, "\\\""), '"'].join("")).join(" "))
+    .then(x => process.exit())
+    .catch(x => process.exit(ErrorCodes.UnknownError))

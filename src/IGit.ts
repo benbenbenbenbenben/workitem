@@ -2,9 +2,14 @@ import { IHost } from "./IHost";
 
 export interface IGit {
     fs: IHost
-    getCurrentBranch(): string
+    getCurrentBranch(): Promise<string>
     
-    getUsername(): string
-    getEmail(): string
-    getWho(): string
+    getUsername(): Promise<string>
+    getEmail(): Promise<string>
+    getWho(): Promise<string>
+
+    isRepo(): Promise<boolean>
+    isInit(): Promise<boolean>
+
+    createRepo(): Promise<boolean> 
 }

@@ -162,23 +162,29 @@ export class WorkitemManager {
             */
 
             // tslint:disable-next-line:max-line-length
-            this.fs.exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} .workitem`, {encoding: "utf8"}, (err, added) => {
-                this.fs.exec(`git diff --stat --diff-filter=R ${here}..${branch} .workitem`, {encoding: "utf8"}, (error, renamed) => {
-                    let addedarr = []
-                    let renamedarr = []
-                    if (added)                    
-                        addedarr = added.toString().split(/\r\n|\r|\n/).filter(x => x)   
-                    if (renamed)             
-                        renamedarr = renamed.toString().match(/^.*\{.*\}[^\|]*/gm)!.map(m => m.substring(1).replace(/.$/, ""))
-                    progress({
-                        total: branches.length - 1,
-                        current: i
-                    })
-                    if (branches.length - 1 === i) {
-                        done()
-                    }
-                })
-            })
+            this.fs.exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} .workitem`).then(
+                result => {
+                    let added = result.stdout
+                    this.fs.exec(`git diff --stat --diff-filter=R ${here}..${branch} .workitem`).then(
+                        result => {
+                            let renamed = result.stdout
+                            let addedarr = []
+                            let renamedarr = []
+                            if (added)                    
+                                addedarr = added.toString().split(/\r\n|\r|\n/).filter(x => x)   
+                            if (renamed)             
+                                renamedarr = renamed.toString().match(/^.*\{.*\}[^\|]*/gm)!.map(m => m.substring(1).replace(/.$/, ""))
+                            progress({
+                                total: branches.length - 1,
+                                current: i
+                            })
+                            if (branches.length - 1 === i) {
+                                done()
+                            }
+                        }
+                    )
+                }
+            )
                // console.log(chalk`{bgYellow !} found ${added.length} files in {bgBlue.white ${branch}} that ${added.length == 1 ? "is" : "are"} missing in {bgRed.white ${here}}`)
                // console.log(added)
 

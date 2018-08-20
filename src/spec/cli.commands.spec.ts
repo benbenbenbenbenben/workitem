@@ -10,8 +10,8 @@ import { Rename } from "../commands/rename";
 import { Init } from "../commands/init";
 import { Show } from "../commands/show";
 
-const git = new FakeGit()
 const fs = new FakeHost()
+const git = new FakeGit(fs)
 const add = new Add(git, fs)
 
 describe("add", () => {

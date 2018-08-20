@@ -9,7 +9,7 @@ import { ErrorCodes } from "../ErrorCodes";
 import chalk from "chalk";
 
 export class Show extends Command {
-    public run(argsraw: string, logger: ILogger): void {
+    public async run(argsraw: string, logger: ILogger): Promise<void> {
         const result = this.parse(argsraw)
         const wim = new WorkitemManager(this.git, this.fs)
         if (result === false) {
@@ -65,7 +65,7 @@ export class Show extends Command {
                 })
             }
         } else {
-            logger.fail(ErrorCodes.NotInitialised, chalk`this repo is not initialised`)
+            logger.fail(ErrorCodes.NotInitialised, chalk`This directory is not a .workitem repository. Run workitem init to create a repository here.`)
         }
     }
     public constructor(git: IGit, fs: IHost) {

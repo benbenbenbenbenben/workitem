@@ -7,7 +7,7 @@ import { IGit } from "../IGit";
 import { IHost } from "../IHost";
 
 export class Collate extends Command {
-    public run(argsraw: string, logger: ILogger): void {
+    public async run(argsraw: string, logger: ILogger): Promise<void> {
         throw new Error("Method not implemented.");
     }
     public constructor(git: IGit, fs: IHost) {

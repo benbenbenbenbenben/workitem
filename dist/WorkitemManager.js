@@ -154,8 +154,10 @@ class WorkitemManager {
             relocated:           .workitem/{todo => doing}/4c4c9a7/index.json | 0
             */
             // tslint:disable-next-line:max-line-length
-            this.fs.exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} .workitem`, { encoding: "utf8" }, (err, added) => {
-                this.fs.exec(`git diff --stat --diff-filter=R ${here}..${branch} .workitem`, { encoding: "utf8" }, (error, renamed) => {
+            this.fs.exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} .workitem`).then(result => {
+                let added = result.stdout;
+                this.fs.exec(`git diff --stat --diff-filter=R ${here}..${branch} .workitem`).then(result => {
+                    let renamed = result.stdout;
                     let addedarr = [];
                     let renamedarr = [];
                     if (added)

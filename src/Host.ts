@@ -1,6 +1,8 @@
+import { promisify } from "util";
 import { IHost } from "./IHost";
 import fs from "fs-extra"
 import { exec, execSync, ExecException } from "child_process"
+const pexec = promisify(exec)
 import { emitKeypressEvents } from "readline"
 import chalk from "../node_modules/chalk";
 
@@ -12,14 +14,20 @@ export class Host implements IHost {
         try {
             emitKeypressEvents(process.stdin)
             process.stdin.setRawMode!(true)
+            process.stdin.on("keypress", (str, key) => {
+                if (key.ctrl && key.name === 'c') {
+                    console.log(chalk`{red.bold exiting mid task}`)
+                    process.exit()
+                }
+            })
         } catch (e) { }
         Host.init = true
     }
     execSync(cmdline: string): Buffer {
         return execSync(cmdline)
     }    
-    exec(cmdline: string, options: any, callback: (error: ExecException | null, stdout: Buffer, stderr: Buffer) => void): void {
-        exec(cmdline, options, callback)
+    async exec(cmdline: string): Promise<{stdout: string, stderr:string}> {
+        return pexec(cmdline)
     }
     outputJsonSync(filename: string, data: any) {
         fs.outputJsonSync(filename, data)
@@ -54,7 +62,11 @@ export class Host implements IHost {
                 console.log(chalk`{red.bold exiting mid task}`)
                 process.exit()
             } else {
-                resolve(key)
+                try {
+                    resolve(key)
+                } catch(e) {
+                    reject()
+                }
             }
         }
     }

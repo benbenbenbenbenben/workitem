@@ -1,6 +1,8 @@
 import { IGit } from "./IGit";
 import { IHost } from "./IHost";
 import { Input, Result, Tibu } from "tibu"
+import { resolve } from "path";
+import { exec } from "child_process";
 const { parse, rule, optional, many, either, token } = Tibu
 
 export class Git implements IGit {
@@ -11,11 +13,12 @@ export class Git implements IGit {
     constructor(fs: IHost) {
         this.fs = fs
     }
-    git(raw: string): string {
-        return this.fs.execSync("git " + raw).toString()
+    async git(raw: string): Promise<string> {
+        return this.fs.exec(`git ${raw}`)
+            .then(x => x.stdout)
     }
-    getCurrentBranch(): string {
-        const gitout = this.git("branch")
+    async getCurrentBranch(): Promise<string> {
+        const gitout = await this.git("branch")
         let branch: string = ""
         parse(gitout)(
             rule("* ", token("branch", /\w+/))
@@ -25,13 +28,33 @@ export class Git implements IGit {
         )
         return branch
     }
-    getUsername(): string {
-        return this.git("config user.name").replace(/\r\n|\r|\n/g, "")
+    async getUsername(): Promise<string> {
+        let user = await this.git("config user.name")
+        return user.replace(/\r\n|\r|\n/g, "")
     }
-    getEmail(): string {
-        return this.git("config user.email").replace(/\r\n|\r|\n/g, "")
+    async getEmail(): Promise<string> {        
+        let email = await this.git("config user.name")
+        return email.replace(/\r\n|\r|\n/g, "")
     }
-    getWho(): string {
-        return `${this.getUsername()} <${this.getEmail()}>`
+    async getWho(): Promise<string> {
+        return `${await this.getUsername()} <${await this.getEmail()}>`
+    }
+    async isRepo(): Promise<boolean> {
+        return this.git("status")
+            .then(x => true)
+            .catch(x => false);
+    }
+    async isInit(): Promise<boolean> {
+        return this.git("branch")
+            .then(x => x.indexOf("*") >= 0)
+            .catch(x => false)
+    }
+    async createRepo(): Promise<boolean> {
+        return this.git("init")
+            .then(x => this.fs.writeFileSync("workitem.md", "project initialised by workitem"))
+            .then(x => this.git("add ."))
+            .then(x => this.git(`commit -a -m "[workitem:createRepo]"`))
+            .then(x => true)
+            .catch(x => false)
     }
 }

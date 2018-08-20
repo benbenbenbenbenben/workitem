@@ -6,10 +6,10 @@ import { IHost } from "../IHost";
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
 import { ErrorCodes } from "../ErrorCodes";
-import chalk from "../../node_modules/chalk";
+import chalk from "chalk";
 
 export class Rename extends Command {
-    public run(argsraw: string, logger: ILogger): void {
+    public async run(argsraw: string, logger: ILogger): Promise<void> {
         const result = this.parse(argsraw)
         const wim = new WorkitemManager(this.git, this.fs)
         if (result === false) {

@@ -1,22 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class FakeHost {
-    getKey() {
-        throw new Error("Method not implemented.");
-    }
-    readFileSync(file, options) {
-        throw new Error("Method not implemented.");
-    }
-    writeFileSync(file, content, options) {
-        throw new Error("Method not implemented.");
-    }
-    mkdirSync(dirname) {
-        throw new Error("Method not implemented.");
-    }
     execSync(cmdline) {
         throw new Error("Method not implemented.");
     }
-    exec(cmdline, options, callback) {
+    exec(cmdline) {
         throw new Error("Method not implemented.");
     }
     outputJsonSync(filename, data) {
@@ -35,6 +23,18 @@ class FakeHost {
         throw new Error("Method not implemented.");
     }
     statSync(fileorfolder) {
+        throw new Error("Method not implemented.");
+    }
+    readFileSync(file, options) {
+        throw new Error("Method not implemented.");
+    }
+    writeFileSync(file, content, options) {
+        throw new Error("Method not implemented.");
+    }
+    mkdirSync(dirname) {
+        throw new Error("Method not implemented.");
+    }
+    getKey() {
         throw new Error("Method not implemented.");
     }
 }

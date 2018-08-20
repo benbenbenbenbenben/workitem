@@ -1,6 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class FakeGit {
+    constructor(fs) {
+        this.fs = fs;
+    }
+    getCurrentBranch() {
+        throw new Error("Method not implemented.");
+    }
     getUsername() {
         throw new Error("Method not implemented.");
     }
@@ -10,11 +16,14 @@ class FakeGit {
     getWho() {
         throw new Error("Method not implemented.");
     }
-    getCurrentBranch() {
+    isRepo() {
         throw new Error("Method not implemented.");
     }
-    raw(command) {
-        return "";
+    isInit() {
+        throw new Error("Method not implemented.");
+    }
+    createRepo() {
+        throw new Error("Method not implemented.");
     }
 }
 exports.FakeGit = FakeGit;

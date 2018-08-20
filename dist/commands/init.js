@@ -15,24 +15,32 @@ const tibu_1 = require("tibu");
 const { parse, rule, optional, many, either, token } = tibu_1.Tibu;
 const command_1 = require("./command");
 const chalk_1 = __importDefault(require("chalk"));
+const ErrorCodes_1 = require("../ErrorCodes");
 class Init extends command_1.Command {
     run(argsraw, logger) {
         return __awaiter(this, void 0, void 0, function* () {
             this.logger = logger;
             const result = this.parse(argsraw);
             if (result.init) {
-                const _ = this.isgitrepo()
-                    ? this.isinitialised()
-                        ? logger.fail(-1, chalk_1.default `{bold Done! This directory is already a workitem repo!}`)
-                        : this.hasworkitemdir()
-                            ? logger.fail(-3, 'This workitem repository is broken. There is a directory structure but I cannot find the configuration file workitem.json')
-                            : this.isgitclean()
-                                ? this.gotoworkitembranch() && (yield this.setupworkitem())
-                                    ? logger.log(chalk_1.default `{bgBlue.white Done!}`)
-                                    : this.revert()
-                                : logger.fail(-4, 'You have uncommited changes in this repository. Use \'git status\' to view these. Once resolved you can initialise this workitem repository.')
-                    : logger.fail(-2, 'This directory is not a git repository. You can\'t initialise a workitem repository outside a git repository.');
+                const _ = (yield this.git.isRepo()) || (result.git && (yield this.gitInit()))
+                    ? (yield this.git.isInit())
+                        ? this.isinitialised()
+                            ? logger.fail(-1, chalk_1.default `{bold Done! This directory is already a workitem repo!}`)
+                            : this.hasworkitemdir()
+                                ? logger.fail(-3, 'This workitem repository is broken. There is a directory structure but I cannot find the configuration file workitem.json')
+                                : this.isgitclean()
+                                    ? this.gotoworkitembranch() && (yield this.setupworkitem())
+                                        ? logger.log(chalk_1.default `{bgBlue.white Done!}`)
+                                        : this.revert()
+                                    : logger.fail(-4, 'You have uncommited changes in this repository. Use \'git status\' to view these. Once resolved you can initialise this workitem repository.')
+                        : logger.fail(ErrorCodes_1.ErrorCodes.NotInitialised, 'This directory is a git repository but there are no branches. Please perform an inital commit.')
+                    : logger.fail(ErrorCodes_1.ErrorCodes.NotInitialised, 'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git');
             }
+        });
+    }
+    gitInit() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.git.createRepo();
         });
     }
     constructor(git, fs) {
@@ -40,18 +48,17 @@ class Init extends command_1.Command {
     }
     parse(argsraw) {
         const init = token("init", "init");
-        const auto = token("auto", /auto/);
+        const auto = token("auto", "auto");
+        const git = token("git", "+git");
         let result = false;
-        parse(argsraw)(rule(init, optional(command_1.Command.ws, auto), command_1.Command.EOL).yields(r => {
+        parse(argsraw)(rule(init, optional(command_1.Command.ws, auto), optional(command_1.Command.ws, git), command_1.Command.EOL).yields(r => {
             result = {
                 init: true,
-                auto: r.one("auto") === "auto"
+                auto: r.one("auto") === "auto",
+                git: r.one("git") !== null,
             };
         }));
         return result;
-    }
-    isgitrepo() {
-        return this.fs.existsSync(`.git`);
     }
     isinitialised() {
         return this.fs.existsSync('./.workitem/workitem.json');
@@ -80,11 +87,13 @@ class Init extends command_1.Command {
         return true;
     }
     commit() {
-        require('child_process').execSync(`git add --all`).toString();
-        require('child_process').execSync(`git commit -m "[workitem:admin:initialised]"`).toString();
-        require('child_process').execSync(`git checkout -`).toString();
-        require('child_process').execSync(`git merge ${this.branch}`).toString();
-        return true;
+        return __awaiter(this, void 0, void 0, function* () {
+            require('child_process').execSync(`git add --all`).toString();
+            require('child_process').execSync(`git commit -m "[workitem:admin:initialised]"`).toString();
+            require('child_process').execSync(`git checkout -`).toString();
+            require('child_process').execSync(`git merge ${this.branch}`).toString();
+            return true;
+        });
     }
     createdirectories() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -215,7 +224,9 @@ class Init extends command_1.Command {
                 "[N]o\n" +
                 "[W]hat does the hook do?");
             while (!(yield this.configurehook())) { }
-            this.commit();
+            yield this.commit().catch(err => {
+                this.revert();
+            });
             return true;
         });
     }

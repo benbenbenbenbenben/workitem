@@ -11,8 +11,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const util_1 = require("util");
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const child_process_1 = require("child_process");
+const pexec = util_1.promisify(child_process_1.exec);
 const readline_1 = require("readline");
 const chalk_1 = __importDefault(require("../node_modules/chalk"));
 class Host {
@@ -22,6 +24,12 @@ class Host {
         try {
             readline_1.emitKeypressEvents(process.stdin);
             process.stdin.setRawMode(true);
+            process.stdin.on("keypress", (str, key) => {
+                if (key.ctrl && key.name === 'c') {
+                    console.log(chalk_1.default `{red.bold exiting mid task}`);
+                    process.exit();
+                }
+            });
         }
         catch (e) { }
         Host.init = true;
@@ -29,8 +37,10 @@ class Host {
     execSync(cmdline) {
         return child_process_1.execSync(cmdline);
     }
-    exec(cmdline, options, callback) {
-        child_process_1.exec(cmdline, options, callback);
+    exec(cmdline) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return pexec(cmdline);
+        });
     }
     outputJsonSync(filename, data) {
         fs_extra_1.default.outputJsonSync(filename, data);
@@ -66,7 +76,12 @@ class Host {
                 process.exit();
             }
             else {
-                resolve(key);
+                try {
+                    resolve(key);
+                }
+                catch (e) {
+                    reject();
+                }
             }
         };
     }

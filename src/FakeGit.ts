@@ -2,20 +2,29 @@ import { IGit } from "./IGit";
 import { IHost } from "./IHost";
 
 export class FakeGit implements IGit {
-    getUsername(): string {
+    fs: IHost;
+    constructor(fs:IHost){
+        this.fs = fs
+    }
+    getCurrentBranch(): Promise<string> {
         throw new Error("Method not implemented.");
     }
-    getEmail(): string {
+    getUsername(): Promise<string> {
         throw new Error("Method not implemented.");
     }
-    getWho(): string {
+    getEmail(): Promise<string> {
         throw new Error("Method not implemented.");
     }
-    fs!: IHost
-    public getCurrentBranch(): string {
+    getWho(): Promise<string> {
         throw new Error("Method not implemented.");
     }
-    public raw(command: string): string {
-        return ""
+    isRepo(): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+    isInit(): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+    createRepo(): Promise<boolean> {
+        throw new Error("Method not implemented.");
     }
 }

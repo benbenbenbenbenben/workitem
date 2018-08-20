@@ -6,6 +6,7 @@ import { IGit } from "../IGit";
 import { ILogger } from "../ILogger";
 import { IHost } from "../IHost";
 import chalk from "chalk";
+import { ErrorCodes } from "../ErrorCodes";
 
 export class Init extends Command {
     private logger!:ILogger
@@ -14,32 +15,39 @@ export class Init extends Command {
         const result = this.parse(argsraw)
         if (result.init) {
             const _ = 
-                this.isgitrepo()
-                ? this.isinitialised()
-                    ? logger.fail(-1, chalk`{bold Done! This directory is already a workitem repo!}`)
-                    : this.hasworkitemdir()
-                     ? logger.fail(-3, 'This workitem repository is broken. There is a directory structure but I cannot find the configuration file workitem.json')
-                     : this.isgitclean()
-                      ? this.gotoworkitembranch() && await this.setupworkitem()
-                       ? logger.log(chalk`{bgBlue.white Done!}`)
-                       : this.revert()
-                      : logger.fail(-4, 'You have uncommited changes in this repository. Use \'git status\' to view these. Once resolved you can initialise this workitem repository.')
-                   : logger.fail(-2, 'This directory is not a git repository. You can\'t initialise a workitem repository outside a git repository.') 
+                await this.git.isRepo() || (result.git && await this.gitInit())
+                ? await this.git.isInit()
+                    ? this.isinitialised()
+                        ? logger.fail(-1, chalk`{bold Done! This directory is already a workitem repo!}`)
+                        : this.hasworkitemdir()
+                            ? logger.fail(-3, 'This workitem repository is broken. There is a directory structure but I cannot find the configuration file workitem.json')
+                            : this.isgitclean()
+                                ? this.gotoworkitembranch() && await this.setupworkitem()
+                                    ? logger.log(chalk`{bgBlue.white Done!}`)
+                                    : this.revert()
+                                : logger.fail(-4, 'You have uncommited changes in this repository. Use \'git status\' to view these. Once resolved you can initialise this workitem repository.')
+                    : logger.fail(ErrorCodes.NotInitialised, 'This directory is a git repository but there are no branches. Please perform an inital commit.') 
+                : logger.fail(ErrorCodes.NotInitialised, 'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git')
         }
+    }
+    async gitInit(): Promise<boolean> {
+        return this.git.createRepo()
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)
     }
     public parse(argsraw: string) {
         const init = token("init", "init")
-        const auto = token("auto", /auto/)
+        const auto = token("auto", "auto")
+        const git = token("git", "+git")
 
         let result: any = false
         parse(argsraw)(
-            rule(init, optional(Command.ws, auto), Command.EOL).yields(r => {
+            rule(init, optional(Command.ws, auto), optional(Command.ws, git), Command.EOL).yields(r => {
                 result = {
                     init: true,
-                    auto: r.one("auto") === "auto"
+                    auto: r.one("auto") === "auto",
+                    git: r.one("git") !== null,
                 }
             })
         )
@@ -49,9 +57,6 @@ export class Init extends Command {
 
     // migrated js
     private branch!: string
-    isgitrepo() {
-        return this.fs.existsSync(`.git`)
-    }
     isinitialised() {
         return this.fs.existsSync('./.workitem/workitem.json')
     }
@@ -78,7 +83,7 @@ export class Init extends Command {
         }
         return true
     }
-    commit() {        
+    async commit(): Promise<boolean> {        
         require('child_process').execSync(`git add --all`).toString()
         require('child_process').execSync(`git commit -m "[workitem:admin:initialised]"`).toString()
         require('child_process').execSync(`git checkout -`).toString()
@@ -212,7 +217,9 @@ export class Init extends Command {
             "[W]hat does the hook do?"
         )
         while(!await this.configurehook()){}
-        this.commit()
+        await this.commit().catch(err => {
+            this.revert()
+        })
         return true
     }
 }

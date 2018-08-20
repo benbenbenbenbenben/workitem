@@ -33,7 +33,7 @@ class CLI {
     }
     fail(err, message) {
         if (err === ErrorCodes_1.ErrorCodes.NotInitialised) {
-            this.log(chalk_1.default `{bgYellow warning} this directory is not initialised as a repo`);
+            this.log(chalk_1.default `{bgYellow warning} NotInitialised ${message}`);
             this.showHelp();
         }
         else {
@@ -55,8 +55,8 @@ class CLI {
             const fs = new Host_1.Host();
             const git = new Git_1.Git(fs);
             const commands = [
-                "show",
                 "init",
+                "show",
                 "add",
                 "note",
                 "rename",
@@ -83,4 +83,6 @@ class CLI {
         });
     }
 }
-new CLI().run(process.argv.slice(2).map(s => !s.includes(" ") ? s : ['"', s.replace(/\"/g, "\\\""), '"'].join("")).join(" "));
+new CLI().run(process.argv.slice(2).map(s => !s.includes(" ") ? s : ['"', s.replace(/\"/g, "\\\""), '"'].join("")).join(" "))
+    .then(x => process.exit())
+    .catch(x => process.exit(ErrorCodes_1.ErrorCodes.UnknownError));
