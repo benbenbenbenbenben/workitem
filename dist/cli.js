@@ -101,7 +101,7 @@ class CLI {
                 process.exit();
             }
             if (/^(\-\-help|\-h|help|\/help|\/h)\s+(\w+)$/i.test(argsraw)) {
-                this.log();
+                // this.log()
                 this.log(chalk_1.default `{bgGreen help} {bold.hex('#cedaed') ${argsraw.split(" ")[1]}}`);
                 this.log();
                 command_1.Command.printhelp(this, argsraw.split(" ")[1]);

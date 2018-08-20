@@ -25,9 +25,8 @@ class Note extends command_1.Command {
             if (result === false) {
                 logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white add} could not proceed`);
             }
-            this.git.getWho().then(who => {
-                wim.comment(result.item, result.comment, who);
-            });
+            const who = yield this.git.getWho();
+            wim.comment(result.item, result.comment, who);
         });
     }
     constructor(git, fs) {

@@ -82,7 +82,7 @@ class CLI implements ILogger {
             process.exit()
         }
         if (/^(\-\-help|\-h|help|\/help|\/h)\s+(\w+)$/i.test(argsraw)) {
-            this.log()
+           // this.log()
             this.log(chalk`{bgGreen help} {bold.hex('#cedaed') ${argsraw.split(" ")[1]}}`)
             this.log()
             Command.printhelp(this, argsraw.split(" ")[1]);

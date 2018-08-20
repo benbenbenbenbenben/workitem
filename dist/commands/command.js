@@ -53,7 +53,7 @@ class Command {
                 cmd.explain.forEach(example => {
                     logger.log(chalk_1.default `{bgRgb(237, 237, 237).black example:} ${example.example}`);
                     logger.log(chalk_1.default `         ${example.info}`);
-                    logger.log(chalk_1.default `{bgRgb(180, 180, 180).black options:} ${example.options.map(o => `${o.label}: ${o.description}`).join("\n         ")}`);
+                    logger.log(chalk_1.default `{bgRgb(180, 180, 180).black options:} ${example.options.map(o => `${(o.label + "          ").substr(0, example.options.map(o => o.label.length + 1).reduce((a, b) => a > b ? a : b))}: ${o.description}`).join("\n         ")}`);
                 });
             }
         }
