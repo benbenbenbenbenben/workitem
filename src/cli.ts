@@ -23,8 +23,10 @@ class CLI implements ILogger {
         process.exit(err)
     }
     showHelp(): void {
-        this.log(`\ncommand usage:\n`)
+        this.log(`\n`)
         Command.printhelp(this)
+        this.log()
+        this.log(chalk`use {bgGreen help} [command] for specific help`)
         this.log()
     }
     constructor() {
@@ -55,7 +57,7 @@ class CLI implements ILogger {
         }).filter(x => x).join(" ")
     }
     public async run(argsraw: string) {
-        console.log(chalk`{bgRed.white.bold workitem 2.0.0}`);
+        process.stdout.write(chalk`{bgRed.white.bold workitem 2.0.0} `)
 
         const fs = new Host()
         const git = new Git(fs)
@@ -80,7 +82,9 @@ class CLI implements ILogger {
             process.exit()
         }
         if (/^(\-\-help|\-h|help|\/help|\/h)\s+(\w+)$/i.test(argsraw)) {
+            this.log()
             this.log(chalk`{bgGreen help} {bold.hex('#cedaed') ${argsraw.split(" ")[1]}}`)
+            this.log()
             Command.printhelp(this, argsraw.split(" ")[1]);
             process.exit()
         }

@@ -42,8 +42,10 @@ class CLI {
         process.exit(err);
     }
     showHelp() {
-        this.log(`\ncommand usage:\n`);
+        this.log(`\n`);
         command_1.Command.printhelp(this);
+        this.log();
+        this.log(chalk_1.default `use {bgGreen help} [command] for specific help`);
         this.log();
     }
     constructor() {
@@ -78,7 +80,7 @@ class CLI {
     }
     run(argsraw) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(chalk_1.default `{bgRed.white.bold workitem 2.0.0}`);
+            process.stdout.write(chalk_1.default `{bgRed.white.bold workitem 2.0.0} `);
             const fs = new Host_1.Host();
             const git = new Git_1.Git(fs);
             const commands = [
@@ -99,7 +101,9 @@ class CLI {
                 process.exit();
             }
             if (/^(\-\-help|\-h|help|\/help|\/h)\s+(\w+)$/i.test(argsraw)) {
+                this.log();
                 this.log(chalk_1.default `{bgGreen help} {bold.hex('#cedaed') ${argsraw.split(" ")[1]}}`);
+                this.log();
                 command_1.Command.printhelp(this, argsraw.split(" ")[1]);
                 process.exit();
             }
