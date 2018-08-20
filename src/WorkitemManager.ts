@@ -102,8 +102,6 @@ export class WorkitemManager {
         if (!workitem.success) {
             return workitem
         }
-        // tslint:disable-next-line:no-console
-        console.log(workitem.value)
         if (workitem.value.stage === stage) {
             return new Success(false,
                 `Cannot move a workitem from ${stage} to ${stage} because it's the same stage`)
