@@ -85,7 +85,10 @@ class WorkitemManager {
         return new Success_1.Success(true, workitem);
     }
     getComments(item) {
-        const workitem = this.idToWorkitem(item);
+        const workitem = this.idToWorkitem(item).value;
+        const dir = `.workitem/${workitem.stage}/${workitem.id}`;
+        const files = this.fs.readdirSync(dir);
+        return files.map(f => this.fs.readJsonSync(`${dir}/${f}`)).filter(f => f.type === "comment");
     }
     move(item, stage) {
         const targetstage = this.workitems.filter((w) => w.stage === stage);

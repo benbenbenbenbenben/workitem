@@ -88,8 +88,10 @@ export class WorkitemManager {
         return new Success(true, workitem)
     }
     public getComments(item: string): any {
-        const workitem = this.idToWorkitem(item)
-
+        const workitem = this.idToWorkitem(item).value
+        const dir = `.workitem/${workitem.stage}/${workitem.id}`
+        const files = this.fs.readdirSync(dir)
+        return files.map(f => this.fs.readJsonSync(`${dir}/${f}`)).filter(f => f.type === "comment")
     }
     public move(item: string, stage: string) {
         const targetstage = this.workitems.filter((w: IStage) => w.stage === stage)

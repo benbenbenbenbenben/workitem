@@ -26,6 +26,12 @@ export class Show extends Command {
                 if (result.more) {
                     // load linked stuff
                     const comments = wim.getComments(item.id)
+                    if (comments.length) {
+                        logger.log(chalk`{bgBlack.yellowBright comments:}`)
+                        for (let comment of comments) {
+                            logger.log(chalk`${comment.content} {yellowBright.italic ${comment.who}}`)
+                        }
+                    }
                 }
                 if (item.tags) {
                     logger.log()

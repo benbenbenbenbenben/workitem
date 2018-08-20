@@ -26,10 +26,10 @@ export class Git implements IGit {
         return branch
     }
     getUsername(): string {
-        return this.git("config user.name")
+        return this.git("config user.name").replace(/\r\n|\r|\n/g, "")
     }
     getEmail(): string {
-        return this.git("config user.email")
+        return this.git("config user.email").replace(/\r\n|\r|\n/g, "")
     }
     getWho(): string {
         return `${this.getUsername()} <${this.getEmail()}>`

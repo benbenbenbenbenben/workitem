@@ -22,10 +22,10 @@ class Git {
         return branch;
     }
     getUsername() {
-        return this.git("config user.name");
+        return this.git("config user.name").replace(/\r\n|\r|\n/g, "");
     }
     getEmail() {
-        return this.git("config user.email");
+        return this.git("config user.email").replace(/\r\n|\r|\n/g, "");
     }
     getWho() {
         return `${this.getUsername()} <${this.getEmail()}>`;
