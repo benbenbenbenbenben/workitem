@@ -70,11 +70,11 @@ export class WorkitemManager {
         return this.workitems
     }
     public idToWorkitem(item: string): Success<IWorkitem> {
-        const itemids = /^(\d+\.\d+)|((?<=#)?[a-f0-9]{7})$/i.exec(item)
+        const itemids = /^(\d+\.\d+)|(#?[a-f0-9]{7})$/i.exec(item)
         if (itemids === null) {
             return new Success<IWorkitem>(false, `Didn't recognise workitem identity pattern "${item}"`)
         }
-        const itemid = itemids[0]
+        const itemid = itemids[0].replace(/^#/, "")
         let workitem = null
         if (itemid.indexOf(".") > 0) {
             const [istage, iitem] = itemid.split(".").map(x => parseInt(x))
