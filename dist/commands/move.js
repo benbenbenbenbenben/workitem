@@ -25,7 +25,10 @@ class Move extends command_1.Command {
             if (result === false) {
                 logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white add} could not proceed`);
             }
-            wim.move(result.item, result.stage);
+            const moveresult = wim.move(result.item, result.stage, result.force);
+            if (moveresult.success === false) {
+                logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `${moveresult.error}`);
+            }
         });
     }
     constructor(git, fs) {
@@ -35,11 +38,13 @@ class Move extends command_1.Command {
         const move = token("move", "move");
         const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i);
         const stage = token("stage", /\w+/);
+        const force = token("force", /\+force/);
         let result = false;
-        parse(argsraw)(rule(move, command_1.Command.ws, item, command_1.Command.ws, optional(/to\s+/), stage, command_1.Command.EOL).yields((r, c) => {
+        parse(argsraw)(rule(move, command_1.Command.ws, item, command_1.Command.ws, optional(/to\s+/), stage, optional(/\s+/, force), command_1.Command.EOL).yields((r, c) => {
             result = {
                 item: r.one("item"),
                 stage: r.one("stage"),
+                force: r.one("force") !== null
             };
         }));
         return result;
@@ -47,8 +52,9 @@ class Move extends command_1.Command {
 }
 exports.Move = Move;
 command_1.Command.register(Move, "moves a workitem", [
-    { example: 'move <item> [to] <stage>', info: "moves an item to another stage", options: [
-            { label: "item", description: "the item id or index, e.g; #f08472a or 1.1" },
-            { label: "stage", description: "the name of the stage to move the item to" },
+    { example: 'move <item> [to] <stage> [+force]', info: "moves an item to another stage", options: [
+            { label: "item", description: "the workitem id or index, e.g; #f08472a or 1.1" },
+            { label: "stage", description: "the name of the stage to move the workitem to" },
+            { label: "+force", description: "moves the workitem even when the move is not a valid transition" },
         ] }
 ]);

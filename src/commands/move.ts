@@ -15,7 +15,10 @@ export class Move extends Command {
         if (result === false) {
             logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white add} could not proceed`)
         }
-        wim.move(result.item, result.stage)
+        const moveresult:any = wim.move(result.item, result.stage, result.force)
+        if (moveresult.success === false) {
+            logger.fail(ErrorCodes.UnknownCommand, chalk`${moveresult.error}`)
+        }
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)
@@ -24,14 +27,16 @@ export class Move extends Command {
         const move = token("move", "move")
         const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i)
         const stage = token("stage", /\w+/)
+        const force = token("force", /\+force/)
 
         let result: any = false
         parse(argsraw)(
-            rule(move, Command.ws, item, Command.ws, optional(/to\s+/), stage, Command.EOL).yields(
+            rule(move, Command.ws, item, Command.ws, optional(/to\s+/), stage, optional(/\s+/, force), Command.EOL).yields(
                 (r, c) => {
                     result = {
                         item: r.one("item"),
                         stage: r.one("stage"),
+                        force: r.one("force") !== null
                     }
                 }
             )
@@ -40,8 +45,9 @@ export class Move extends Command {
     }
 }
 Command.register(Move, "moves a workitem", [
-    { example: 'move <item> [to] <stage>', info: "moves an item to another stage", options:[
-        { label: "item", description: "the item id or index, e.g; #f08472a or 1.1" },
-        { label: "stage", description: "the name of the stage to move the item to" },
+    { example: 'move <item> [to] <stage> [+force]', info: "moves an item to another stage", options:[
+        { label: "item", description: "the workitem id or index, e.g; #f08472a or 1.1" },
+        { label: "stage", description: "the name of the stage to move the workitem to" },
+        { label: "+force", description: "moves the workitem even when the move is not a valid transition" },
     ] }
 ])

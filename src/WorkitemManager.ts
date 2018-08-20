@@ -93,7 +93,7 @@ export class WorkitemManager {
         const files = this.fs.readdirSync(dir)
         return files.map(f => this.fs.readJsonSync(`${dir}/${f}`)).filter(f => f.type === "comment")
     }
-    public move(item: string, stage: string) {
+    public move(item: string, stage: string, force: boolean = false) {
         const targetstage = this.workitems.filter((w: IStage) => w.stage === stage)
         if (targetstage.length === 0) {
             return {success: false, message: `No stage named ${stage}`}
@@ -106,6 +106,10 @@ export class WorkitemManager {
             return new Success(false,
                 `Cannot move a workitem from ${stage} to ${stage} because it's the same stage`)
         }
+        if (!force && !this.isStageTransitionValid(workitem.value.stage, stage)) {
+            return new Success(false,
+                `Cannot move workitem from ${workitem.value.stage} to ${stage}. Use +force or move to a valid stage.`)
+        }
         this.gitDo(() => {
             this.fs.execSync(
                 `git mv .workitem/${workitem.value.stage}/${workitem.value.id} .workitem/${stage}/${workitem.value.id}`)
@@ -113,6 +117,20 @@ export class WorkitemManager {
                 `git commit -m "[workitem:${workitem.value.id}:move] ${workitem.value.stage} to ${stage}"`)
         })
         return workitem
+    }
+    isStageTransitionValid(a: string, b: string): boolean {
+        let hash:any = {};
+        for(let i = 0; i < this.config.transitions.length; i++) {
+            hash[this.config.transitions[i]] = i
+        }        
+        var fwd = [a, b]
+        var rev = [b, a]
+        
+        if (hash.hasOwnProperty(fwd) || hash.hasOwnProperty(rev)) {
+            //console.log(hash[val]);
+            return true
+        }
+        return false
     }
     public rename(item: string, newname: string): Success<IWorkitem> {
         const workitem = this.idToWorkitem(item)
