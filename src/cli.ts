@@ -31,6 +31,8 @@ class CLI implements ILogger {
         ;
     }
     public async run(argsraw: string) {
+        console.log(chalk`{bgRed.white.bold workitem 2.0.0}`);
+
         const fs = new Host()
         const git = new Git(fs)
 
@@ -47,8 +49,13 @@ class CLI implements ILogger {
         for (let command of commands) { 
             await import(`./commands/${command}`)
         }
-        console.log(chalk`{bgRed.white.bold workitem 2.0.0}`);
-        
+
+        // short circuit for help
+        if (/^(\-\-help|\-h|help|\/help|\/h)$/i.test(argsraw)) {
+            this.showHelp()
+            process.exit()
+        }
+
         const parseok = await Command.run(git, fs, this, argsraw)
 
         if (parseok === false) {

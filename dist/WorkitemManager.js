@@ -73,7 +73,7 @@ class WorkitemManager {
         const itemid = itemids[0];
         let workitem = null;
         if (itemid.indexOf(".") > 0) {
-            const [istage, iitem] = itemid.split(".").map(parseInt);
+            const [istage, iitem] = itemid.split(".").map(x => parseInt(x));
             workitem = this.workitems[istage].items[iitem];
             workitem.stage = this.workitems[istage].stage;
         }

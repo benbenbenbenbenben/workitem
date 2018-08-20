@@ -11,7 +11,6 @@ import { IHost } from "../IHost";
 export interface Add extends Command {}
 export class Add extends Command  {
     public run(argsraw: string, logger: ILogger): void {
-        console.log(argsraw)
         const result = this.parse(argsraw)
         const wim = new WorkitemManager(this.git, this.fs)
         if (result === false) {

@@ -9,8 +9,10 @@ export class Host implements IHost {
     constructor() {
         if (Host.init)
             return
-        emitKeypressEvents(process.stdin)
-        process.stdin.setRawMode!(true)
+        try {
+            emitKeypressEvents(process.stdin)
+            process.stdin.setRawMode!(true)
+        } catch (e) { }
         Host.init = true
     }
     execSync(cmdline: string): Buffer {

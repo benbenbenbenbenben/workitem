@@ -5,10 +5,17 @@ import { Command } from "./command";
 import { IHost } from "../IHost";
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
+import { ErrorCodes } from "../ErrorCodes";
+import chalk from "../../node_modules/chalk";
 
 export class Move extends Command {
-    public run(argsraw: string, logger: ILogger): void {
-        throw new Error("Method not implemented.");
+    public run(argsraw: string, logger: ILogger): void {        
+        const result = this.parse(argsraw)
+        const wim = new WorkitemManager(this.git, this.fs)
+        if (result === false) {
+            logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white add} could not proceed`)
+        }
+        wim.move(result.item, result.stage)
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)
@@ -20,7 +27,7 @@ export class Move extends Command {
 
         let result: any = false
         parse(argsraw)(
-            rule(move, Command.ws, item, Command.ws, optional(/to\s+/), stage).yields(
+            rule(move, Command.ws, item, Command.ws, optional(/to\s+/), stage, Command.EOL).yields(
                 (r, c) => {
                     result = {
                         item: r.one("item"),

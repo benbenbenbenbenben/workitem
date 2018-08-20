@@ -19,8 +19,11 @@ class Host {
     constructor() {
         if (Host.init)
             return;
-        readline_1.emitKeypressEvents(process.stdin);
-        process.stdin.setRawMode(true);
+        try {
+            readline_1.emitKeypressEvents(process.stdin);
+            process.stdin.setRawMode(true);
+        }
+        catch (e) { }
         Host.init = true;
     }
     execSync(cmdline) {

@@ -51,6 +51,7 @@ class CLI {
     }
     run(argsraw) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(chalk_1.default `{bgRed.white.bold workitem 2.0.0}`);
             const fs = new Host_1.Host();
             const git = new Git_1.Git(fs);
             const commands = [
@@ -65,7 +66,11 @@ class CLI {
             for (let command of commands) {
                 yield Promise.resolve().then(() => __importStar(require(`./commands/${command}`)));
             }
-            console.log(chalk_1.default `{bgRed.white.bold workitem 2.0.0}`);
+            // short circuit for help
+            if (/^(\-\-help|\-h|help|\/help|\/h)$/i.test(argsraw)) {
+                this.showHelp();
+                process.exit();
+            }
             const parseok = yield command_1.Command.run(git, fs, this, argsraw);
             if (parseok === false) {
                 if (argsraw.length) {

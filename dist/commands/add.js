@@ -11,7 +11,6 @@ const ErrorCodes_1 = require("../ErrorCodes");
 const chalk_1 = __importDefault(require("chalk"));
 class Add extends command_1.Command {
     run(argsraw, logger) {
-        console.log(argsraw);
         const result = this.parse(argsraw);
         const wim = new WorkitemManager_1.WorkitemManager(this.git, this.fs);
         if (result === false) {

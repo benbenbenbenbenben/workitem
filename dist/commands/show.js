@@ -18,22 +18,53 @@ class Show extends command_1.Command {
         }
         else if (wim.isInitialised()) {
             logger.log(chalk_1.default `{bgGreen.white show}`);
-            const logs = wim.show();
-            const top = result.more ? 9999 : 3;
-            logs.forEach((l, j) => {
-                logger.log(chalk_1.default `{bgBlue.yellow ${l.stage}}`);
-                l.items.slice(0, top).forEach((i, k) => {
-                    logger.log(chalk_1.default `[${j.toString()}.${k.toString()}] {bold #${i.id}} {yellow ${i.description}}`);
+            if (result.item) {
+                const item = wim.idToWorkitem(result.item).value;
+                if (item.type) {
+                    logger.log(chalk_1.default `{bgBlue.white.bold ${item.stage} #${item.id}} {bgYellow.bold ${item.type}} ${item.description}`);
+                }
+                else {
+                    logger.log(chalk_1.default `{bgBlue.white.bold ${item.stage} #${item.id}} ${item.description}`);
+                }
+                if (result.more) {
+                    // load linked stuff
+                }
+                if (item.tags) {
+                    logger.log();
+                    const tags = item.tags.map((t) => chalk_1.default `{bgWhite.black ${t}}`).join(" ");
+                    logger.log(tags);
+                }
+                let footer = [];
+                if (item.parent) {
+                    footer.push(chalk_1.default `child of: {bgBlue.white ${item.parent}}`);
+                }
+                if (item.child) {
+                    footer.push(`parent of: ${item.child.map((c) => chalk_1.default `{bgBlue.white ${c}}`).join(" ")}`);
+                }
+                if (item.estimate) {
+                    footer.push(`est: ${item.estimate}`);
+                }
+                if (footer.length) {
+                    logger.log(footer.join("\n"));
+                }
+            }
+            else {
+                const logs = wim.show();
+                const top = result.more ? 9999 : 3;
+                logs.forEach((l, j) => {
+                    logger.log(chalk_1.default `{bgBlue.yellow ${l.stage}}`);
+                    l.items.slice(0, top).forEach((i, k) => {
+                        logger.log(chalk_1.default `[${j.toString()}.${k.toString()}] {bold #${i.id}} {yellow ${i.description}}`);
+                    });
+                    let x = l.items.length - top;
+                    if (x > 0)
+                        logger.log(` +${x} more...`);
                 });
-                let x = l.items.length - top;
-                if (x > 0)
-                    logger.log(` +${x} more...`);
-            });
+            }
         }
         else {
             logger.fail(ErrorCodes_1.ErrorCodes.NotInitialised, chalk_1.default `this repo is not initialised`);
         }
-        // wim.add(result)
     }
     constructor(git, fs) {
         super(git, fs);
