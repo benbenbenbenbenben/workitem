@@ -1,0 +1,1 @@
+{"type":"comment","content":"using .once will prevent ctrl+c from working when not getKey is awaited","who":"Benjamin Babik <work@benjaminbabik.com>"}
