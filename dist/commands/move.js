@@ -46,4 +46,9 @@ class Move extends command_1.Command {
     }
 }
 exports.Move = Move;
-command_1.Command.register(Move, "moves a workitem");
+command_1.Command.register(Move, "moves a workitem", [
+    { example: 'move <item> [to] <stage>', info: "moves an item to another stage", options: [
+            { label: "item", description: "the item id or index, e.g; #f08472a or 1.1" },
+            { label: "stage", description: "the name of the stage to move the item to" },
+        ] }
+]);

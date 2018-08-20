@@ -19,7 +19,7 @@ class Command {
         this.git = git;
         this.fs = fs;
     }
-    static register(c, help = "") {
+    static register(c, help = "", explain = []) {
         if (Command.registry === undefined) {
             Command.registry = [];
         }
@@ -28,6 +28,7 @@ class Command {
                 name: c.name,
                 ctor: c,
                 help,
+                explain
             });
         }
     }
@@ -45,9 +46,21 @@ class Command {
             return parseok;
         });
     }
-    static printhelp(logger) {
-        for (let reg of Command.registry) {
-            logger.log(chalk_1.default `{bgGreen.white ${reg.name.toLowerCase()}}\t${reg.help}`);
+    static printhelp(logger, command) {
+        if (command) {
+            const cmd = Command.registry.find(c => c.name.toLowerCase() === command.toLowerCase());
+            if (cmd) {
+                cmd.explain.forEach(example => {
+                    logger.log(chalk_1.default `{bgRgb(237, 237, 237).black example:} ${example.example}`);
+                    logger.log(chalk_1.default `         ${example.info}`);
+                    logger.log(chalk_1.default `{bgRgb(180, 180, 180).black options:} ${example.options.map(o => `${o.label}: ${o.description}`).join("\n         ")}`);
+                });
+            }
+        }
+        else {
+            for (let reg of Command.registry) {
+                logger.log(chalk_1.default `{bgGreen.white ${reg.name.toLowerCase()}}\t${reg.help}`);
+            }
         }
     }
 }

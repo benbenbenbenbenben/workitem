@@ -1,7 +1,7 @@
 import { Input, Result, Tibu } from "tibu";
 const { parse, rule, optional, many, either, token, all } = Tibu
 import { WorkitemManager } from "../WorkitemManager"
-import { Command, ICommand } from "./command";
+import { Command, ICommand, Example } from "./command";
 import { ErrorCodes } from "../ErrorCodes";
 import chalk from "chalk"
 import { ILogger } from "../ILogger";
@@ -32,13 +32,14 @@ export class Add extends Command  {
         const xest = rule(Command.ws, token("xest", /\~\w+/))
         const xplus = token("xplus", /\+\w+/)
         const xmin = token("xmin", /\-\w+/)
-        const xbigger = rule(Command.ws, token("xbigger", /\>\w+/))
-        const xsmaller = rule(Command.ws, token("xsmaller", /\<\w+/))
+        const xbigger = rule(Command.ws, /\>\s*/, token("xbigger", /w+/))
+        const xsmaller = rule(Command.ws, /\<\s*/, token("xsmaller", /\w+/))
 
         let result: any = false
         parse(argsraw)(
             rule(either(
-                rule(add, Command.ws, either(all(type, Command.ws, Command.msg), Command.msg), many(xtags),
+                rule(add, Command.ws, either(all(type, Command.ws, Command.msg), Command.msg), 
+                    many(xtags),
                     optional(xats), optional(xest),
                     optional(either(xbigger, xsmaller)),
                     Command.EOL).yields((r, c) => {
@@ -48,8 +49,8 @@ export class Add extends Command  {
                         type: r.one("type"),
                         location: r.one("xats"),
                         estimate: r.one("xest"),
-                        child: r.one("xsmaller"),
-                        parent: r.one("xbigger"),
+                        child: r.one("xbigger"),
+                        parent: r.one("xsmaller"),
                     }
                 }),
                 rule(add, Command.EOL).yields(() => {
@@ -60,4 +61,14 @@ export class Add extends Command  {
         return result
     }
 }
-Command.register(Add, "adds a workitem")
+Command.register(Add, "adds a workitem", [
+            { example: 'add [type] "description of item" [#tag, ...] [@location] [~estimate] [> child] [< parent]',
+                info: "intialises a workitem repository in the current directory", options:[
+                { label: "type", description: "specifies an arbitrary workitem type e.g; task, story, defect" },
+                { label: "#tag", description: "adds a tag" },
+                { label: "@location", description: "specifies the workitem will start in the specified non-default stage e.g; @doing" },
+                { label: "~estimate", description: "specifies an arbitrary estimate for the workitem e.g; 10, 5pts, 2hrs, xxl" },
+                { label: "> child", description: "specifies a child workitem where child is a workitem index or id"},
+                { label: "< parent", description: "specifies a parent workitem where parent is a workitem index or id"},
+            ] }
+        ])

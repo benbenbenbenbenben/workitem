@@ -102,4 +102,15 @@ class Show extends command_1.Command {
     }
 }
 exports.Show = Show;
-command_1.Command.register(Show, "(default) shows the current workitems");
+command_1.Command.register(Show, "(default) shows the current workitems", [
+    { example: "show", info: "show a truncated view of workitems", options: [] },
+    { example: "show more | more", info: "shows all work items", options: [] },
+    { example: "show [more] <item>", info: "shows an item in detail", options: [
+            {
+                label: "more", description: "includes more detail"
+            },
+            {
+                label: "item", description: "the item id or index, e.g; #f08472a or 1.1"
+            }
+        ] },
+]);

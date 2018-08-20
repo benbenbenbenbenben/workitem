@@ -42,8 +42,8 @@ class Add extends command_1.Command {
         const xest = rule(command_1.Command.ws, token("xest", /\~\w+/));
         const xplus = token("xplus", /\+\w+/);
         const xmin = token("xmin", /\-\w+/);
-        const xbigger = rule(command_1.Command.ws, token("xbigger", /\>\w+/));
-        const xsmaller = rule(command_1.Command.ws, token("xsmaller", /\<\w+/));
+        const xbigger = rule(command_1.Command.ws, /\>\s*/, token("xbigger", /w+/));
+        const xsmaller = rule(command_1.Command.ws, /\<\s*/, token("xsmaller", /\w+/));
         let result = false;
         parse(argsraw)(rule(either(rule(add, command_1.Command.ws, either(all(type, command_1.Command.ws, command_1.Command.msg), command_1.Command.msg), many(xtags), optional(xats), optional(xest), optional(either(xbigger, xsmaller)), command_1.Command.EOL).yields((r, c) => {
             result = {
@@ -52,8 +52,8 @@ class Add extends command_1.Command {
                 type: r.one("type"),
                 location: r.one("xats"),
                 estimate: r.one("xest"),
-                child: r.one("xsmaller"),
-                parent: r.one("xbigger"),
+                child: r.one("xbigger"),
+                parent: r.one("xsmaller"),
             };
         }), rule(add, command_1.Command.EOL).yields(() => {
             result = true;
@@ -62,4 +62,14 @@ class Add extends command_1.Command {
     }
 }
 exports.Add = Add;
-command_1.Command.register(Add, "adds a workitem");
+command_1.Command.register(Add, "adds a workitem", [
+    { example: 'add [type] "description of item" [#tag, ...] [@location] [~estimate] [> child] [< parent]',
+        info: "intialises a workitem repository in the current directory", options: [
+            { label: "type", description: "specifies an arbitrary workitem type e.g; task, story, defect" },
+            { label: "#tag", description: "adds a tag" },
+            { label: "@location", description: "specifies the workitem will start in the specified non-default stage e.g; @doing" },
+            { label: "~estimate", description: "specifies an arbitrary estimate for the workitem e.g; 10, 5pts, 2hrs, xxl" },
+            { label: "> child", description: "specifies a child workitem where child is a workitem index or id" },
+            { label: "< parent", description: "specifies a parent workitem where parent is a workitem index or id" },
+        ] }
+]);

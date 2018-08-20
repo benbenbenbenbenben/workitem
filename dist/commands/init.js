@@ -232,4 +232,9 @@ class Init extends command_1.Command {
     }
 }
 exports.Init = Init;
-command_1.Command.register(Init, "initialises a workitem repo in the current git repo");
+command_1.Command.register(Init, "initialises a workitem repo in the current git repo", [
+    { example: 'init [auto] [+git]', info: "intialises a workitem repository in the current directory", options: [
+            { label: "auto", description: "doesn't prompt for user interaction and assumes default options" },
+            { label: "+git", description: "initialises a git repository if the directory is not already a git repository" },
+        ] }
+]);

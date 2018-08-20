@@ -49,6 +49,33 @@ class CLI {
     constructor() {
         ;
     }
+    explain(thisrule) {
+        const asarr = thisrule;
+        return asarr.map(p => {
+            if (p.__token__) {
+                if (p.__token__ === p.toString()) {
+                    return p.__token__;
+                }
+                else {
+                    return `${p.__token__}:${p.toString()}`;
+                }
+            }
+            else {
+                if (p.pattern) {
+                    switch (p.name) {
+                        case "many":
+                            return `${this.explain(p.pattern)}*`;
+                        case "optional":
+                            return `${this.explain(p.pattern)}?`;
+                    }
+                    return `${p.name}(${this.explain(p.pattern)})`;
+                }
+                else {
+                    return null;
+                }
+            }
+        }).filter(x => x).join(" ");
+    }
     run(argsraw) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log(chalk_1.default `{bgRed.white.bold workitem 2.0.0}`);
@@ -69,6 +96,11 @@ class CLI {
             // short circuit for help
             if (/^(\-\-help|\-h|help|\/help|\/h)$/i.test(argsraw)) {
                 this.showHelp();
+                process.exit();
+            }
+            if (/^(\-\-help|\-h|help|\/help|\/h)\s+(\w+)$/i.test(argsraw)) {
+                this.log(chalk_1.default `{bgGreen help} {bold.hex('#cedaed') ${argsraw.split(" ")[1]}}`);
+                command_1.Command.printhelp(this, argsraw.split(" ")[1]);
                 process.exit();
             }
             const parseok = yield command_1.Command.run(git, fs, this, argsraw);

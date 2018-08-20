@@ -1,7 +1,7 @@
 import { Input, Result, Tibu } from "tibu";
 const { parse, rule, optional, many, either, token } = Tibu
 import { WorkitemManager } from "../WorkitemManager"
-import { Command, ICommand } from "./command";
+import { Command, ICommand, Example } from "./command";
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
 import { IHost } from "../IHost";
@@ -27,6 +27,9 @@ export class Collate extends Command {
             })
         )
     }
-
 }
-Command.register(Collate, "collates workitems across local branches")
+Command.register(Collate, "collates workitems across local branches", [
+    { example: 'collate [auto]', info: "collates all work items together in the current branch", options:[
+        { label: "auto", description: "doesn't prompt for user interaction and assumes default options" },
+    ] }
+])

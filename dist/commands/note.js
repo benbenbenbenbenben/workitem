@@ -47,4 +47,10 @@ class Note extends command_1.Command {
     }
 }
 exports.Note = Note;
-command_1.Command.register(Note, "adds commentary to a work item");
+command_1.Command.register(Note, "adds commentary to a work item", [
+    { example: 'note <item> "new note"', info: "adds a new commentary note to an item", options: [
+            {
+                label: "item", description: "the item id or index, e.g; #f08472a or 1.1"
+            }
+        ] }
+]);

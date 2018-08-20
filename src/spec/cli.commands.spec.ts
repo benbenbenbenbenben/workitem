@@ -98,15 +98,15 @@ describe("add", () => {
             parent: null,
         })
     })
-    it("should accept add type 'string' #tag1 #tag2 ~10 <theparent", () => {
-        expect(add.parse("add type 'foo' #tag1 #tag2 ~10 <theparent")).to.deep.eq({
+    it("should accept add type 'string' #tag1 #tag2 ~10 < theparent", () => {
+        expect(add.parse("add type 'foo' #tag1 #tag2 ~10 < theparent")).to.deep.eq({
             description: "foo",
             tags: ["#tag1", "#tag2"],
             type: "type",
             location: null,
             estimate: "~10",
-            child: "<theparent",
-            parent: null,
+            parent: "theparent",
+            child: null,
         })
     })
 })
@@ -172,13 +172,22 @@ describe("init", () => {
     it("should accept init", () => {
         expect(new Init(git, fs).parse("init")).to.deep.eq({
             init: true,
-            auto: false
+            auto: false,
+            git: false
         })
     })
     it("should accept init auto", () => {
         expect(new Init(git, fs).parse("init auto")).to.deep.eq({
             init: true,
-            auto: true
+            auto: true,
+            git: false
+        })
+    })
+    it("should accept init auto +git", () => {
+        expect(new Init(git, fs).parse("init auto +git")).to.deep.eq({
+            init: true,
+            auto: true,
+            git: true
         })
     })
 })

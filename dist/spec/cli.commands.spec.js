@@ -97,15 +97,15 @@ describe("add", () => {
             parent: null,
         });
     });
-    it("should accept add type 'string' #tag1 #tag2 ~10 <theparent", () => {
-        chai_1.expect(add.parse("add type 'foo' #tag1 #tag2 ~10 <theparent")).to.deep.eq({
+    it("should accept add type 'string' #tag1 #tag2 ~10 < theparent", () => {
+        chai_1.expect(add.parse("add type 'foo' #tag1 #tag2 ~10 < theparent")).to.deep.eq({
             description: "foo",
             tags: ["#tag1", "#tag2"],
             type: "type",
             location: null,
             estimate: "~10",
-            child: "<theparent",
-            parent: null,
+            parent: "theparent",
+            child: null,
         });
     });
 });
@@ -167,13 +167,22 @@ describe("init", () => {
     it("should accept init", () => {
         chai_1.expect(new init_1.Init(git, fs).parse("init")).to.deep.eq({
             init: true,
-            auto: false
+            auto: false,
+            git: false
         });
     });
     it("should accept init auto", () => {
         chai_1.expect(new init_1.Init(git, fs).parse("init auto")).to.deep.eq({
             init: true,
-            auto: true
+            auto: true,
+            git: false
+        });
+    });
+    it("should accept init auto +git", () => {
+        chai_1.expect(new init_1.Init(git, fs).parse("init auto +git")).to.deep.eq({
+            init: true,
+            auto: true,
+            git: true
         });
     });
 });

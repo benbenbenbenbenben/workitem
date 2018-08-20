@@ -1,7 +1,7 @@
 import { Input, Result, Tibu } from "tibu";
 const { parse, rule, optional, many, either, token, all } = Tibu
 import { WorkitemManager } from "../WorkitemManager"
-import { Command } from "./command";
+import { Command, Example } from "./command";
 import { IHost } from "../IHost";
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
@@ -92,4 +92,16 @@ export class Show extends Command {
         return result
     }
 }
-Command.register(Show, "(default) shows the current workitems")
+
+Command.register(Show, "(default) shows the current workitems",  [
+    { example: "show", info: "show a truncated view of workitems", options: [] },
+    { example: "show more | more", info: "shows all work items", options: [] },
+    { example: "show [more] <item>", info: "shows an item in detail", options: [
+        {
+            label: "more", description: "includes more detail"
+        },
+        {
+            label: "item", description: "the item id or index, e.g; #f08472a or 1.1"
+        }
+    ] },
+])

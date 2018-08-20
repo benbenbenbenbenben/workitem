@@ -45,4 +45,8 @@ class Rename extends command_1.Command {
     }
 }
 exports.Rename = Rename;
-command_1.Command.register(Rename, "renames a workitem");
+command_1.Command.register(Rename, "renames a workitem", [
+    { example: 'rename <item> "new name"', info: "renames an item", options: [{
+                label: "item", description: "the item id or index, e.g; #f08472a or 1.1"
+            }] }
+]);

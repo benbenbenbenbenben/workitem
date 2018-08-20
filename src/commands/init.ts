@@ -1,7 +1,7 @@
 import { Input, Result, Tibu } from "tibu";
 const { parse, rule, optional, many, either, token } = Tibu
 import { WorkitemManager } from "../WorkitemManager"
-import { Command } from "./command";
+import { Command, Example } from "./command";
 import { IGit } from "../IGit";
 import { ILogger } from "../ILogger";
 import { IHost } from "../IHost";
@@ -223,4 +223,9 @@ export class Init extends Command {
         return true
     }
 }
-Command.register(Init, "initialises a workitem repo in the current git repo")
+Command.register(Init, "initialises a workitem repo in the current git repo", [
+    { example: 'init [auto] [+git]', info: "intialises a workitem repository in the current directory", options:[
+        { label: "auto", description: "doesn't prompt for user interaction and assumes default options" },
+        { label: "+git", description: "initialises a git repository if the directory is not already a git repository" },
+    ] }
+])

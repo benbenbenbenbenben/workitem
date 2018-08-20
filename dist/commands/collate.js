@@ -33,4 +33,8 @@ class Collate extends command_1.Command {
     }
 }
 exports.Collate = Collate;
-command_1.Command.register(Collate, "collates workitems across local branches");
+command_1.Command.register(Collate, "collates workitems across local branches", [
+    { example: 'collate [auto]', info: "collates all work items together in the current branch", options: [
+            { label: "auto", description: "doesn't prompt for user interaction and assumes default options" },
+        ] }
+]);

@@ -30,6 +30,30 @@ class CLI implements ILogger {
     constructor() {
         ;
     }
+    explain(thisrule: any):any {
+        const asarr:any[] = thisrule
+        return asarr.map(p => {
+            if (p.__token__) {
+                if (p.__token__ === p.toString()) {
+                    return p.__token__
+                } else {
+                    return `${p.__token__}:${p.toString()}`
+                }
+            } else {
+                if (p.pattern) {
+                    switch(p.name) {
+                        case "many":
+                            return `${this.explain(p.pattern)}*`
+                        case "optional":
+                            return `${this.explain(p.pattern)}?`
+                    }
+                    return `${p.name}(${this.explain(p.pattern)})`
+                } else {
+                    return null
+                }
+            }
+        }).filter(x => x).join(" ")
+    }
     public async run(argsraw: string) {
         console.log(chalk`{bgRed.white.bold workitem 2.0.0}`);
 
@@ -53,6 +77,11 @@ class CLI implements ILogger {
         // short circuit for help
         if (/^(\-\-help|\-h|help|\/help|\/h)$/i.test(argsraw)) {
             this.showHelp()
+            process.exit()
+        }
+        if (/^(\-\-help|\-h|help|\/help|\/h)\s+(\w+)$/i.test(argsraw)) {
+            this.log(chalk`{bgGreen help} {bold.hex('#cedaed') ${argsraw.split(" ")[1]}}`)
+            Command.printhelp(this, argsraw.split(" ")[1]);
             process.exit()
         }
 

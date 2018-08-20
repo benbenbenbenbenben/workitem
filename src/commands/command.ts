@@ -12,11 +12,18 @@ export type ICommand = {
     run(argsraw:string, logger: ILogger): Promise<void>
 }
 
+export type Example = {
+    example: string
+    info: string
+    options: { label: string, description: string }[]
+}
+
 export abstract class Command {
     private static registry: {
         name: string
         ctor: new(git: IGit, fs: IHost) => Command,
-        help: string
+        help: string,
+        explain: Example[]
     }[]
     public git: IGit
     public fs: IHost
@@ -36,7 +43,7 @@ export abstract class Command {
                         input.location === input.source.length
                                         ? Result.pass(input)
                                         : Result.fault(input)
-    public static register<T extends Command>(c: new(git: IGit, fs: IHost) => T, help: string = ""): void {
+    public static register<T extends Command>(c: new(git: IGit, fs: IHost) => T, help: string = "", explain: Example[] = []): void {
         if (Command.registry === undefined) {
             Command.registry = []
         }
@@ -45,6 +52,7 @@ export abstract class Command {
                 name: c.name,
                 ctor: c,
                 help,
+                explain
             })
         }
     }
@@ -60,9 +68,20 @@ export abstract class Command {
         }
         return parseok
     }
-    public static printhelp(logger: ILogger): void {        
-        for (let reg of Command.registry) {
-            logger.log(chalk`{bgGreen.white ${reg.name.toLowerCase()}}\t${reg.help}`)
+    public static printhelp(logger: ILogger, command?: string): void {
+        if (command) {
+            const cmd = Command.registry.find(c => c.name.toLowerCase() === command.toLowerCase())
+            if (cmd) {
+                cmd.explain.forEach(example => {
+                    logger.log(chalk`{bgRgb(237, 237, 237).black example:} ${example.example}`)
+                    logger.log(chalk`         ${example.info}`)
+                    logger.log(chalk`{bgRgb(180, 180, 180).black options:} ${example.options.map(o => `${o.label}: ${o.description}`).join("\n         ")}`)
+                })
+            }
+        } else {
+            for (let reg of Command.registry) {
+                logger.log(chalk`{bgGreen.white ${reg.name.toLowerCase()}}\t${reg.help}`)
+            }
         }
     }
 }

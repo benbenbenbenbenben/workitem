@@ -1,7 +1,7 @@
 import { Input, Result, Tibu } from "tibu";
 const { parse, rule, optional, many, either, token } = Tibu
 import { WorkitemManager } from "../WorkitemManager"
-import { Command } from "./command";
+import { Command, Example } from "./command";
 import { IHost } from "../IHost";
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
@@ -39,4 +39,9 @@ export class Rename extends Command {
         return result
     }
 }
-Command.register(Rename, "renames a workitem")
+
+Command.register(Rename, "renames a workitem", [
+    { example: 'rename <item> "new name"', info: "renames an item", options: [{
+        label: "item", description: "the item id or index, e.g; #f08472a or 1.1"
+    }]}
+])

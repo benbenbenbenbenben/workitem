@@ -1,7 +1,7 @@
 import { Input, Result, Tibu } from "tibu";
 const { parse, rule, optional, many, either, token } = Tibu
 import { WorkitemManager } from "../WorkitemManager"
-import { Command } from "./command";
+import { Command, Example } from "./command";
 import { IHost } from "../IHost";
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
@@ -38,6 +38,10 @@ export class Move extends Command {
         )
         return result
     }
-
 }
-Command.register(Move, "moves a workitem")
+Command.register(Move, "moves a workitem", [
+    { example: 'move <item> [to] <stage>', info: "moves an item to another stage", options:[
+        { label: "item", description: "the item id or index, e.g; #f08472a or 1.1" },
+        { label: "stage", description: "the name of the stage to move the item to" },
+    ] }
+])
