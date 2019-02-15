@@ -11,5 +11,5 @@ export interface IGit {
     isRepo(): Promise<boolean>
     isInit(): Promise<boolean>
 
-    createRepo(): Promise<boolean> 
+    createRepo(): Promise<boolean>
 }

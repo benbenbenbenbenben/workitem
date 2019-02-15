@@ -15,7 +15,7 @@ class CLI implements ILogger {
     }
     fail(err: number, message: string): void {
         if (err === ErrorCodes.NotInitialised) {
-            this.log(chalk`{bgYellow warning} NotInitialised ${message}`)
+            this.log(chalk`\n{bgYellow warning} NotInitialised ${message}`)
             this.showHelp()
         } else {
             console.error(message)

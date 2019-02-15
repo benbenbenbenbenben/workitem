@@ -33,7 +33,7 @@ class CLI {
     }
     fail(err, message) {
         if (err === ErrorCodes_1.ErrorCodes.NotInitialised) {
-            this.log(chalk_1.default `{bgYellow warning} NotInitialised ${message}`);
+            this.log(chalk_1.default `\n{bgYellow warning} NotInitialised ${message}`);
             this.showHelp();
         }
         else {

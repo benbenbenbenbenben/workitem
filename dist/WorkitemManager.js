@@ -4,17 +4,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const crypto_1 = __importDefault(require("crypto"));
+const path_1 = __importDefault(require("path"));
 const Success_1 = require("./Success");
 class WorkitemManager {
     constructor(git, fs) {
         this.git = git;
         this.fs = fs;
+        this.gitroot = fs.execSync(`git rev-parse --show-toplevel`).toString().replace(/[\r\n]*/g, "");
+        this.wiroot = path_1.default.join(this.gitroot, "/", ".workitem");
         try {
-            this.config = fs.readJsonSync(".workitem/workitem.json");
+            this.config = fs.readJsonSync(this.wipath("/workitem.json"));
         }
         catch (e) {
             this.config = undefined;
         }
+    }
+    wipath(resource) {
+        return path_1.default.join(this.wiroot, resource);
     }
     isInitialised() {
         return this.config !== undefined;
@@ -31,10 +37,10 @@ class WorkitemManager {
         const tree = dirs.map((d) => {
             return {
                 stage: d,
-                items: this.fs.readdirSync(`.workitem/${d}`)
-                    .filter(f => this.fs.statSync(`.workitem/${d}/${f}`).isDirectory())
+                items: this.fs.readdirSync(this.wipath(`/${d}`))
+                    .filter(f => this.fs.statSync(this.wipath(`/${d}/${f}`)).isDirectory())
                     .map(f => {
-                    const res = this.fs.readJsonSync(`.workitem/${d}/${f}/index.json`);
+                    const res = this.fs.readJsonSync(this.wipath(`/${d}/${f}/index.json`));
                     res.id = f;
                     return res;
                 }),
@@ -56,8 +62,8 @@ class WorkitemManager {
         hash.update(this.fs.execSync(`git rev-parse HEAD`).toString());
         const digest = hash.digest("hex").substring(0, 7);
         this.gitDo(() => {
-            this.fs.outputJsonSync(`.workitem/${dir}/${digest}/index.json`, def);
-            this.fs.execSync(`git add .workitem/${dir}/${digest}/index.json`);
+            this.fs.outputJsonSync(`${this.wiroot}/${dir}/${digest}/index.json`, def);
+            this.fs.execSync(`git add ${this.wiroot}/${dir}/${digest}/index.json`);
             this.fs.execSync(`git commit -m "[workitem:${digest}:add] ${def.description}"`);
         });
         return digest;
@@ -106,7 +112,7 @@ class WorkitemManager {
             return new Success_1.Success(false, `Cannot move workitem from ${workitem.value.stage} to ${stage}. Use +force or move to a valid stage.`);
         }
         this.gitDo(() => {
-            this.fs.execSync(`git mv .workitem/${workitem.value.stage}/${workitem.value.id} .workitem/${stage}/${workitem.value.id}`);
+            this.fs.execSync(`git mv "${this.wiroot}/${workitem.value.stage}/${workitem.value.id}" "${this.wiroot}/${stage}/${workitem.value.id}"`);
             this.fs.execSync(`git commit -m "[workitem:${workitem.value.id}:move] ${workitem.value.stage} to ${stage}"`);
         });
         return workitem;
@@ -142,7 +148,7 @@ class WorkitemManager {
     }
     save(workitem) {
         this.gitDo(() => {
-            const filename = `.workitem/${workitem.stage}/${workitem.id}/index.json`;
+            const filename = `${this.wiroot}/${workitem.stage}/${workitem.id}/index.json`;
             this.fs.writeJsonSync(filename, workitem);
             this.fs.execSync(`git add ${filename}`);
             this.fs.execSync(`git commit -m "[workitem:${workitem.id}:edit]"`);
@@ -168,9 +174,9 @@ class WorkitemManager {
             relocated:           .workitem/{todo => doing}/4c4c9a7/index.json | 0
             */
             // tslint:disable-next-line:max-line-length
-            this.fs.exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} .workitem`).then(result => {
+            this.fs.exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} ${this.wiroot}`).then(result => {
                 let added = result.stdout;
-                this.fs.exec(`git diff --stat --diff-filter=R ${here}..${branch} .workitem`).then(result => {
+                this.fs.exec(`git diff --stat --diff-filter=R ${here}..${branch} ${this.wiroot}`).then(result => {
                     let renamed = result.stdout;
                     let addedarr = [];
                     let renamedarr = [];
@@ -202,7 +208,7 @@ class WorkitemManager {
         const stamp = this.timestamp();
         const outfilename = `${stamp}.${digest}.${data.type}.json`;
         this.gitDo(() => {
-            const filename = `.workitem/${workitem.stage}/${workitem.id}/${outfilename}`;
+            const filename = `${this.wiroot}/${workitem.stage}/${workitem.id}/${outfilename}`;
             this.fs.writeJsonSync(filename, data);
             this.fs.execSync(`git add ${filename}`);
             this.fs.execSync(`git commit -m "[workitem:${workitem.id}:${data.type}]"`);
