@@ -26,7 +26,7 @@ export class Init extends Command {
                                     ? logger.log(chalk`{bgBlue.white Done!}`)
                                     : this.revert()
                                 : logger.fail(-4, 'You have uncommited changes in this repository. Use \'git status\' to view these. Once resolved you can initialise this workitem repository.')
-                    : logger.fail(ErrorCodes.NotInitialised, 'This directory is a git repository but there are no branches. Please perform an inital commit.') 
+                    : logger.fail(ErrorCodes.NotInitialised, 'This directory is a git repository but there are no branches. Please perform an initial commit.') 
                 : logger.fail(ErrorCodes.NotInitialised, 'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git')
         }
     }
