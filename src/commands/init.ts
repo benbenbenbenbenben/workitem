@@ -15,7 +15,7 @@ export class Init extends Command {
         const result = this.parse(argsraw)
         if (result.init) {
             const _ = 
-                await this.git.isRepo() || (result.git && await this.gitInit())
+                await this.git.isRepo() || (result.git && await this.gitInit(result.force))
                 ? await this.git.isInit()
                     ? this.isinitialised()
                         ? logger.fail(-1, chalk`{bold Done! This directory is already a workitem repo!}`)
@@ -27,11 +27,30 @@ export class Init extends Command {
                                     : this.revert()
                                 : logger.fail(-4, 'You have uncommited changes in this repository. Use \'git status\' to view these. Once resolved you can initialise this workitem repository.')
                     : logger.fail(ErrorCodes.NotInitialised, 'This directory is a git repository but there are no branches. Please perform an initial commit.') 
-                : logger.fail(ErrorCodes.NotInitialised, 'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git')
+                : logger.fail(ErrorCodes.NotInitialised, 'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git [+force]')
         }
     }
-    async gitInit(): Promise<boolean> {
-        return this.git.createRepo()
+    async gitInit(force:boolean = false): Promise<boolean> {
+        const who = await this.git.getWho().then(who => who).catch(error => false)
+        if (who) {
+            return this.git.init()
+                .then(x => this.fs.writeFileSync("workitem.md", "project initialised by workitem"))
+                .then(x => this.git.add("workitem.md"))
+                .then(x => this.git.commit("[workitem:createRepo]"))
+        } else {
+            if (force) {
+                return this.git.init()
+                    .then(x => this.git.setUsername("workitem"))
+                    .then(x => this.git.setEmail("workitem@example.com"))
+                    .then(x => this.fs.writeFileSync("workitem.md", "project initialised by workitem"))
+                    .then(x => this.git.add("workitem.md"))
+                    .then(x => this.git.commit("[workitem:createRepo]"))
+                    // TODO: add workitem to update auto username/email
+            } else {
+                this.logger.fail(-100, chalk`workitem cannot initialize a git repository before a user.name and user.email are set. Alternatively, add +force to use a default user.name and user.email value; i.e. workitem init +git +force`)
+                return false
+            }
+        }
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)
@@ -40,14 +59,16 @@ export class Init extends Command {
         const init = token("init", "init")
         const auto = token("auto", "auto")
         const git = token("git", "+git")
+        const force = token("force", "+force")
 
         let result: any = false
         parse(argsraw)(
-            rule(init, optional(Command.ws, auto), optional(Command.ws, git), Command.EOL).yields(r => {
+            rule(init, optional(Command.ws, auto), optional(Command.ws, git), optional(Command.ws, force), Command.EOL).yields(r => {
                 result = {
                     init: true,
                     auto: r.one("auto") === "auto",
                     git: r.one("git") !== null,
+                    force: r.one("force") !== null
                 }
             })
         )

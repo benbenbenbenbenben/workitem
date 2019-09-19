@@ -115,25 +115,29 @@ describe("move", () => {
     it("should accept move 0.0 to stage", () => {
         expect(new Move(git, fs).parse("move 0.0 to stage")).to.deep.eq({
             item: "0.0",
-            stage: "stage"
+            stage: "stage",
+            force: false
         })
     })
     it("should accept move 999.999 to stage", () => {
         expect(new Move(git, fs).parse("move 999.999 to stage")).to.deep.eq({
             item: "999.999",
-            stage: "stage"
+            stage: "stage",
+            force: false
         })
     })
     it("should accept move 1234567 to stage", () => {
         expect(new Move(git, fs).parse("move 1234567 to stage")).to.deep.eq({
             item: "1234567",
-            stage: "stage"
+            stage: "stage",
+            force: false
         })
     })
     it("should accept move #1234567 to stage", () => {
         expect(new Move(git, fs).parse("move #1234567 to stage")).to.deep.eq({
             item: "#1234567",
-            stage: "stage"
+            stage: "stage",
+            force: false
         })
     })
 })
@@ -173,21 +177,24 @@ describe("init", () => {
         expect(new Init(git, fs).parse("init")).to.deep.eq({
             init: true,
             auto: false,
-            git: false
+            git: false,
+            force: false
         })
     })
     it("should accept init auto", () => {
         expect(new Init(git, fs).parse("init auto")).to.deep.eq({
             init: true,
             auto: true,
-            git: false
+            git: false,
+            force: false
         })
     })
     it("should accept init auto +git", () => {
         expect(new Init(git, fs).parse("init auto +git")).to.deep.eq({
             init: true,
             auto: true,
-            git: true
+            git: true,
+            force: false
         })
     })
 })

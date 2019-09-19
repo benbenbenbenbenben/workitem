@@ -22,7 +22,7 @@ class Init extends command_1.Command {
             this.logger = logger;
             const result = this.parse(argsraw);
             if (result.init) {
-                const _ = (yield this.git.isRepo()) || (result.git && (yield this.gitInit()))
+                const _ = (yield this.git.isRepo()) || (result.git && (yield this.gitInit(result.force)))
                     ? (yield this.git.isInit())
                         ? this.isinitialised()
                             ? logger.fail(-1, chalk_1.default `{bold Done! This directory is already a workitem repo!}`)
@@ -33,14 +33,35 @@ class Init extends command_1.Command {
                                         ? logger.log(chalk_1.default `{bgBlue.white Done!}`)
                                         : this.revert()
                                     : logger.fail(-4, 'You have uncommited changes in this repository. Use \'git status\' to view these. Once resolved you can initialise this workitem repository.')
-                        : logger.fail(ErrorCodes_1.ErrorCodes.NotInitialised, 'This directory is a git repository but there are no branches. Please perform an inital commit.')
-                    : logger.fail(ErrorCodes_1.ErrorCodes.NotInitialised, 'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git');
+                        : logger.fail(ErrorCodes_1.ErrorCodes.NotInitialised, 'This directory is a git repository but there are no branches. Please perform an initial commit.')
+                    : logger.fail(ErrorCodes_1.ErrorCodes.NotInitialised, 'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git [+force]');
             }
         });
     }
-    gitInit() {
+    gitInit(force = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.git.createRepo();
+            const who = yield this.git.getWho().then(who => who).catch(error => false);
+            if (who) {
+                return this.git.init()
+                    .then(x => this.fs.writeFileSync("workitem.md", "project initialised by workitem"))
+                    .then(x => this.git.add("workitem.md"))
+                    .then(x => this.git.commit("[workitem:createRepo]"));
+            }
+            else {
+                if (force) {
+                    return this.git.init()
+                        .then(x => this.git.setUsername("workitem"))
+                        .then(x => this.git.setEmail("workitem@example.com"))
+                        .then(x => this.fs.writeFileSync("workitem.md", "project initialised by workitem"))
+                        .then(x => this.git.add("workitem.md"))
+                        .then(x => this.git.commit("[workitem:createRepo]"));
+                    // TODO: add workitem to update auto username/email
+                }
+                else {
+                    this.logger.fail(-100, chalk_1.default `workitem cannot initialize a git repository before a user.name and user.email are set. Alternatively, add +force to use a default user.name and user.email value; i.e. workitem init +git +force`);
+                    return false;
+                }
+            }
         });
     }
     constructor(git, fs) {
@@ -50,12 +71,14 @@ class Init extends command_1.Command {
         const init = token("init", "init");
         const auto = token("auto", "auto");
         const git = token("git", "+git");
+        const force = token("force", "+force");
         let result = false;
-        parse(argsraw)(rule(init, optional(command_1.Command.ws, auto), optional(command_1.Command.ws, git), command_1.Command.EOL).yields(r => {
+        parse(argsraw)(rule(init, optional(command_1.Command.ws, auto), optional(command_1.Command.ws, git), optional(command_1.Command.ws, force), command_1.Command.EOL).yields(r => {
             result = {
                 init: true,
                 auto: r.one("auto") === "auto",
                 git: r.one("git") !== null,
+                force: r.one("force") !== null
             };
         }));
         return result;

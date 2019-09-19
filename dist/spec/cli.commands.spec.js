@@ -113,25 +113,29 @@ describe("move", () => {
     it("should accept move 0.0 to stage", () => {
         chai_1.expect(new move_1.Move(git, fs).parse("move 0.0 to stage")).to.deep.eq({
             item: "0.0",
-            stage: "stage"
+            stage: "stage",
+            force: false
         });
     });
     it("should accept move 999.999 to stage", () => {
         chai_1.expect(new move_1.Move(git, fs).parse("move 999.999 to stage")).to.deep.eq({
             item: "999.999",
-            stage: "stage"
+            stage: "stage",
+            force: false
         });
     });
     it("should accept move 1234567 to stage", () => {
         chai_1.expect(new move_1.Move(git, fs).parse("move 1234567 to stage")).to.deep.eq({
             item: "1234567",
-            stage: "stage"
+            stage: "stage",
+            force: false
         });
     });
     it("should accept move #1234567 to stage", () => {
         chai_1.expect(new move_1.Move(git, fs).parse("move #1234567 to stage")).to.deep.eq({
             item: "#1234567",
-            stage: "stage"
+            stage: "stage",
+            force: false
         });
     });
 });
@@ -168,21 +172,24 @@ describe("init", () => {
         chai_1.expect(new init_1.Init(git, fs).parse("init")).to.deep.eq({
             init: true,
             auto: false,
-            git: false
+            git: false,
+            force: false
         });
     });
     it("should accept init auto", () => {
         chai_1.expect(new init_1.Init(git, fs).parse("init auto")).to.deep.eq({
             init: true,
             auto: true,
-            git: false
+            git: false,
+            force: false
         });
     });
     it("should accept init auto +git", () => {
         chai_1.expect(new init_1.Init(git, fs).parse("init auto +git")).to.deep.eq({
             init: true,
             auto: true,
-            git: true
+            git: true,
+            force: false
         });
     });
 });

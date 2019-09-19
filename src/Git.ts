@@ -38,6 +38,12 @@ export class Git implements IGit {
     }
     async getWho(): Promise<string> {
         return `${await this.getUsername()} <${await this.getEmail()}>`
+    }    
+    async setEmail(email: string): Promise<boolean> {
+        return this.git(`config user.email "${email}"`).then(x => true).catch(x => false)
+    }
+    async setUsername(username: string): Promise<boolean> {
+        return this.git(`config user.name "${username}"`).then(x => true).catch(x => false)
     }
     async isRepo(): Promise<boolean> {
         return this.git("status")
@@ -49,12 +55,13 @@ export class Git implements IGit {
             .then(x => x.indexOf("*") >= 0)
             .catch(x => false)
     }
-    async createRepo(): Promise<boolean> {
-        return this.git("init")
-            .then(x => this.fs.writeFileSync("workitem.md", "project initialised by workitem"))
-            .then(x => this.git("add ."))
-            .then(x => this.git(`commit -a -m "[workitem:createRepo]"`))
-            .then(x => true)
-            .catch(x => false)
+    async init(): Promise<boolean> {
+        return this.git("init").then(x => true).catch(x => false)
+    }    
+    async add(pattern: string): Promise<boolean> {
+        return this.git(`add ${pattern}`).then(x => true).catch(x => false)
+    }
+    async commit(message: string): Promise<boolean> {
+        return this.git(`commit -m "${message}"`).then(x => true).catch(x => false)
     }
 }
