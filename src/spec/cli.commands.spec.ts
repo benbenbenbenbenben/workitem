@@ -206,6 +206,7 @@ describe("show", () => {
             show: true,
             more: false,
             item: null,
+            stage: null
         })
     })
     it("should accept more", () => {
@@ -213,6 +214,7 @@ describe("show", () => {
             show: true,
             more: true,
             item: null,
+            stage: null
         })
     })
     it("should accept show more", () => {
@@ -220,6 +222,15 @@ describe("show", () => {
             show: true,
             more: true,
             item: null,
+            stage: null
+        })
+    })
+    it("should accept @todo", () => {
+        expect(new Show(git, fs).parse("@todo")).to.deep.eq({
+            show: true,
+            more: false,
+            item: null,
+            stage: "todo"
         })
     })
 })

@@ -1,0 +1,41 @@
+workitem 2.0.0 show
+todo
+[0.0] #0a0da09 wi commands not working in directories
+[0.1] #0d2c524 add search function
+[0.2] #0dee191 create tag command i.e. wi tag 0.4 #newtag
+[0.3] #167f90a create/update error code enum for logger.fail
+[0.4] #1ed512d make About the Commit Hook message better
+[0.5] #2f93f69 capture fatal errors
+[0.6] #36e4ac9 discuss plugin system
+[0.7] #3c4a09c show hints when showing status table from show()
+[0.8] #40c0b4e improve printing of i.e. command tips on logger.fail messages
+[0.9] #423a302 add collate function to pull straggling work items in from other branches
+[0.10] #4c4c9a7 incorporate blessed/slap editor-widget for extended editing
+[0.11] #4d0bf3e improve printing of i.e. command tips on logger.fail messages
+[0.12] #4e09c67 add a DOD for the readme/docs
+[0.13] #57b4cde add delete function
+[0.14] #58f68f9 add tagging feature, e.g. workitem tag 1.0 #newtag
+[0.15] #59712ff prevent editing 'done' items unless forced
+[0.16] #5f9841c allow wildcard transition states
+[0.17] #60354f7 port to marthascript
+[0.18] #62ec279 optionally push work items after adding
+[0.19] #64fe567 when adding workitems, 'show item' should be the output
+[0.20] #677b526 fatal errors can cause __workitem__ branch to remain checked out
+[0.21] #6936c61 add complexity field to work items
+[0.22] #6b8c744 improve performance of fs scan operations
+[0.23] #6f8b86e make git atomic recover 'well'
+[0.24] #7157863 test tags
+[0.25] #7f4c621 print something useful when adding items
+[0.26] #861ea5e add search function
+[0.27] #973d385 enable searching for work items with ? on cli e.g wi selenium ?
+[0.28] #9bfab2e show for individual items
+[0.29] #9d418fb add hash identity function e.g. makeId(somedata)
+[0.30] #a4839c7 using @stage needs #tag to parse correctly
+[0.31] #ad22026 prioritse display of active items when using now args/show/show more
+[0.32] #b02ee1f make sure added parent/children are validated before accepting
+[0.33] #bf3ebe2 add archive feature
+[0.34] #c2a0501 add iteration feature
+[0.35] #dd10b5b replace images in readme with html if pos
+[0.36] #ebc31d7 print something useful when moving items
+[0.37] #f7529b9 replace Success class with promises
+[0.38] #f83abd0 make sure WorkitemManager.add sanitises paths

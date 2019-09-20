@@ -53,15 +53,19 @@ export class Show extends Command {
                 }
             } else {
                 const logs = wim.show()
-                const top = result.more ? 9999 : 3
+                const top = result.more || result.stage ? undefined : 3
                 logs.forEach((l, j) => {
-                    logger.log(chalk`{bgBlue.yellow ${l.stage}}`)
-                    l.items.slice(0, top).forEach((i, k) => {
-                        logger.log(chalk`[${j.toString()}.${k.toString()}] {bold #${i.id}} {yellow ${i.description}}`)
-                    })
-                    let x = l.items.length - top
-                    if (x > 0)
-                        logger.log(` +${x} more...`)
+                    if (result.stage === null || l.stage === result.stage) {
+                        logger.log(chalk`{bgBlue.yellow ${l.stage}}`)
+                        l.items.slice(0, top).forEach((i, k) => {
+                            logger.log(chalk`[${j.toString()}.${k.toString()}] {bold #${i.id}} {yellow ${i.description}}`)
+                        })
+                        if (top) {
+                            let x = l.items.length - top
+                            if (x > 0)
+                                logger.log(` +${x} more...`)
+                        }
+                    }
                 })
             }
         } else {
@@ -75,15 +79,17 @@ export class Show extends Command {
         const show = token("show", "show")
         const more = token("more", "more")
         const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i)
+        const stage = token("stage", /[\w_-]+/)
 
         let result: any = false
         parse(argsraw)(
-            rule(optional(either(all(show, Command.ws, more), show, more)), optional(Command.ws, item), Command.EOL).yields(
+            rule(optional(either(all(show, Command.ws, more), show, more, all("@", stage))), optional(Command.ws, item), Command.EOL).yields(
                 (r, c) => {
                     result = {
                         show: true,
                         more: r.one("more") === "more",
                         item: r.one("item"),
+                        stage: r.one("stage")
                     }
                 }
             )
