@@ -13,10 +13,14 @@ export class Note extends Command {
         const result = this.parse(argsraw)
         const wim = new WorkitemManager(this.git, this.fs)
         if (result === false) {
-            logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white add} could not proceed`)
+            logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white note} could not proceed`)
         }
         const who = await this.git.getWho()
+        const workitem = await wim.idToWorkitem(result.item)
         wim.comment(result.item, result.comment, who)
+        logger.log(chalk`{bgGreen.white note}`)
+        logger.log(chalk`{bgBlue.white ${workitem.value.stage} #${workitem.value.id}} ${workitem.value.description}`)
+        logger.log(chalk`{yellow added comment:} ${result.comment} {yellow ${who}}`)
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)

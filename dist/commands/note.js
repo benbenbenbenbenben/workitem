@@ -23,10 +23,14 @@ class Note extends command_1.Command {
             const result = this.parse(argsraw);
             const wim = new WorkitemManager_1.WorkitemManager(this.git, this.fs);
             if (result === false) {
-                logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white add} could not proceed`);
+                logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white note} could not proceed`);
             }
             const who = yield this.git.getWho();
+            const workitem = yield wim.idToWorkitem(result.item);
             wim.comment(result.item, result.comment, who);
+            logger.log(chalk_1.default `{bgGreen.white note}`);
+            logger.log(chalk_1.default `{bgBlue.white ${workitem.value.stage} #${workitem.value.id}} ${workitem.value.description}`);
+            logger.log(chalk_1.default `{yellow added comment:} ${result.comment} {yellow ${who}}`);
         });
     }
     constructor(git, fs) {
