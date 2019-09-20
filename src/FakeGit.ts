@@ -2,6 +2,21 @@ import { IGit } from "./IGit";
 import { IHost } from "./IHost";
 
 export class FakeGit implements IGit {
+    setEmail(email: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+    setUsername(username: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+    init(): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+    add(pattern: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+    commit(message: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
     fs: IHost;
     constructor(fs:IHost){
         this.fs = fs

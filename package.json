@@ -28,8 +28,10 @@
   },
   "dependencies": {
     "@types/fs-extra": "^5.0.4",
+    "@types/shelljs": "^0.8.5",
     "chalk": "^2.4.1",
     "fs-extra": "^7.0.0",
+    "shelljs": "^0.8.3",
     "tibu": "0.0.1-alpha1"
   },
   "devDependencies": {

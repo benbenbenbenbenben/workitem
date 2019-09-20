@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const util_1 = require("util");
 const fs_extra_1 = __importDefault(require("fs-extra"));
+const shelljs_1 = require("shelljs");
 const child_process_1 = require("child_process");
 const pexec = util_1.promisify(child_process_1.exec);
 const readline_1 = require("readline");
@@ -35,11 +36,19 @@ class Host {
         Host.init = true;
     }
     execSync(cmdline) {
-        return child_process_1.execSync(cmdline);
+        return new Buffer(shelljs_1.exec(cmdline, { silent: true }).stdout);
     }
     exec(cmdline) {
         return __awaiter(this, void 0, void 0, function* () {
-            return pexec(cmdline);
+            return new Promise((resolve, reject) => {
+                const output = shelljs_1.exec(cmdline, { async: false, silent: true });
+                if (output.code !== 0) {
+                    reject(output);
+                }
+                else {
+                    resolve(output);
+                }
+            });
         });
     }
     outputJsonSync(filename, data) {

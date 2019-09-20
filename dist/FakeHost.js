@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class FakeHost {
+    spawn(cmd, args) {
+        throw new Error("Method not implemented.");
+    }
     execSync(cmdline) {
         throw new Error("Method not implemented.");
     }

@@ -2,6 +2,9 @@ import { IHost } from "./IHost";
 import { ExecException } from "child_process";
 
 export class FakeHost implements IHost {
+    spawn(cmd: string, args: string[]): Promise<{ stdout: string; stderr: string; }> {
+        throw new Error("Method not implemented.");
+    }
     execSync(cmdline: string): Buffer {
         throw new Error("Method not implemented.");
     }    exec(cmdline: string): Promise<{ stdout: string; stderr: string; }> {

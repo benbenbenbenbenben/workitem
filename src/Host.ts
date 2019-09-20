@@ -1,10 +1,13 @@
 import { promisify } from "util";
 import { IHost } from "./IHost";
 import fs from "fs-extra"
-import { exec, execSync, ExecException } from "child_process"
+import { exec as sexec } from "shelljs"
+import { spawn, exec, execSync, ExecException } from "child_process"
 const pexec = promisify(exec)
 import { emitKeypressEvents } from "readline"
 import chalk from "../node_modules/chalk";
+import { rejects } from "assert";
+import { resolve } from "dns";
 
 export class Host implements IHost {
     private static init: boolean = false
@@ -24,10 +27,17 @@ export class Host implements IHost {
         Host.init = true
     }
     execSync(cmdline: string): Buffer {
-        return execSync(cmdline)
+        return new Buffer(sexec(cmdline, { silent:true }).stdout)
     }    
     async exec(cmdline: string): Promise<{stdout: string, stderr:string}> {
-        return pexec(cmdline)
+        return new Promise((resolve, reject) => {
+            const output = sexec(cmdline, { async:false, silent:true })
+            if (output.code !== 0) {
+                reject(output)
+            } else {
+                resolve(output)
+            }
+        })
     }
     outputJsonSync(filename: string, data: any) {
         fs.outputJsonSync(filename, data)
