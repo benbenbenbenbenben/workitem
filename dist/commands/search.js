@@ -32,7 +32,7 @@ class Search extends command_1.Command {
                 if (stage.items.length > 0) {
                     stage.items.forEach(item => {
                         logger.log(chalk_1.default `{white.bold #${item.id}} ${item.description} ` +
-                            item.tags.map(tag => chalk_1.default `{yellow ${tag}}`).join(" "));
+                            (item.tags ? item.tags.map(tag => chalk_1.default `{yellow ${tag}}`).join(" ") : ""));
                     });
                 }
                 else {
@@ -65,8 +65,15 @@ class Search extends command_1.Command {
     }
 }
 exports.Search = Search;
-command_1.Command.register(Search, "searchs a workitem", [
-    { example: 'search <item> "new name"', info: "searchs an item", options: [{
-                label: "item", description: "the item id or index, e.g; #f08472a or 1.1"
-            }] }
+command_1.Command.register(Search, "searches a workitem", [
+    {
+        example: 'search #bug [and] #defect [and] word',
+        info: 'searches for items with tag #bug and #defect and containing "word"',
+        options: [
+            { label: "tag", description: "a tag to search for" },
+            { label: "word", description: "a word to search for" },
+            { label: "and", description: "forces left and right hand side to be found; e.g. search #bug [and] ui" },
+            { label: "or", description: "allows either left or right to be found; e.g. search crash or freeze" }
+        ]
+    }
 ]);
