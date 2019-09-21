@@ -59,7 +59,7 @@ export class WorkitemManager {
     public add(def: any): string | any {
         const dir = (def.location || "+" + this.config.incoming).substring(1)
         delete def.location
-        if (!this.fs.existsSync(`.workitem/${dir}`)) {
+        if (!this.fs.existsSync(`${this.wiroot}/${dir}`)) {
             return null
         }
         if (dir === ".secrets") {
