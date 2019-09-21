@@ -22,7 +22,7 @@ export class Search extends Command {
             if (stage.items.length > 0) {
                 stage.items.forEach(item => {
                     logger.log(chalk`{white.bold #${item.id}} ${item.description} ` +
-                        item.tags.map(tag => chalk`{yellow ${tag}}`).join(" ")
+                        (item.tags ? item.tags.map(tag => chalk`{yellow ${tag}}`).join(" ") : "")
                     )
                 })
             } else {
