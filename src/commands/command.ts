@@ -1,5 +1,4 @@
 import { IRule, Tibu, Input, Result } from "tibu";
-import { CONNREFUSED } from "dns";
 import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
 import { IHost } from "../IHost";
