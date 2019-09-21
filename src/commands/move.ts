@@ -13,12 +13,15 @@ export class Move extends Command {
         const result = this.parse(argsraw)
         const wim = new WorkitemManager(this.git, this.fs)
         if (result === false) {
-            logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white add} could not proceed`)
+            logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white move} could not proceed`)
         }
+        const fromstage = wim.idToWorkitem(result.item).value.stage
+        const fullid = wim.idToWorkitem(result.item).value.id
         const moveresult:any = wim.move(result.item, result.stage, result.force)
         if (moveresult.success === false) {
             logger.fail(ErrorCodes.UnknownCommand, chalk`${moveresult.error}`)
         }
+        logger.log(chalk`{bgGreen.white move} moved {bold #${fullid}} from {bold ${fromstage}} to {bold ${result.stage}}`)
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)

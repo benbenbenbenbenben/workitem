@@ -23,12 +23,15 @@ class Move extends command_1.Command {
             const result = this.parse(argsraw);
             const wim = new WorkitemManager_1.WorkitemManager(this.git, this.fs);
             if (result === false) {
-                logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white add} could not proceed`);
+                logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white move} could not proceed`);
             }
+            const fromstage = wim.idToWorkitem(result.item).value.stage;
+            const fullid = wim.idToWorkitem(result.item).value.id;
             const moveresult = wim.move(result.item, result.stage, result.force);
             if (moveresult.success === false) {
                 logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `${moveresult.error}`);
             }
+            logger.log(chalk_1.default `{bgGreen.white move} moved {bold #${fullid}} from {bold ${fromstage}} to {bold ${result.stage}}`);
         });
     }
     constructor(git, fs) {
