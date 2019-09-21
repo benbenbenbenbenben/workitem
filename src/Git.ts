@@ -33,7 +33,7 @@ export class Git implements IGit {
         return user.replace(/\r\n|\r|\n/g, "")
     }
     async getEmail(): Promise<string> {        
-        let email = await this.git("config user.name")
+        let email = await this.git("config user.email")
         return email.replace(/\r\n|\r|\n/g, "")
     }
     async getWho(): Promise<string> {
