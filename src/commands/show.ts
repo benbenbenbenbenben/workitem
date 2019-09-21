@@ -56,7 +56,7 @@ export class Show extends Command {
                 const top = result.more || result.stage ? undefined : 3
                 logs.forEach((l, j) => {
                     if (result.stage === null || l.stage === result.stage) {
-                        logger.log(chalk`{bgBlue.yellow ${l.stage}}`)
+                        logger.log(chalk`{bgBlueBright.yellowBright ${l.stage}}`)
                         l.items.slice(0, top).forEach((i, k) => {
                             logger.log(chalk`[${j.toString()}.${k.toString()}] {bold #${i.id}} {yellow ${i.description}}`)
                         })
@@ -78,7 +78,7 @@ export class Show extends Command {
     public parse(argsraw: string) {
         const show = token("show", "show")
         const more = token("more", "more")
-        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i)
+        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{3,7}))/i)
         const stage = token("stage", /[\w_-]+/)
 
         let result: any = false

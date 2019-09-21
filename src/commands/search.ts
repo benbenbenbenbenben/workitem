@@ -7,6 +7,7 @@ import { ILogger } from "../ILogger";
 import { IGit } from "../IGit";
 import { ErrorCodes } from "../ErrorCodes";
 import chalk from "chalk";
+import { IWorkitem } from "../Workitem";
 
 export class Search extends Command {
     public async run(argsraw: string, logger: ILogger): Promise<void> {
@@ -18,7 +19,7 @@ export class Search extends Command {
         logger.log(chalk`{bgGreen.white search} ${argsraw.substr(7)}`)
         const items = wim.search(result)
         items.forEach(stage => {
-            logger.log(chalk`{bgBlue.yellow ${stage.stage}}`)
+            logger.log(chalk`{bgBlueBright.yellowBright ${stage.stage}}`)
             if (stage.items.length > 0) {
                 stage.items.forEach(item => {
                     logger.log(chalk`{white.bold #${item.id}} ${item.description} ` +
@@ -37,17 +38,17 @@ export class Search extends Command {
         const search = token("search", /search|find|\?/)
         const operator = rule(
             either(
-                rule(token("and", /and|\&/)).yields(_ => (l, r) => item => l(item) && r(item)),
-                rule(token("or", /or|\|/)).yields(_ => (l, r) => item => l(item) || r(item))
+                rule(token("and", /and|\&/)).yields(_ => (l: (i:IWorkitem) => boolean, r: (i:IWorkitem) => boolean) => (item:IWorkitem) => l(item) && r(item)),
+                rule(token("or", /or|\|/)).yields(_ => (l: (i:IWorkitem) => boolean, r: (i:IWorkitem) => boolean) => (item:IWorkitem) => l(item) || r(item))
             )
         )
         const term = rule(
             either(
                 rule(token("tag", /\#[\w_-]+/i)).yields(
-                    x => item => item.tags && item.tags.find(tag => tag === x.one("tag"))
+                    x => (item: IWorkitem) => item.tags && item.tags.find(tag => tag === x.one("tag"))
                 ),
                 rule(token("word", /[\w_-]+/i)).yields(
-                    x => item => item.description && item.description.indexOf(x.one("word")) >= 0
+                    x => (item: IWorkitem) => item.description && item.description.indexOf(x.one("word")) >= 0
                 )
             )
         )
@@ -64,7 +65,7 @@ export class Search extends Command {
                 rule(term, Command.ws, () => query).yields(
                     (t, c) => {
                         const [l, r] = flat(c)
-                        return item => l(item) && r(item)
+                        return (item: IWorkitem) => l(item) && r(item)
                     }
                 ),
                 rule(term)
