@@ -14,7 +14,7 @@
             "name": "Launch TS",
             "type": "node",
             "request": "launch",
-            "args": ["${workspaceRoot}/src/cli.ts", "init", "git"],
+            "args": ["${workspaceRoot}/src/cli.ts", "?", "git"],
             "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",

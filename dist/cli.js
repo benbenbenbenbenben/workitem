@@ -90,7 +90,8 @@ class CLI {
                 "note",
                 "rename",
                 "move",
-                "collate"
+                "collate",
+                "search"
             ];
             for (let command of commands) {
                 yield Promise.resolve().then(() => __importStar(require(`./commands/${command}`)));

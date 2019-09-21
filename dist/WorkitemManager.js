@@ -32,7 +32,7 @@ class WorkitemManager {
         this.fs.execSync(`git merge __workitem__`);
         this.fs.execSync(`git branch -D __workitem__`);
     }
-    get workitems() {
+    filterWorkitems(where = (x) => true) {
         const dirs = this.config.directories;
         const tree = dirs.map((d) => {
             return {
@@ -43,10 +43,13 @@ class WorkitemManager {
                     const res = this.fs.readJsonSync(this.wipath(`/${d}/${f}/index.json`));
                     res.id = f;
                     return res;
-                }),
+                }).filter(where),
             };
         });
         return tree;
+    }
+    get workitems() {
+        return this.filterWorkitems();
     }
     add(def) {
         const dir = (def.location || "+" + this.config.incoming).substring(1);
@@ -213,6 +216,9 @@ class WorkitemManager {
             this.fs.execSync(`git add ${filename}`);
             this.fs.execSync(`git commit -m "[workitem:${workitem.id}:${data.type}]"`);
         });
+    }
+    search(filter) {
+        return this.filterWorkitems(filter);
     }
     timestamp() {
         return new Date().toISOString().replace(/[^0-9]/g, "");

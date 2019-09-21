@@ -69,7 +69,8 @@ class CLI implements ILogger {
             "note",
             "rename",
             "move",
-            "collate"
+            "collate",
+            "search"
         ]
 
         for (let command of commands) { 

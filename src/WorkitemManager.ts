@@ -37,7 +37,7 @@ export class WorkitemManager {
         this.fs.execSync(`git merge __workitem__`)
         this.fs.execSync(`git branch -D __workitem__`)
     }
-    public get workitems(): IStageCollection {
+    public filterWorkitems(where: (item:IWorkitem) => boolean = (x) => true): IStageCollection {
         const dirs = this.config.directories
         const tree = dirs.map((d: string) => {
             return {
@@ -48,10 +48,13 @@ export class WorkitemManager {
                         const res = this.fs.readJsonSync(this.wipath(`/${d}/${f}/index.json`))
                         res.id = f
                         return res
-                }),
+                }).filter(where),
             }
         })
         return tree
+    }
+    public get workitems(): IStageCollection {
+        return this.filterWorkitems()
     }
     public add(def: any): string | any {
         const dir = (def.location || "+" + this.config.incoming).substring(1)
@@ -232,6 +235,9 @@ export class WorkitemManager {
             this.fs.execSync(`git add ${filename}`)
             this.fs.execSync(`git commit -m "[workitem:${workitem.id}:${data.type}]"`)
         })
+    }    
+    public search(filter: (item:IWorkitem) => boolean): IStageCollection {
+        return this.filterWorkitems(filter)
     }
     public timestamp(): string {
         return new Date().toISOString().replace(/[^0-9]/g, "")
