@@ -147,7 +147,7 @@ export class Init extends Command {
                 this.fs.mkdirSync('./.workitem/review')
                 this.fs.mkdirSync('./.workitem/done')
                 this.fs.writeJsonSync("./.workitem/workitem.json", {
-                    directories: ["todo", "doing", "done"],
+                    directories: ["backlog", "analysis", "dev", "test", "review", "done"],
                     incoming: "backlog",
                     active: ["analysis", "dev", "test", "review"],
                     completed: "done",
