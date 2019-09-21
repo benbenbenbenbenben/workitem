@@ -168,11 +168,11 @@ export class Init extends Command {
                 this.fs.writeJsonSync("./.workitem/done/index.json", {})
                 return true
             case "3":
-                this.logger.log("[3]: I'll create my own folders")
+                this.logger.log("[3]: I'll create my own stages")
                 this.fs.mkdirSync('./.workitem')
                 this.fs.mkdirSync('./.workitem/.secrets')
                 this.fs.writeJsonSync("./.workitem/workitem.json", {
-                    directories: ["todo", "doing", "done"],
+                    directories: [],
                     incoming: "",
                     active: [],
                     completed: "",
