@@ -27,7 +27,7 @@ export class Note extends Command {
     }
     public parse(argsraw: string) {
         const move = token("note", "note")
-        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i)
+        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{3,7}))/i)
 
         let result: any = false
         parse(argsraw)(

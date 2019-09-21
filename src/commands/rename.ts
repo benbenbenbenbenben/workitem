@@ -22,7 +22,7 @@ export class Rename extends Command {
     }
     public parse(argsraw: string) {
         const rename = token("rename", "rename")
-        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i)
+        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{3,7}))/i)
 
         let result: any = false
         parse(argsraw)(

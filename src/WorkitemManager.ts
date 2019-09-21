@@ -81,7 +81,7 @@ export class WorkitemManager {
         return this.workitems
     }
     public idToWorkitem(item: string): Success<IWorkitem> {
-        const itemids = /^(\d+\.\d+)|(#?[a-f0-9]{7})$/i.exec(item)
+        const itemids = /^(\d+\.\d+)|(#?[a-f0-9]{3,7})$/i.exec(item)
         if (itemids === null) {
             return new Success<IWorkitem>(false, `Didn't recognise workitem identity pattern "${item}"`)
         }
@@ -94,7 +94,7 @@ export class WorkitemManager {
         } else {
             workitem = this.workitems
                 .map((s: any) => s.items.map((t: any) => Object.assign({stage: s.stage}, t)))
-                .reduce((a: any, b: any) => a.concat(b)).find((x: any) => x.id === itemid)
+                .reduce((a: any, b: any) => a.concat(b)).find((x: any) => itemid.length === 7 ? x.id === itemid : x.id.indexOf(itemid) === 0)
         }
         return new Success(true, workitem)
     }

@@ -38,7 +38,7 @@ class Note extends command_1.Command {
     }
     parse(argsraw) {
         const move = token("note", "note");
-        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i);
+        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{3,7}))/i);
         let result = false;
         parse(argsraw)(rule(move, command_1.Command.ws, item, command_1.Command.ws, command_1.Command.msg, command_1.Command.EOL).yields((r, c) => {
             result = {

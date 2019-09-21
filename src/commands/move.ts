@@ -25,7 +25,7 @@ export class Move extends Command {
     }
     public parse(argsraw: string) {
         const move = token("move", "move")
-        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i)
+        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{3,7}))/i)
         const stage = token("stage", /\w+/)
         const force = token("force", /\+force/)
 
