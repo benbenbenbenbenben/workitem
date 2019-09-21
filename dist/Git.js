@@ -42,7 +42,7 @@ class Git {
     }
     getEmail() {
         return __awaiter(this, void 0, void 0, function* () {
-            let email = yield this.git("config user.name");
+            let email = yield this.git("config user.email");
             return email.replace(/\r\n|\r|\n/g, "");
         });
     }
