@@ -27,7 +27,7 @@ export class Host implements IHost {
         Host.init = true
     }
     execSync(cmdline: string): Buffer {
-        return new Buffer(sexec(cmdline, { silent:true }).stdout)
+        return Buffer.from(sexec(cmdline, { silent:true }).stdout)
     }    
     async exec(cmdline: string): Promise<{stdout: string, stderr:string}> {
         return new Promise((resolve, reject) => {

@@ -36,7 +36,7 @@ class Host {
         Host.init = true;
     }
     execSync(cmdline) {
-        return new Buffer(shelljs_1.exec(cmdline, { silent: true }).stdout);
+        return Buffer.from(shelljs_1.exec(cmdline, { silent: true }).stdout);
     }
     exec(cmdline) {
         return __awaiter(this, void 0, void 0, function* () {
