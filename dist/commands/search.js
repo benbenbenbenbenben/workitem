@@ -28,7 +28,7 @@ class Search extends command_1.Command {
             logger.log(chalk_1.default `{bgGreen.white search} ${argsraw.substr(7)}`);
             const items = wim.search(result);
             items.forEach(stage => {
-                logger.log(chalk_1.default `{bgBlue.yellow ${stage.stage}}`);
+                logger.log(chalk_1.default `{bgBlueBright.yellowBright ${stage.stage}}`);
                 if (stage.items.length > 0) {
                     stage.items.forEach(item => {
                         logger.log(chalk_1.default `{white.bold #${item.id}} ${item.description} ` +
@@ -46,8 +46,8 @@ class Search extends command_1.Command {
     }
     parse(argsraw) {
         const search = token("search", /search|find|\?/);
-        const operator = rule(either(rule(token("and", /and|\&/)).yields(_ => (l, r) => item => l(item) && r(item)), rule(token("or", /or|\|/)).yields(_ => (l, r) => item => l(item) || r(item))));
-        const term = rule(either(rule(token("tag", /\#[\w_-]+/i)).yields(x => item => item.tags && item.tags.find(tag => tag === x.one("tag"))), rule(token("word", /[\w_-]+/i)).yields(x => item => item.description && item.description.indexOf(x.one("word")) >= 0)));
+        const operator = rule(either(rule(token("and", /and|\&/)).yields(_ => (l, r) => (item) => l(item) && r(item)), rule(token("or", /or|\|/)).yields(_ => (l, r) => (item) => l(item) || r(item))));
+        const term = rule(either(rule(token("tag", /\#[\w_-]+/i)).yields(x => (item) => item.tags && item.tags.find(tag => tag === x.one("tag"))), rule(token("word", /[\w_-]+/i)).yields(x => (item) => item.description && item.description.indexOf(x.one("word")) >= 0)));
         const query = rule(either(rule(term, command_1.Command.ws, operator, command_1.Command.ws, () => query).yields((t, c) => {
             const [l, o, r] = flat(c);
             const f = o(l, r);
@@ -55,7 +55,7 @@ class Search extends command_1.Command {
             return f;
         }), rule(term, command_1.Command.ws, () => query).yields((t, c) => {
             const [l, r] = flat(c);
-            return item => l(item) && r(item);
+            return (item) => l(item) && r(item);
         }), rule(term)));
         let result = false;
         parse(argsraw)(rule(search, command_1.Command.ws, query, command_1.Command.EOL).yields((r, c) => {

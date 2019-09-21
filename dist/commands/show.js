@@ -69,7 +69,7 @@ class Show extends command_1.Command {
                     const top = result.more || result.stage ? undefined : 3;
                     logs.forEach((l, j) => {
                         if (result.stage === null || l.stage === result.stage) {
-                            logger.log(chalk_1.default `{bgBlue.yellow ${l.stage}}`);
+                            logger.log(chalk_1.default `{bgBlueBright.yellowBright ${l.stage}}`);
                             l.items.slice(0, top).forEach((i, k) => {
                                 logger.log(chalk_1.default `[${j.toString()}.${k.toString()}] {bold #${i.id}} {yellow ${i.description}}`);
                             });
@@ -93,7 +93,7 @@ class Show extends command_1.Command {
     parse(argsraw) {
         const show = token("show", "show");
         const more = token("more", "more");
-        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{7}))/i);
+        const item = token("item", /((\d+\.)+(\d+))|(\#?([a-f0-9]{3,7}))/i);
         const stage = token("stage", /[\w_-]+/);
         let result = false;
         parse(argsraw)(rule(optional(either(all(show, command_1.Command.ws, more), show, more, all("@", stage))), optional(command_1.Command.ws, item), command_1.Command.EOL).yields((r, c) => {
