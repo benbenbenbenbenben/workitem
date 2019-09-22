@@ -28,7 +28,8 @@ class Add extends command_1.Command {
             if (result === true) {
                 logger.fail(ErrorCodes_1.ErrorCodes.NotImplemented, chalk_1.default `wizard not implemented`);
             }
-            wim.add(result);
+            const id = wim.add(result);
+            logger.log(chalk_1.default `{bgGreen.white add} added {bold #${id}} ${result.description}`);
         });
     }
     constructor(git, fs) {

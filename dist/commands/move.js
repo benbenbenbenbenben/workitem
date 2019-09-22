@@ -25,8 +25,12 @@ class Move extends command_1.Command {
             if (result === false) {
                 logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white move} could not proceed`);
             }
-            const fromstage = wim.idToWorkitem(result.item).value.stage;
-            const fullid = wim.idToWorkitem(result.item).value.id;
+            const workitem = wim.idToWorkitem(result.item);
+            if (!workitem) {
+                logger.fail(ErrorCodes_1.ErrorCodes.UnknownIdentifier, chalk_1.default `cannot find item with specified identifier`);
+            }
+            const fromstage = workitem.value.stage;
+            const fullid = workitem.value.id;
             const moveresult = wim.move(result.item, result.stage, result.force);
             if (moveresult.success === false) {
                 logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `${moveresult.error}`);

@@ -19,7 +19,8 @@ export class Add extends Command  {
         if (result === true) {
             logger.fail(ErrorCodes.NotImplemented, chalk`wizard not implemented`)
         }
-        wim.add(result)
+        const id = wim.add(result)
+        logger.log(chalk`{bgGreen.white add} added {bold #${id}} ${result.description}`)
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)
