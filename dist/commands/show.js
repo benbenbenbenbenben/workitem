@@ -71,7 +71,7 @@ class Show extends command_1.Command {
                         if (result.stage === null || l.stage === result.stage) {
                             logger.log(chalk_1.default `{bgBlueBright.yellowBright ${l.stage}}`);
                             l.items.slice(0, top).forEach((i, k) => {
-                                logger.log(chalk_1.default `[${j.toString()}.${k.toString()}] {bold #${i.id}} {yellow ${i.description}}`);
+                                logger.log(chalk_1.default `[${j.toString()}.${k.toString()}] {bold #${i.id}} ${i.description}`);
                             });
                             if (top) {
                                 let x = l.items.length - top;
