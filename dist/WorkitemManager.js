@@ -158,7 +158,6 @@ class WorkitemManager {
             workitem.value.tags = [];
         }
         if (!workitem.value.tags.find(h => h == tag)) {
-            console.log(tag);
             workitem.value.tags.push(tag);
             this.save(workitem.value);
         }

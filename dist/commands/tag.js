@@ -26,10 +26,8 @@ class Tag extends command_1.Command {
                 logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white tag} could not proceed`);
             }
             const workitem = yield wim.idToWorkitem(result.item);
-            console.log(result);
             wim.tag(result.item, result.tag);
-            logger.log(chalk_1.default `{bgGreen.white tag} #${workitem.value.id}} ${workitem.value.description}`);
-            logger.log(chalk_1.default `{yellow added} {bgGrey.white ${result.tag}}`);
+            logger.log(chalk_1.default `{bgGreen.white tag} #${workitem.value.id} ${workitem.value.description} {yellow added} {bgWhite.black ${result.tag}}`);
         });
     }
     constructor(git, fs) {

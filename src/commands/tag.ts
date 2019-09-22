@@ -16,10 +16,8 @@ export class Tag extends Command {
             logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white tag} could not proceed`)
         }
         const workitem = await wim.idToWorkitem(result.item)
-        console.log(result)
         wim.tag(result.item, result.tag)
-        logger.log(chalk`{bgGreen.white tag} #${workitem.value.id}} ${workitem.value.description}`)
-        logger.log(chalk`{yellow added} {bgGrey.white ${result.tag}}`)
+        logger.log(chalk`{bgGreen.white tag} #${workitem.value.id} ${workitem.value.description} {yellow added} {bgWhite.black ${result.tag}}`)
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)
