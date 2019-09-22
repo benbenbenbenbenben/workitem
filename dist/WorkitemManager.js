@@ -149,6 +149,20 @@ class WorkitemManager {
         }
         this.appendItem(workitem.value, { type: "comment", content: comment, who });
     }
+    tag(item, tag) {
+        const workitem = this.idToWorkitem(item);
+        if (!workitem.success) {
+            return workitem;
+        }
+        if (!workitem.value.tags) {
+            workitem.value.tags = [];
+        }
+        if (!workitem.value.tags.find(h => h == tag)) {
+            console.log(tag);
+            workitem.value.tags.push(tag);
+            this.save(workitem.value);
+        }
+    }
     save(workitem) {
         this.gitDo(() => {
             const filename = `${this.wiroot}/${workitem.stage}/${workitem.id}/index.json`;

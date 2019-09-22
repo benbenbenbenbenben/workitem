@@ -10,8 +10,6 @@ And that's it. A new issue. With the tag `#bug` and an estimated complexity of `
 
 One line descriptions aren't enough? Run `workitem new` for the editor:
 
-// TODOODLEAOOO
-
 To get started, run `npm i -g workitem`, then in your git repo run `workitem init`
 
 ## Getting Started
