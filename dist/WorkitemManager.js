@@ -95,7 +95,7 @@ class WorkitemManager {
     }
     getComments(item) {
         const workitem = this.idToWorkitem(item).value;
-        const dir = `.workitem/${workitem.stage}/${workitem.id}`;
+        const dir = `${this.wiroot}/${workitem.stage}/${workitem.id}`;
         const files = this.fs.readdirSync(dir);
         return files.map(f => this.fs.readJsonSync(`${dir}/${f}`)).filter(f => f.type === "comment");
     }

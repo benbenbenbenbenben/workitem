@@ -25,7 +25,7 @@ class Search extends command_1.Command {
             if (result === false) {
                 logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white search} could not proceed`);
             }
-            logger.log(chalk_1.default `{bgGreen.white search} ${argsraw.substr(7)}`);
+            logger.log(chalk_1.default `{bgGreen.white search} ${argsraw.split(" ").slice(1).join(" ")}`);
             const items = wim.search(result);
             items.forEach(stage => {
                 logger.log(chalk_1.default `{bgBlueBright.yellowBright ${stage.stage}}`);
@@ -45,9 +45,10 @@ class Search extends command_1.Command {
         super(git, fs);
     }
     parse(argsraw) {
+        const wim = new WorkitemManager_1.WorkitemManager(this.git, this.fs);
         const search = token("search", /search|find|\?/);
         const operator = rule(either(rule(token("and", /and|\&/)).yields(_ => (l, r) => (item) => l(item) && r(item)), rule(token("or", /or|\|/)).yields(_ => (l, r) => (item) => l(item) || r(item))));
-        const term = rule(either(rule(token("tag", /\#[\w_-]+/i)).yields(x => (item) => item.tags && item.tags.find(tag => tag === x.one("tag"))), rule(token("word", /[\w_-]+/i)).yields(x => (item) => item.description && item.description.indexOf(x.one("word")) >= 0)));
+        const term = rule(either(rule(token("tag", /\#[\w_-]+/i)).yields(x => (item) => item.tags && item.tags.find(tag => tag === x.one("tag"))), rule(token("word", /[\w_-]+/i)).yields(x => (item) => (item.description && item.description.indexOf(x.one("word")) >= 0) || (wim.getComments(item.id).find(content => content.content.indexOf(x.one("word")) >= 0)))));
         const query = rule(either(rule(term, command_1.Command.ws, operator, command_1.Command.ws, () => query).yields((t, c) => {
             const [l, o, r] = flat(c);
             const f = o(l, r);

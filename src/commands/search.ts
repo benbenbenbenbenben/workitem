@@ -16,7 +16,7 @@ export class Search extends Command {
         if (result === false) {
             logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white search} could not proceed`)
         }
-        logger.log(chalk`{bgGreen.white search} ${argsraw.substr(7)}`)
+        logger.log(chalk`{bgGreen.white search} ${argsraw.split(" ").slice(1).join(" ")}`)
         const items = wim.search(result)
         items.forEach(stage => {
             logger.log(chalk`{bgBlueBright.yellowBright ${stage.stage}}`)
@@ -35,6 +35,7 @@ export class Search extends Command {
         super(git, fs)
     }
     public parse(argsraw: string) {
+        const wim = new WorkitemManager(this.git, this.fs)
         const search = token("search", /search|find|\?/)
         const operator = rule(
             either(
@@ -48,7 +49,7 @@ export class Search extends Command {
                     x => (item: IWorkitem) => item.tags && item.tags.find(tag => tag === x.one("tag"))
                 ),
                 rule(token("word", /[\w_-]+/i)).yields(
-                    x => (item: IWorkitem) => item.description && item.description.indexOf(x.one("word")) >= 0
+                    x => (item: IWorkitem) => (item.description && item.description.indexOf(x.one("word")) >= 0) || (wim.getComments(item.id).find(content => content.content.indexOf(x.one("word")) >= 0))
                 )
             )
         )

@@ -6,6 +6,7 @@ import { Success } from "./Success";
 import { IWorkitem } from "./Workitem";
 import { IHost } from "./IHost";
 import { IGit } from "./IGit";
+import { Command } from "./commands/command";
 
 export class WorkitemManager {
     public fs: IHost
@@ -96,11 +97,12 @@ export class WorkitemManager {
                 .map((s: any) => s.items.map((t: any) => Object.assign({stage: s.stage}, t)))
                 .reduce((a: any, b: any) => a.concat(b)).find((x: any) => itemid.length === 7 ? x.id === itemid : x.id.indexOf(itemid) === 0)
         }
+        
         return new Success(true, workitem)
     }
-    public getComments(item: string): any {
+    public getComments(item: string): Array<{type:string, content:string, who:string}> {
         const workitem = this.idToWorkitem(item).value
-        const dir = `.workitem/${workitem.stage}/${workitem.id}`
+        const dir = `${this.wiroot}/${workitem.stage}/${workitem.id}`
         const files = this.fs.readdirSync(dir)
         return files.map(f => this.fs.readJsonSync(`${dir}/${f}`)).filter(f => f.type === "comment")
     }
