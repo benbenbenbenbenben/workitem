@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class ErrorCodes {
 }
+ErrorCodes.WorkitemBranchDetected = -100;
 ErrorCodes.UnknownCommand = -1;
 ErrorCodes.NotInitialised = -2;
 ErrorCodes.NotImplemented = -3;

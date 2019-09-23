@@ -62,6 +62,12 @@ class CLI implements ILogger {
         const fs = new Host()
         const git = new Git(fs)
 
+        const currentBranch = await git.getCurrentBranch()
+        if (currentBranch === "__workitem__") {
+            // TODO: when this happens it's likely to be that git didn't successfully switch back to the previous branch
+            this.fail(ErrorCodes.WorkitemBranchDetected, chalk`workitem is in an invalid state because a previous command did complete correctly. Run {green workitem fix} to diagnose and fix the problem.`)
+        }
+
         const commands = [            
             "init",
             "show",
