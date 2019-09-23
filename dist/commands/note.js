@@ -27,6 +27,9 @@ class Note extends command_1.Command {
             }
             const who = yield this.git.getWho();
             const workitem = yield wim.idToWorkitem(result.item);
+            if (!workitem.success) {
+                logger.fail(ErrorCodes_1.ErrorCodes.UnknownIdentifier, workitem.error);
+            }
             wim.comment(result.item, result.comment, who);
             logger.log(chalk_1.default `{bgGreen.white note}`);
             logger.log(chalk_1.default `{bgBlue.white.bold ${workitem.value.stage} #${workitem.value.id}} ${workitem.value.description}`);

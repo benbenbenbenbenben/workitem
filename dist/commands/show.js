@@ -28,7 +28,11 @@ class Show extends command_1.Command {
             else if (wim.isInitialised()) {
                 logger.log(chalk_1.default `{bgGreen.white show}`);
                 if (result.item) {
-                    const item = wim.idToWorkitem(result.item).value;
+                    const itemsuccess = wim.idToWorkitem(result.item);
+                    if (!itemsuccess.success) {
+                        logger.fail(ErrorCodes_1.ErrorCodes.UnknownIdentifier, itemsuccess.error);
+                    }
+                    const item = itemsuccess.value;
                     if (item.type) {
                         logger.log(chalk_1.default `{bgBlue.white.bold ${item.stage} #${item.id}} {bgYellow.bold ${item.type}} ${item.description}`);
                     }

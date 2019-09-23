@@ -25,9 +25,13 @@ class Tag extends command_1.Command {
             if (result === false) {
                 logger.fail(ErrorCodes_1.ErrorCodes.UnknownCommand, chalk_1.default `{bgGreen.white tag} could not proceed`);
             }
-            const workitem = yield wim.idToWorkitem(result.item);
+            const workitemsuccess = wim.idToWorkitem(result.item);
+            if (!workitemsuccess.success) {
+                logger.fail(ErrorCodes_1.ErrorCodes.UnknownIdentifier, workitemsuccess.error);
+            }
+            const workitem = workitemsuccess.value;
             wim.tag(result.item, result.tag);
-            logger.log(chalk_1.default `{bgGreen.white tag} #${workitem.value.id} ${workitem.value.description} {yellow added} {bgWhite.black ${result.tag}}`);
+            logger.log(chalk_1.default `{bgGreen.white tag} #${workitem.id} ${workitem.description} {yellow added} {bgWhite.black ${result.tag}}`);
         });
     }
     constructor(git, fs) {

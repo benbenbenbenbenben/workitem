@@ -87,9 +87,17 @@ class WorkitemManager {
             workitem.stage = this.workitems[istage].stage;
         }
         else {
-            workitem = this.workitems
+            const workitemlist = this.workitems
                 .map((s) => s.items.map((t) => Object.assign({ stage: s.stage }, t)))
-                .reduce((a, b) => a.concat(b)).find((x) => itemid.length === 7 ? x.id === itemid : x.id.indexOf(itemid) === 0);
+                .reduce((a, b) => a.concat(b))
+                .filter((x) => itemid.length === 7 ? x.id === itemid : x.id.indexOf(itemid) === 0);
+            if (workitemlist.length > 1) {
+                return new Success_1.Success(false, `Too many workitems matched the pattern "${item}"`);
+            }
+            if (workitemlist.length === 0) {
+                return new Success_1.Success(false, `No workitem was found for pattern "${item}"`);
+            }
+            workitem = workitemlist[0];
         }
         return new Success_1.Success(true, workitem);
     }

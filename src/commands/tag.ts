@@ -15,9 +15,13 @@ export class Tag extends Command {
         if (result === false) {
             logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white tag} could not proceed`)
         }
-        const workitem = await wim.idToWorkitem(result.item)
+        const workitemsuccess = wim.idToWorkitem(result.item)
+        if (!workitemsuccess.success) {
+            logger.fail(ErrorCodes.UnknownIdentifier, workitemsuccess.error!)
+        }
+        const workitem = workitemsuccess.value
         wim.tag(result.item, result.tag)
-        logger.log(chalk`{bgGreen.white tag} #${workitem.value.id} ${workitem.value.description} {yellow added} {bgWhite.black ${result.tag}}`)
+        logger.log(chalk`{bgGreen.white tag} #${workitem.id} ${workitem.description} {yellow added} {bgWhite.black ${result.tag}}`)
     }
     public constructor(git: IGit, fs: IHost) {
         super(git, fs)

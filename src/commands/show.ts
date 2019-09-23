@@ -17,7 +17,11 @@ export class Show extends Command {
         } else if (wim.isInitialised()) {
             logger.log(chalk`{bgGreen.white show}`)
             if (result.item) {
-                const item:any = wim.idToWorkitem(result.item).value
+                const itemsuccess = wim.idToWorkitem(result.item)
+                if (!itemsuccess.success) {
+                    logger.fail(ErrorCodes.UnknownIdentifier, itemsuccess.error!)
+                }
+                const item:any = itemsuccess.value
                 if (item.type) {
                     logger.log(chalk`{bgBlue.white.bold ${item.stage} #${item.id}} {bgYellow.bold ${item.type}} ${item.description}`)
                 } else {

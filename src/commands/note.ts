@@ -17,6 +17,9 @@ export class Note extends Command {
         }
         const who = await this.git.getWho()
         const workitem = await wim.idToWorkitem(result.item)
+        if (!workitem.success) {
+            logger.fail(ErrorCodes.UnknownIdentifier, workitem.error!)
+        }
         wim.comment(result.item, result.comment, who)
         logger.log(chalk`{bgGreen.white note}`)
         logger.log(chalk`{bgBlue.white.bold ${workitem.value.stage} #${workitem.value.id}} ${workitem.value.description}`)

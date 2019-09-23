@@ -16,8 +16,8 @@ export class Move extends Command {
             logger.fail(ErrorCodes.UnknownCommand, chalk`{bgGreen.white move} could not proceed`)
         }
         const workitem = wim.idToWorkitem(result.item)
-        if (!workitem) {
-            logger.fail(ErrorCodes.UnknownIdentifier, chalk`cannot find item with specified identifier`)
+        if (!workitem.success) {
+            logger.fail(ErrorCodes.UnknownIdentifier, workitem.error!)
         }
         const fromstage = workitem.value.stage
         const fullid = workitem.value.id

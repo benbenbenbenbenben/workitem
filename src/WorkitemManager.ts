@@ -93,11 +93,18 @@ export class WorkitemManager {
             workitem = this.workitems[istage].items[iitem]
             workitem.stage = this.workitems[istage].stage
         } else {
-            workitem = this.workitems
+            const workitemlist = this.workitems
                 .map((s: any) => s.items.map((t: any) => Object.assign({stage: s.stage}, t)))
-                .reduce((a: any, b: any) => a.concat(b)).find((x: any) => itemid.length === 7 ? x.id === itemid : x.id.indexOf(itemid) === 0)
-        }
-        
+                .reduce((a: any, b: any) => a.concat(b))
+                .filter((x: any) => itemid.length === 7 ? x.id === itemid : x.id.indexOf(itemid) === 0)
+            if (workitemlist.length > 1) {
+                return new Success<IWorkitem>(false, `Too many workitems matched the pattern "${item}"`)
+            }
+            if (workitemlist.length === 0) {
+                return new Success<IWorkitem>(false, `No workitem was found for pattern "${item}"`)
+            }
+            workitem = workitemlist[0]
+        }        
         return new Success(true, workitem)
     }
     public getComments(item: string): Array<{type:string, content:string, who:string}> {
