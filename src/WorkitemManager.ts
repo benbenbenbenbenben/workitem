@@ -138,7 +138,7 @@ export class WorkitemManager {
             return new Success(false,
                 `Cannot move workitem from ${currentStage} to ${stage}. Use +force or move to a valid stage.`)
         }
-        console.log(`git mv "${WorkitemManager.wiroot}/${currentStage}/${workitem.value.id}" "${WorkitemManager.wiroot}/${stage}/${workitem.value.id}"`)
+        //console.log(`git mv "${WorkitemManager.wiroot}/${currentStage}/${workitem.value.id}" "${WorkitemManager.wiroot}/${stage}/${workitem.value.id}"`)
         this.gitDo(() => {
             this.fs.execSync(
                 `git mv "${WorkitemManager.wiroot}/${currentStage}/${workitem.value.id}" "${WorkitemManager.wiroot}/${stage}/${workitem.value.id}"`)
