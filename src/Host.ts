@@ -6,10 +6,10 @@ import { spawn, exec, execSync, ExecException } from "child_process"
 const pexec = promisify(exec)
 import { emitKeypressEvents } from "readline"
 import chalk from "../node_modules/chalk";
-import { rejects } from "assert";
-import { resolve } from "dns";
 
 export class Host implements IHost {
+    private static statCache: Map<string, any> = new Map()
+    private static jsonCache: Map<string, any> = new Map()
     private static init: boolean = false
     constructor() {
         if (Host.init)
@@ -39,14 +39,16 @@ export class Host implements IHost {
             }
         })
     }
-    outputJsonSync(filename: string, data: any) {
-        fs.outputJsonSync(filename, data)
-    }
     writeJsonSync(filename: string, data: any) {
-        this.outputJsonSync(filename, data)
+        fs.writeJSONSync(filename, data)
     }
     readJsonSync(filename: string): any {
-        return fs.readJsonSync(filename)
+        if (Host.jsonCache.has(filename)) {
+            return Host.jsonCache.get(filename)
+        }
+        const file = fs.readJsonSync(filename)
+        Host.jsonCache.set(filename, file)
+        return file
     }
     existsSync(fileorfolder: string): boolean {
         return fs.existsSync(fileorfolder)
@@ -55,7 +57,12 @@ export class Host implements IHost {
         return fs.readdirSync(dir)
     }
     statSync(fileorfolder: string): fs.Stats {
-        return fs.statSync(fileorfolder)
+        if (Host.statCache.has(fileorfolder)) {
+            return Host.statCache.get(fileorfolder)
+        }
+        const stat = fs.statSync(fileorfolder)
+        Host.statCache.set(fileorfolder, stat)
+        return stat
     }
     readFileSync(file: string, options: any): Buffer {
         return fs.readFileSync(file, options)

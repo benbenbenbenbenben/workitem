@@ -10,8 +10,9 @@ class WorkitemManager {
     constructor(git, fs) {
         this.git = git;
         this.fs = fs;
-        this.gitroot = fs.execSync(`git rev-parse --show-toplevel`).toString().replace(/[\r\n]*/g, "");
-        this.wiroot = path_1.default.join(this.gitroot, "/", ".workitem");
+        // memoise strings
+        WorkitemManager.gitroot = (WorkitemManager.gitroot || fs.execSync(`git rev-parse --show-toplevel`).toString().replace(/[\r\n]*/g, ""));
+        WorkitemManager.wiroot = path_1.default.join(WorkitemManager.gitroot, "/", ".workitem");
         try {
             this.config = fs.readJsonSync(this.wipath("/workitem.json"));
         }
@@ -20,7 +21,7 @@ class WorkitemManager {
         }
     }
     wipath(resource) {
-        return path_1.default.join(this.wiroot, resource);
+        return path_1.default.join(WorkitemManager.wiroot, resource);
     }
     isInitialised() {
         return this.config !== undefined;
@@ -54,7 +55,7 @@ class WorkitemManager {
     add(def) {
         const dir = (def.location || "+" + this.config.incoming).substring(1);
         delete def.location;
-        if (!this.fs.existsSync(`${this.wiroot}/${dir}`)) {
+        if (!this.fs.existsSync(`${WorkitemManager.wiroot}/${dir}`)) {
             return null;
         }
         if (dir === ".secrets") {
@@ -65,8 +66,8 @@ class WorkitemManager {
         hash.update(this.fs.execSync(`git rev-parse HEAD`).toString());
         const digest = hash.digest("hex").substring(0, 7);
         this.gitDo(() => {
-            this.fs.outputJsonSync(`${this.wiroot}/${dir}/${digest}/index.json`, def);
-            this.fs.execSync(`git add ${this.wiroot}/${dir}/${digest}/index.json`);
+            this.fs.writeJsonSync(`${WorkitemManager.wiroot}/${dir}/${digest}/index.json`, def);
+            this.fs.execSync(`git add ${WorkitemManager.wiroot}/${dir}/${digest}/index.json`);
             this.fs.execSync(`git commit -m "[workitem:${digest}:add] ${def.description}"`);
         });
         return digest;
@@ -84,7 +85,7 @@ class WorkitemManager {
         if (itemid.indexOf(".") > 0) {
             const [istage, iitem] = itemid.split(".").map(x => parseInt(x));
             workitem = this.workitems[istage].items[iitem];
-            workitem.stage = this.workitems[istage].stage;
+            // workitem.stage = this.workitems[istage].stage
         }
         else {
             const workitemlist = this.workitems
@@ -99,11 +100,15 @@ class WorkitemManager {
             }
             workitem = workitemlist[0];
         }
+        workitem.g;
         return new Success_1.Success(true, workitem);
     }
     getComments(item) {
-        const workitem = this.idToWorkitem(item).value;
-        const dir = `${this.wiroot}/${workitem.stage}/${workitem.id}`;
+        const workitem = this.idToWorkitem(item);
+        if (!workitem.success) {
+            throw workitem.error;
+        }
+        const dir = `${WorkitemManager.wiroot}/${this.workitemToStage(workitem.value.id)}/${workitem.value.id}`;
         const files = this.fs.readdirSync(dir);
         return files.map(f => this.fs.readJsonSync(`${dir}/${f}`)).filter(f => f.type === "comment");
     }
@@ -116,15 +121,17 @@ class WorkitemManager {
         if (!workitem.success) {
             return workitem;
         }
-        if (workitem.value.stage === stage) {
-            return new Success_1.Success(false, `Cannot move a workitem from ${stage} to ${stage} because it's the same stage`);
+        const currentStage = this.workitemToStage(workitem.value.id);
+        if (currentStage === stage) {
+            return new Success_1.Success(false, `Cannot move a workitem from ${currentStage} to ${stage} because it's the same stage`);
         }
-        if (!force && !this.isStageTransitionValid(workitem.value.stage, stage)) {
-            return new Success_1.Success(false, `Cannot move workitem from ${workitem.value.stage} to ${stage}. Use +force or move to a valid stage.`);
+        if (!force && !this.isStageTransitionValid(currentStage, stage)) {
+            return new Success_1.Success(false, `Cannot move workitem from ${currentStage} to ${stage}. Use +force or move to a valid stage.`);
         }
+        console.log(`git mv "${WorkitemManager.wiroot}/${currentStage}/${workitem.value.id}" "${WorkitemManager.wiroot}/${stage}/${workitem.value.id}"`);
         this.gitDo(() => {
-            this.fs.execSync(`git mv "${this.wiroot}/${workitem.value.stage}/${workitem.value.id}" "${this.wiroot}/${stage}/${workitem.value.id}"`);
-            this.fs.execSync(`git commit -m "[workitem:${workitem.value.id}:move] ${workitem.value.stage} to ${stage}"`);
+            this.fs.execSync(`git mv "${WorkitemManager.wiroot}/${currentStage}/${workitem.value.id}" "${WorkitemManager.wiroot}/${stage}/${workitem.value.id}"`);
+            this.fs.execSync(`git commit -m "[workitem:${workitem.value.id}:move] ${currentStage} to ${stage}"`);
         });
         return workitem;
     }
@@ -172,7 +179,7 @@ class WorkitemManager {
     }
     save(workitem) {
         this.gitDo(() => {
-            const filename = `${this.wiroot}/${workitem.stage}/${workitem.id}/index.json`;
+            const filename = `${WorkitemManager.wiroot}/${this.workitemToStage(workitem.id)}/${workitem.id}/index.json`;
             this.fs.writeJsonSync(filename, workitem);
             this.fs.execSync(`git add ${filename}`);
             this.fs.execSync(`git commit -m "[workitem:${workitem.id}:edit]"`);
@@ -198,9 +205,9 @@ class WorkitemManager {
             relocated:           .workitem/{todo => doing}/4c4c9a7/index.json | 0
             */
             // tslint:disable-next-line:max-line-length
-            this.fs.exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} ${this.wiroot}`).then(result => {
+            this.fs.exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} ${WorkitemManager.wiroot}`).then(result => {
                 let added = result.stdout;
-                this.fs.exec(`git diff --stat --diff-filter=R ${here}..${branch} ${this.wiroot}`).then(result => {
+                this.fs.exec(`git diff --stat --diff-filter=R ${here}..${branch} ${WorkitemManager.wiroot}`).then(result => {
                     let renamed = result.stdout;
                     let addedarr = [];
                     let renamedarr = [];
@@ -223,6 +230,9 @@ class WorkitemManager {
             // console.log(renamed)
         });
     }
+    workitemToStage(id) {
+        return this.workitems.find(stage => stage.items.find(item => item.id === id) != null).stage;
+    }
     appendItem(workitem, data) {
         // generate identity
         const hash = crypto_1.default.createHash("sha256");
@@ -232,7 +242,8 @@ class WorkitemManager {
         const stamp = this.timestamp();
         const outfilename = `${stamp}.${digest}.${data.type}.json`;
         this.gitDo(() => {
-            const filename = `${this.wiroot}/${workitem.stage}/${workitem.id}/${outfilename}`;
+            const stage = this.workitemToStage(workitem.id);
+            const filename = `${WorkitemManager.wiroot}/${stage}/${workitem.id}/${outfilename}`;
             this.fs.writeJsonSync(filename, data);
             this.fs.execSync(`git add ${filename}`);
             this.fs.execSync(`git commit -m "[workitem:${workitem.id}:${data.type}]"`);
@@ -245,4 +256,5 @@ class WorkitemManager {
         return new Date().toISOString().replace(/[^0-9]/g, "");
     }
 }
+WorkitemManager.gitroot = "";
 exports.WorkitemManager = WorkitemManager;

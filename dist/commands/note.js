@@ -32,7 +32,7 @@ class Note extends command_1.Command {
             }
             wim.comment(result.item, result.comment, who);
             logger.log(chalk_1.default `{bgGreen.white note}`);
-            logger.log(chalk_1.default `{bgBlue.white.bold ${workitem.value.stage} #${workitem.value.id}} ${workitem.value.description}`);
+            logger.log(chalk_1.default `{bgBlue.white.bold ${wim.workitemToStage(workitem.value.id)} #${workitem.value.id}} ${workitem.value.description}`);
             logger.log(chalk_1.default `{yellow added comment:} ${result.comment} {yellow ${who}}`);
         });
     }

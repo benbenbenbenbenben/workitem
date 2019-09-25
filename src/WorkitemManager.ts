@@ -12,13 +12,16 @@ export class WorkitemManager {
     public fs: IHost
     public git: IGit
     public config: any
-    public gitroot: string
-    public wiroot:string
+    public static gitroot: string = ""
+    public static wiroot:string
     constructor(git: IGit, fs: IHost) {
         this.git = git
         this.fs = fs
-        this.gitroot = fs.execSync(`git rev-parse --show-toplevel`).toString().replace(/[\r\n]*/g, "")
-        this.wiroot = path.join(this.gitroot, "/", ".workitem")
+        
+        // memoise strings
+        WorkitemManager.gitroot = (WorkitemManager.gitroot || fs.execSync(`git rev-parse --show-toplevel`).toString().replace(/[\r\n]*/g, ""))
+        WorkitemManager.wiroot = path.join(WorkitemManager.gitroot, "/", ".workitem")
+
         try {
             this.config = fs.readJsonSync(this.wipath("/workitem.json"))
         } catch(e) {
@@ -26,7 +29,7 @@ export class WorkitemManager {
         }
     }    
     wipath(resource:string): string {
-        return path.join(this.wiroot, resource)
+        return path.join(WorkitemManager.wiroot, resource)
     }
     isInitialised(): any {
         return this.config !== undefined
@@ -60,7 +63,7 @@ export class WorkitemManager {
     public add(def: any): string | any {
         const dir = (def.location || "+" + this.config.incoming).substring(1)
         delete def.location
-        if (!this.fs.existsSync(`${this.wiroot}/${dir}`)) {
+        if (!this.fs.existsSync(`${WorkitemManager.wiroot}/${dir}`)) {
             return null
         }
         if (dir === ".secrets") {
@@ -72,8 +75,8 @@ export class WorkitemManager {
         const digest = hash.digest("hex").substring(0, 7)
 
         this.gitDo(() => {
-            this.fs.outputJsonSync(`${this.wiroot}/${dir}/${digest}/index.json`, def)
-            this.fs.execSync(`git add ${this.wiroot}/${dir}/${digest}/index.json`)
+            this.fs.writeJsonSync(`${WorkitemManager.wiroot}/${dir}/${digest}/index.json`, def)
+            this.fs.execSync(`git add ${WorkitemManager.wiroot}/${dir}/${digest}/index.json`)
             this.fs.execSync(`git commit -m "[workitem:${digest}:add] ${def.description}"`)
         })
         return digest
@@ -91,7 +94,7 @@ export class WorkitemManager {
         if (itemid.indexOf(".") > 0) {
             const [istage, iitem] = itemid.split(".").map(x => parseInt(x))
             workitem = this.workitems[istage].items[iitem]
-            workitem.stage = this.workitems[istage].stage
+            // workitem.stage = this.workitems[istage].stage
         } else {
             const workitemlist = this.workitems
                 .map((s: any) => s.items.map((t: any) => Object.assign({stage: s.stage}, t)))
@@ -104,12 +107,16 @@ export class WorkitemManager {
                 return new Success<IWorkitem>(false, `No workitem was found for pattern "${item}"`)
             }
             workitem = workitemlist[0]
-        }        
+        }
+        workitem.g
         return new Success(true, workitem)
     }
     public getComments(item: string): Array<{type:string, content:string, who:string}> {
-        const workitem = this.idToWorkitem(item).value
-        const dir = `${this.wiroot}/${workitem.stage}/${workitem.id}`
+        const workitem = this.idToWorkitem(item)
+        if (!workitem.success) {
+            throw workitem.error
+        }
+        const dir = `${WorkitemManager.wiroot}/${this.workitemToStage(workitem.value.id)}/${workitem.value.id}`
         const files = this.fs.readdirSync(dir)
         return files.map(f => this.fs.readJsonSync(`${dir}/${f}`)).filter(f => f.type === "comment")
     }
@@ -122,19 +129,21 @@ export class WorkitemManager {
         if (!workitem.success) {
             return workitem
         }
-        if (workitem.value.stage === stage) {
+        const currentStage = this.workitemToStage(workitem.value.id)
+        if (currentStage === stage) {
             return new Success(false,
-                `Cannot move a workitem from ${stage} to ${stage} because it's the same stage`)
+                `Cannot move a workitem from ${currentStage} to ${stage} because it's the same stage`)
         }
-        if (!force && !this.isStageTransitionValid(workitem.value.stage, stage)) {
+        if (!force && !this.isStageTransitionValid(currentStage, stage)) {
             return new Success(false,
-                `Cannot move workitem from ${workitem.value.stage} to ${stage}. Use +force or move to a valid stage.`)
+                `Cannot move workitem from ${currentStage} to ${stage}. Use +force or move to a valid stage.`)
         }
+        console.log(`git mv "${WorkitemManager.wiroot}/${currentStage}/${workitem.value.id}" "${WorkitemManager.wiroot}/${stage}/${workitem.value.id}"`)
         this.gitDo(() => {
             this.fs.execSync(
-                `git mv "${this.wiroot}/${workitem.value.stage}/${workitem.value.id}" "${this.wiroot}/${stage}/${workitem.value.id}"`)
+                `git mv "${WorkitemManager.wiroot}/${currentStage}/${workitem.value.id}" "${WorkitemManager.wiroot}/${stage}/${workitem.value.id}"`)
             this.fs.execSync(
-                `git commit -m "[workitem:${workitem.value.id}:move] ${workitem.value.stage} to ${stage}"`)
+                `git commit -m "[workitem:${workitem.value.id}:move] ${currentStage} to ${stage}"`)
         })
         return workitem
     }
@@ -183,7 +192,7 @@ export class WorkitemManager {
     }
     public save(workitem: IWorkitem) {
         this.gitDo(() => {
-            const filename = `${this.wiroot}/${workitem.stage}/${workitem.id}/index.json`
+            const filename = `${WorkitemManager.wiroot}/${this.workitemToStage(workitem.id)}/${workitem.id}/index.json`
             this.fs.writeJsonSync(filename, workitem)
             this.fs.execSync(`git add ${filename}`)
             this.fs.execSync(`git commit -m "[workitem:${workitem.id}:edit]"`)
@@ -211,10 +220,10 @@ export class WorkitemManager {
             */
 
             // tslint:disable-next-line:max-line-length
-            this.fs.exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} ${this.wiroot}`).then(
+            this.fs.exec(`git diff --stat --name-only --diff-filter=A ${here}..${branch} ${WorkitemManager.wiroot}`).then(
                 result => {
                     let added = result.stdout
-                    this.fs.exec(`git diff --stat --diff-filter=R ${here}..${branch} ${this.wiroot}`).then(
+                    this.fs.exec(`git diff --stat --diff-filter=R ${here}..${branch} ${WorkitemManager.wiroot}`).then(
                         result => {
                             let renamed = result.stdout
                             let addedarr = []
@@ -243,6 +252,9 @@ export class WorkitemManager {
         })
 
     }
+    public workitemToStage(id:string): string {
+        return this.workitems.find(stage => stage.items.find(item => item.id === id) != null)!.stage
+    }
     public appendItem(workitem: IWorkitem, data: { type: string, content: any, who: string }) {
         // generate identity
         const hash = crypto.createHash("sha256")
@@ -252,7 +264,8 @@ export class WorkitemManager {
         const stamp = this.timestamp()
         const outfilename = `${stamp}.${digest}.${data.type}.json`
         this.gitDo(() => {
-            const filename = `${this.wiroot}/${workitem.stage}/${workitem.id}/${outfilename}`
+            const stage = this.workitemToStage(workitem.id)
+            const filename = `${WorkitemManager.wiroot}/${stage}/${workitem.id}/${outfilename}`
             this.fs.writeJsonSync(filename, data)
             this.fs.execSync(`git add ${filename}`)
             this.fs.execSync(`git commit -m "[workitem:${workitem.id}:${data.type}]"`)

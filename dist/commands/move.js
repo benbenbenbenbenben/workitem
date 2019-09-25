@@ -29,7 +29,7 @@ class Move extends command_1.Command {
             if (!workitem.success) {
                 logger.fail(ErrorCodes_1.ErrorCodes.UnknownIdentifier, workitem.error);
             }
-            const fromstage = workitem.value.stage;
+            const fromstage = wim.workitemToStage(workitem.value.id);
             const fullid = workitem.value.id;
             const moveresult = wim.move(result.item, result.stage, result.force);
             if (moveresult.success === false) {

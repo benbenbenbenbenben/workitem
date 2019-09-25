@@ -83,11 +83,13 @@ class CLI {
             process.stdout.write(chalk_1.default `{bgRed.white.bold workitem 2.0.0} `);
             const fs = new Host_1.Host();
             const git = new Git_1.Git(fs);
-            const currentBranch = yield git.getCurrentBranch();
-            if (currentBranch === "__workitem__") {
-                // TODO: when this happens it's likely to be that git didn't successfully switch back to the previous branch
-                this.fail(ErrorCodes_1.ErrorCodes.WorkitemBranchDetected, chalk_1.default `workitem is in an invalid state because a previous command did complete correctly. Run {green workitem fix} to diagnose and fix the problem.`);
-            }
+            /*
+                    const currentBranch = await git.getCurrentBranch()
+                    if (currentBranch === "__workitem__") {
+                        // TODO: when this happens it's likely to be that git didn't successfully switch back to the previous branch
+                        this.fail(ErrorCodes.WorkitemBranchDetected, chalk`workitem is in an invalid state because a previous command did complete correctly. Run {green workitem fix} to diagnose and fix the problem.`)
+                    }
+            */
             const commands = [
                 "init",
                 "show",

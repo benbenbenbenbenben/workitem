@@ -6,7 +6,6 @@ export interface IHost {
     exec(cmdline: string): Promise<{stdout: string, stderr: string}>
    // spawn(cmd: string, args: string[]): Promise<{stdout: string, stderr: string}>
     // io
-    outputJsonSync(filename: string, data: any): any
     writeJsonSync(filename: string, data: any): any
     readJsonSync(filename: string): any
     existsSync(fileorfolder: string): boolean

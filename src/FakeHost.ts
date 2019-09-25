@@ -10,9 +10,6 @@ export class FakeHost implements IHost {
     }    exec(cmdline: string): Promise<{ stdout: string; stderr: string; }> {
         throw new Error("Method not implemented.");
     }
-    outputJsonSync(filename: string, data: any) {
-        throw new Error("Method not implemented.");
-    }
     writeJsonSync(filename: string, data: any) {
         throw new Error("Method not implemented.");
     }

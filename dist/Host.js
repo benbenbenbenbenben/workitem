@@ -51,14 +51,16 @@ class Host {
             });
         });
     }
-    outputJsonSync(filename, data) {
-        fs_extra_1.default.outputJsonSync(filename, data);
-    }
     writeJsonSync(filename, data) {
-        this.outputJsonSync(filename, data);
+        fs_extra_1.default.writeJSONSync(filename, data);
     }
     readJsonSync(filename) {
-        return fs_extra_1.default.readJsonSync(filename);
+        if (Host.jsonCache.has(filename)) {
+            return Host.jsonCache.get(filename);
+        }
+        const file = fs_extra_1.default.readJsonSync(filename);
+        Host.jsonCache.set(filename, file);
+        return file;
     }
     existsSync(fileorfolder) {
         return fs_extra_1.default.existsSync(fileorfolder);
@@ -67,7 +69,12 @@ class Host {
         return fs_extra_1.default.readdirSync(dir);
     }
     statSync(fileorfolder) {
-        return fs_extra_1.default.statSync(fileorfolder);
+        if (Host.statCache.has(fileorfolder)) {
+            return Host.statCache.get(fileorfolder);
+        }
+        const stat = fs_extra_1.default.statSync(fileorfolder);
+        Host.statCache.set(fileorfolder, stat);
+        return stat;
     }
     readFileSync(file, options) {
         return fs_extra_1.default.readFileSync(file, options);
@@ -102,5 +109,7 @@ class Host {
         });
     }
 }
+Host.statCache = new Map();
+Host.jsonCache = new Map();
 Host.init = false;
 exports.Host = Host;

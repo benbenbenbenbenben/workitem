@@ -22,7 +22,7 @@ export class Note extends Command {
         }
         wim.comment(result.item, result.comment, who)
         logger.log(chalk`{bgGreen.white note}`)
-        logger.log(chalk`{bgBlue.white.bold ${workitem.value.stage} #${workitem.value.id}} ${workitem.value.description}`)
+        logger.log(chalk`{bgBlue.white.bold ${wim.workitemToStage(workitem.value.id)} #${workitem.value.id}} ${workitem.value.description}`)
         logger.log(chalk`{yellow added comment:} ${result.comment} {yellow ${who}}`)
     }
     public constructor(git: IGit, fs: IHost) {

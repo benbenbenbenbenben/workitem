@@ -10,9 +10,6 @@ class FakeHost {
     exec(cmdline) {
         throw new Error("Method not implemented.");
     }
-    outputJsonSync(filename, data) {
-        throw new Error("Method not implemented.");
-    }
     writeJsonSync(filename, data) {
         throw new Error("Method not implemented.");
     }

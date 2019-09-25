@@ -19,7 +19,7 @@ export class Move extends Command {
         if (!workitem.success) {
             logger.fail(ErrorCodes.UnknownIdentifier, workitem.error!)
         }
-        const fromstage = workitem.value.stage
+        const fromstage = wim.workitemToStage(workitem.value.id)
         const fullid = workitem.value.id
         const moveresult:any = wim.move(result.item, result.stage, result.force)
         if (moveresult.success === false) {
