@@ -1,6 +1,6 @@
 import { promisify } from "util";
 import { IHost } from "./IHost";
-import fs from "fs-extra"
+import fs, { pathExists } from "fs-extra"
 import { exec as sexec } from "shelljs"
 import { spawn, exec, execSync, ExecException } from "child_process"
 const pexec = promisify(exec)
@@ -40,7 +40,7 @@ export class Host implements IHost {
         })
     }
     writeJsonSync(filename: string, data: any) {
-        fs.writeJSONSync(filename, data)
+        fs.outputJsonSync(filename, data)
     }
     readJsonSync(filename: string): any {
         if (Host.jsonCache.has(filename)) {
@@ -68,7 +68,7 @@ export class Host implements IHost {
         return fs.readFileSync(file, options)
     }
     writeFileSync(file: string, content: any, options: any) {
-        fs.writeFileSync(file, content, options)
+        fs.outputFileSync(file, content, options)
     }
     mkdirSync(dirname: string): void {
         fs.mkdirSync(dirname)

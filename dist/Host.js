@@ -52,7 +52,7 @@ class Host {
         });
     }
     writeJsonSync(filename, data) {
-        fs_extra_1.default.writeJSONSync(filename, data);
+        fs_extra_1.default.outputJsonSync(filename, data);
     }
     readJsonSync(filename) {
         if (Host.jsonCache.has(filename)) {
@@ -80,7 +80,7 @@ class Host {
         return fs_extra_1.default.readFileSync(file, options);
     }
     writeFileSync(file, content, options) {
-        fs_extra_1.default.writeFileSync(file, content, options);
+        fs_extra_1.default.outputFileSync(file, content, options);
     }
     mkdirSync(dirname) {
         fs_extra_1.default.mkdirSync(dirname);

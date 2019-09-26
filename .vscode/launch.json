@@ -20,6 +20,16 @@
             "cwd": "${workspaceRoot}",
             "protocol": "inspector",
         },
+        {
+            "name": "Launch JS",
+            "type": "node",
+            "request": "launch",
+            "args": ["${workspaceRoot}/dist/cli.js", "add", "fop"],
+            "sourceMaps": true,
+            "old.cwd": "${workspaceRoot}",
+            "cwd": "D:/repos/HAckerAlongStarteit",
+            "protocol": "inspector",
+        },
         
     ]
 }
