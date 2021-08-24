@@ -10,6 +10,7 @@ import chalk from 'chalk';
 
 export class Show extends Command {
   public async run(argsRaw: string, logger: ILogger): Promise<void> {
+    debugger
     const result = this.parse(argsRaw);
     const wim = new WorkitemManager(this.git, this.fs);
     if (result === false) {
@@ -27,11 +28,11 @@ export class Show extends Command {
         const item: any = itemSuccess.value;
         if (item.type) {
           logger.log(
-            chalk`{bgBlue.white.bold ${item.stage} #${item.id}} {bgYellow.bold ${item.type}} ${item.description}`
+            chalk`{bgBlue.white.bold @${wim.workitemToStage(item.id)} #${item.id}} {bgYellow.bold ${item.type}} ${item.description}`
           );
         } else {
           logger.log(
-            chalk`{bgBlue.white.bold ${item.stage} #${item.id}} ${item.description}`
+            chalk`{bgBlue.white.bold @${wim.workitemToStage(item.id)} #${item.id}} ${item.description}`
           );
         }
         if (result.more) {
@@ -74,7 +75,7 @@ export class Show extends Command {
         const logs = wim.show();
         const top = result.more || result.stage ? undefined : 3;
         logs.forEach((l, j) => {
-          if (result.stage === null || l.stage === result.stage) {
+          if ([null, undefined].includes(result.stage) || l.stage === result.stage) {
             logger.log(chalk`{bgBlueBright.yellowBright ${l.stage}}`);
             l.items.slice(0, top).forEach((i, k) => {
               logger.log(
@@ -110,7 +111,7 @@ export class Show extends Command {
     parse(argsRaw)(
       rule(
         optional(
-          either(all(show, Command.ws, more), show, more, all('@', stage))
+          either(all(show, Command.ws, more), all(optional(show, Command.ws), '@', stage), show, more)
         ),
         optional(Command.ws, item),
         Command.EOL
@@ -118,8 +119,8 @@ export class Show extends Command {
         result = {
           show: true,
           more: r.one('more')?.value === 'more',
-          item: r.one('item'),
-          stage: r.one('stage')
+          item: r.one('item')?.value,
+          stage: r.one('stage')?.value
         };
       })
     );

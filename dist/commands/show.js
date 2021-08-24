@@ -22,6 +22,7 @@ const chalk_1 = __importDefault(require("chalk"));
 class Show extends command_1.Command {
     run(argsRaw, logger) {
         return __awaiter(this, void 0, void 0, function* () {
+            debugger;
             const result = this.parse(argsRaw);
             const wim = new WorkitemManager_1.WorkitemManager(this.git, this.fs);
             if (result === false) {
@@ -36,10 +37,10 @@ class Show extends command_1.Command {
                     }
                     const item = itemSuccess.value;
                     if (item.type) {
-                        logger.log(chalk_1.default `{bgBlue.white.bold ${item.stage} #${item.id}} {bgYellow.bold ${item.type}} ${item.description}`);
+                        logger.log(chalk_1.default `{bgBlue.white.bold @${wim.workitemToStage(item.id)} #${item.id}} {bgYellow.bold ${item.type}} ${item.description}`);
                     }
                     else {
-                        logger.log(chalk_1.default `{bgBlue.white.bold ${item.stage} #${item.id}} ${item.description}`);
+                        logger.log(chalk_1.default `{bgBlue.white.bold @${wim.workitemToStage(item.id)} #${item.id}} ${item.description}`);
                     }
                     if (result.more) {
                         // load linked stuff
@@ -78,7 +79,7 @@ class Show extends command_1.Command {
                     const logs = wim.show();
                     const top = result.more || result.stage ? undefined : 3;
                     logs.forEach((l, j) => {
-                        if (result.stage === null || l.stage === result.stage) {
+                        if ([null, undefined].includes(result.stage) || l.stage === result.stage) {
                             logger.log(chalk_1.default `{bgBlueBright.yellowBright ${l.stage}}`);
                             l.items.slice(0, top).forEach((i, k) => {
                                 logger.log(chalk_1.default `[${j.toString()}.${k.toString()}] {bold #${i.id}} ${i.description}`);
@@ -106,13 +107,13 @@ class Show extends command_1.Command {
         const item = token('item', /((\d+\.)+(\d+))|(\#?([a-f0-9]{3,7}))/i);
         const stage = token('stage', /[\w_-]+/);
         let result = false;
-        parse(argsRaw)(rule(optional(either(all(show, command_1.Command.ws, more), show, more, all('@', stage))), optional(command_1.Command.ws, item), command_1.Command.EOL).yields((r, c) => {
-            var _a;
+        parse(argsRaw)(rule(optional(either(all(show, command_1.Command.ws, more), all(optional(show, command_1.Command.ws), '@', stage), show, more)), optional(command_1.Command.ws, item), command_1.Command.EOL).yields((r, c) => {
+            var _a, _b, _c;
             result = {
                 show: true,
                 more: ((_a = r.one('more')) === null || _a === void 0 ? void 0 : _a.value) === 'more',
-                item: r.one('item'),
-                stage: r.one('stage')
+                item: (_b = r.one('item')) === null || _b === void 0 ? void 0 : _b.value,
+                stage: (_c = r.one('stage')) === null || _c === void 0 ? void 0 : _c.value
             };
         }));
         return result;
