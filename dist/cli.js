@@ -1,21 +1,34 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // #!/usr/bin/env node
@@ -48,12 +61,11 @@ class CLI {
         this.log(chalk_1.default `use {bgGreen help} [command] for specific help`);
         this.log();
     }
-    constructor() {
-        ;
-    }
+    constructor() { }
     explain(thisrule) {
         const asarr = thisrule;
-        return asarr.map(p => {
+        return asarr
+            .map((p) => {
             if (p.__token__) {
                 if (p.__token__ === p.toString()) {
                     return p.__token__;
@@ -65,9 +77,9 @@ class CLI {
             else {
                 if (p.pattern) {
                     switch (p.name) {
-                        case "many":
+                        case 'many':
                             return `${this.explain(p.pattern)}*`;
-                        case "optional":
+                        case 'optional':
                             return `${this.explain(p.pattern)}?`;
                     }
                     return `${p.name}(${this.explain(p.pattern)})`;
@@ -76,7 +88,9 @@ class CLI {
                     return null;
                 }
             }
-        }).filter(x => x).join(" ");
+        })
+            .filter((x) => x)
+            .join(' ');
     }
     run(argsraw) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -84,22 +98,22 @@ class CLI {
             const fs = new Host_1.Host();
             const git = new Git_1.Git(fs);
             const currentBranch = git.getCurrentBranch();
-            if ((yield currentBranch) === "__workitem__") {
+            if ((yield currentBranch) === '__workitem__') {
                 // TODO: when this happens it's likely to be that git didn't successfully switch back to the previous branch
                 this.fail(ErrorCodes_1.ErrorCodes.WorkitemBranchDetected, chalk_1.default `workitem is in an invalid state because a previous command did complete correctly. Run {green workitem fix} to diagnose and fix the problem.`);
             }
             const commands = [
-                "init",
-                "show",
-                "add",
-                "note",
-                "rename",
-                "move",
-                "collate",
-                "search",
-                "tag"
+                'init',
+                'show',
+                'add',
+                'note',
+                'rename',
+                'move',
+                'collate',
+                'search',
+                'tag'
             ];
-            for (let command of commands) {
+            for (const command of commands) {
                 yield Promise.resolve().then(() => __importStar(require(`./commands/${command}`)));
             }
             // short circuit for help
@@ -109,9 +123,9 @@ class CLI {
             }
             if (/^(\-\-help|\-h|help|\/help|\/h)\s+(\w+)$/i.test(argsraw)) {
                 // this.log()
-                this.log(chalk_1.default `{bgGreen help} {bold.hex('#cedaed') ${argsraw.split(" ")[1]}}`);
+                this.log(chalk_1.default `{bgGreen help} {bold.hex('#cedaed') ${argsraw.split(' ')[1]}}`);
                 this.log();
-                command_1.Command.printhelp(this, argsraw.split(" ")[1]);
+                command_1.Command.printhelp(this, argsraw.split(' ')[1]);
                 process.exit();
             }
             const parseok = yield command_1.Command.run(git, fs, this, argsraw);
@@ -126,6 +140,10 @@ class CLI {
         });
     }
 }
-new CLI().run(process.argv.slice(2).map(s => !s.includes(" ") ? s : ['"', s.replace(/\"/g, "\\\""), '"'].join("")).join(" "))
-    .then(x => process.exit())
-    .catch(x => process.exit(ErrorCodes_1.ErrorCodes.UnknownError));
+new CLI()
+    .run(process.argv
+    .slice(2)
+    .map((s) => !s.includes(' ') ? s : ['"', s.replace(/\"/g, '\\"'), '"'].join(''))
+    .join(' '))
+    .then((x) => process.exit())
+    .catch((x) => process.exit(ErrorCodes_1.ErrorCodes.UnknownError));

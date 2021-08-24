@@ -1,3 +1,3 @@
 declare interface ObjectConstructor {
-    assign(...objects: Object[]): Object;
+  assign(...objects: Object[]): Object;
 }
