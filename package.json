@@ -1,6 +1,6 @@
 {
   "name": "workitem",
-  "version": "2.2.0-alpha1",
+  "version": "2.2.0-alpha2",
   "description": "a git based work item tracker",
   "main": "index.js",
   "scripts": {
