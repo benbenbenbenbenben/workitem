@@ -33,7 +33,7 @@ export class Host implements IHost {
   async exec(cmdline: string): Promise<{ stdout: string; stderr: string }> {
     return new Promise((resolve, reject) => {
       const output = sexec(cmdline, { async: false, silent: true });
-      if (output.code !== 0) {
+      if (output.code != 0) {
         reject(output);
       } else {
         resolve(output);

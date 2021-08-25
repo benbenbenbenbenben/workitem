@@ -56,7 +56,7 @@ export class Move extends Command {
         result = {
           item: r.one('item')?.value,
           stage: r.one('stage')?.value,
-          force: r.one('force')?.value !== null
+          force: r.one('force')?.value != null
         };
       })
     );

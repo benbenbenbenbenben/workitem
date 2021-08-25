@@ -107,8 +107,8 @@ export class Init extends Command {
         result = {
           init: true,
           auto: r.one('auto')?.value === 'auto',
-          git: r.one('git')?.value !== null,
-          force: r.one('force')?.value !== null
+          git: r.one('git')?.value != null,
+          force: r.one('force')?.value != null
         };
       })
     );

@@ -39,7 +39,7 @@ export class WorkitemManager {
     return path.join(WorkitemManager.wiroot, resource);
   }
   isInitialised(): any {
-    return this.config !== undefined;
+    return this.config != undefined;
   }
   public gitDo(func: () => void): void {
     this.fs.execSync(`git checkout -B __workitem__`);
@@ -119,7 +119,6 @@ export class WorkitemManager {
     if (itemid.indexOf('.') > 0) {
       const [istage, iitem] = itemid.split('.').map((x) => parseInt(x));
       workitem = this.workitems[istage].items[iitem];
-      // workitem.stage = this.workitems[istage].stage
     } else {
       const workitemlist = this.workitems
         .map((s: any) =>
@@ -143,8 +142,14 @@ export class WorkitemManager {
       }
       workitem = workitemlist[0];
     }
-    workitem.g;
-    return new Success(true, workitem);
+    if (!workitem) {
+      return new Success<IWorkitem>(
+        false,
+        `No workitem was found for pattern "${item}"`
+      );
+    } else {
+      return new Success(true, workitem);
+    }
   }
   public getComments(
     item: string
