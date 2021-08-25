@@ -42,8 +42,8 @@ export class Tag extends Command {
       rule(tag, Command.ws, item, Command.ws, thetag, Command.EOL).yields(
         (r, c) => {
           result = {
-            item: r.one('item'),
-            tag: r.one('thetag')
+            item: r.one('item')?.value,
+            tag: r.one('thetag')?.value
           };
         }
       )

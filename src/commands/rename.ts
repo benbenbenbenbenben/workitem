@@ -38,8 +38,8 @@ export class Rename extends Command {
         Command.EOL
       ).yields((r, c) => {
         result = {
-          item: r.one('item'),
-          newname: r.one('msg')
+          item: r.one('item')?.value,
+          newname: r.one('msg')?.value
         };
       })
     );

@@ -55,13 +55,13 @@ export class Add extends Command {
             Command.EOL
           ).yields((r, c) => {
             result = {
-              description: r.one('msg'),
-              tags: r.get('xtags'),
-              type: r.one('type'),
-              location: r.one('xats'),
-              estimate: r.one('xest'),
-              child: r.one('xbigger'),
-              parent: r.one('xsmaller')
+              description: r.one('msg')?.value,
+              tags: r.get('xtags')?.map(x => x.value),
+              type: r.one('type')?.value,
+              location: r.one('xats')?.value,
+              estimate: r.one('xest')?.value,
+              child: r.one('xbigger')?.value,
+              parent: r.one('xsmaller')?.value
             };
           }),
           rule(add, Command.EOL).yields(() => {

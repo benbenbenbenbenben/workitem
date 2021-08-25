@@ -14,36 +14,37 @@ export class Init extends Command {
     this.logger = logger;
     const result = this.parse(argsraw);
     if (result.init) {
+      const isGitRepo = await this.git.isRepo();
       const _ =
-        (await this.git.isRepo()) ||
-        (result.git && (await this.gitInit(result.force)))
+        (isGitRepo) ||
+          (result.git && (await this.gitInit(result.force)))
           ? (await this.git.isInit())
             ? this.isinitialised()
               ? logger.fail(
-                  -1,
-                  chalk`{bold Done! This directory is already a workitem repo!}`
-                )
+                -1,
+                chalk`{bold Done! This directory is already a workitem repo!}`
+              )
               : this.hasworkitemdir()
-              ? logger.fail(
+                ? logger.fail(
                   -3,
                   'This workitem repository is broken. There is a directory structure but I cannot find the configuration file workitem.json'
                 )
-              : this.isgitclean()
-              ? this.gotoworkitembranch() && (await this.setupworkitem())
-                ? logger.log(chalk`{bgBlue.white Done!}`)
-                : this.revert()
-              : logger.fail(
-                  -4,
-                  "You have uncommited changes in this repository. Use 'git status' to view these. Once resolved you can initialise this workitem repository."
-                )
+                : this.isgitclean()
+                  ? this.gotoworkitembranch() && (await this.setupworkitem())
+                    ? logger.log(chalk`{bgBlue.white Done!}`)
+                    : this.revert()
+                  : logger.fail(
+                    -4,
+                    "You have uncommited changes in this repository. Use 'git status' to view these. Once resolved you can initialise this workitem repository."
+                  )
             : logger.fail(
-                ErrorCodes.NotInitialised,
-                'This directory is a git repository but there are no branches. Please perform an initial commit.'
-              )
-          : logger.fail(
               ErrorCodes.NotInitialised,
-              'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git [+force]'
-            );
+              'This directory is a git repository but there are no branches. Please perform an initial commit.'
+            )
+          : logger.fail(
+            ErrorCodes.NotInitialised,
+            'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git [+force]'
+          );
     }
   }
   async gitInit(force = false): Promise<boolean> {
@@ -107,8 +108,8 @@ export class Init extends Command {
         result = {
           init: true,
           auto: r.one('auto')?.value === 'auto',
-          git: r.one('git') !== null,
-          force: r.one('force') !== null
+          git: r.one('git')?.value !== null,
+          force: r.one('force')?.value !== null
         };
       })
     );
@@ -278,19 +279,19 @@ export class Init extends Command {
   async setupworkitem() {
     this.logger.log(
       'Which workflow would you like?\n' +
-        '[1]: todo -> doing -> done\n' +
-        '[2]: backlog -> analysis -> dev -> test -> review -> done\n' +
-        "[3]: I'll create my own folders"
+      '[1]: todo -> doing -> done\n' +
+      '[2]: backlog -> analysis -> dev -> test -> review -> done\n' +
+      "[3]: I'll create my own folders"
     );
-    while (!(await this.createdirectories())) {}
-    while (!this.updategitignore) {}
+    while (!(await this.createdirectories())) { }
+    while (!this.updategitignore) { }
     this.logger.log(
       'Would you like to install a git commit hook for workitem?\n' +
-        "[Y]es, let's do that\n" +
-        '[N]o\n' +
-        '[W]hat does the hook do?'
+      "[Y]es, let's do that\n" +
+      '[N]o\n' +
+      '[W]hat does the hook do?'
     );
-    while (!(await this.configurehook())) {}
+    while (!(await this.configurehook())) { }
     await this.commit().catch((err) => {
       this.revert();
     });

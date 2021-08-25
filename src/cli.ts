@@ -27,7 +27,7 @@ class CLI implements ILogger {
     this.log(chalk`use {bgGreen help} [command] for specific help`);
     this.log();
   }
-  constructor() {}
+  constructor() { }
   explain(thisrule: any): any {
     const asarr: any[] = thisrule;
     return asarr
@@ -57,12 +57,11 @@ class CLI implements ILogger {
   }
   public async run(argsraw: string) {
     process.stdout.write(chalk`{bgRed.white.bold workitem 2.0.0} `);
-
     const fs = new Host();
     const git = new Git(fs);
-    const currentBranch = git.getCurrentBranch();
+    const currentBranch = await git.getCurrentBranch().catch(() => false);
 
-    if ((await currentBranch) === '__workitem__') {
+    if (currentBranch === '__workitem__') {
       // TODO: when this happens it's likely to be that git didn't successfully switch back to the previous branch
       this.fail(
         ErrorCodes.WorkitemBranchDetected,

@@ -54,9 +54,9 @@ export class Move extends Command {
         Command.EOL
       ).yields((r, c) => {
         result = {
-          item: r.one('item'),
-          stage: r.one('stage'),
-          force: r.one('force') !== null
+          item: r.one('item')?.value,
+          stage: r.one('stage')?.value,
+          force: r.one('force')?.value !== null
         };
       })
     );

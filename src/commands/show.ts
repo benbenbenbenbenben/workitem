@@ -10,7 +10,6 @@ import chalk from 'chalk';
 
 export class Show extends Command {
   public async run(argsRaw: string, logger: ILogger): Promise<void> {
-    debugger
     const result = this.parse(argsRaw);
     const wim = new WorkitemManager(this.git, this.fs);
     if (result === false) {

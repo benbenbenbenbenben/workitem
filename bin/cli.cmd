@@ -1,1 +1,1 @@
-node dist/src/cli.js
+ts-node --project %~dp0/../tsconfig.json %~dp0/../src/cli.ts %*

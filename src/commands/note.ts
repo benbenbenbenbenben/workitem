@@ -46,8 +46,8 @@ export class Note extends Command {
       rule(move, Command.ws, item, Command.ws, Command.msg, Command.EOL).yields(
         (r, c) => {
           result = {
-            item: r.one('item'),
-            comment: r.one('msg')
+            item: r.one('item')?.value,
+            comment: r.one('msg')?.value
           };
         }
       )
