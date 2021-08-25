@@ -1,5 +1,5 @@
 import { promisify } from 'util';
-import { IHost } from './IHost';
+import type { IHost } from './IHost';
 import fs, { pathExists } from 'fs-extra';
 import { exec as sexec } from 'shelljs';
 import { spawn, exec, execSync, ExecException } from 'child_process';
@@ -22,7 +22,9 @@ export class Host implements IHost {
           process.exit();
         }
       });
-    } catch (e) {}
+    } catch (e) {
+      console.error(e.message);
+    }
     Host.init = true;
   }
   execSync(cmdline: string): Buffer {

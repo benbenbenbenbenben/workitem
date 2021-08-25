@@ -1,4 +1,4 @@
-import { IHost } from './IHost';
+import type { IHost } from './IHost';
 import { ExecException } from 'child_process';
 
 export class FakeHost implements IHost {

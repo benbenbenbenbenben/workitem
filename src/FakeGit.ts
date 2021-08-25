@@ -1,5 +1,5 @@
-import { IGit } from './IGit';
-import { IHost } from './IHost';
+import type { IGit } from './IGit';
+import type { IHost } from './IHost';
 
 export class FakeGit implements IGit {
   setEmail(email: string): Promise<boolean> {

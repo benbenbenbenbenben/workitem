@@ -2,9 +2,9 @@ import { Input, Result, Tibu } from 'tibu';
 const { parse, rule, optional, many, either, token } = Tibu;
 import { WorkitemManager } from '../WorkitemManager';
 import { Command, Example } from './command';
-import { IHost } from '../IHost';
-import { ILogger } from '../ILogger';
-import { IGit } from '../IGit';
+import type { IHost } from '../IHost';
+import type { ILogger } from '../ILogger';
+import type { IGit } from '../IGit';
 import { ErrorCodes } from '../ErrorCodes';
 import chalk from 'chalk';
 
@@ -37,7 +37,7 @@ export class Move extends Command {
   }
   public parse(argsraw: string) {
     const move = token('move', 'move');
-    const item = token('item', /((\d+\.)+(\d+))|(\#?([a-f0-9]{3,7}))/i);
+    const item = token('item', /((\d+\.)+(\d+))|(#?([a-f0-9]{3,7}))/i);
     const stage = token('stage', /\w+/);
     const force = token('force', /\+force/);
 

@@ -1,7 +1,6 @@
-// #!/usr/bin/env node
 import chalk from 'chalk';
-import { Command, ICommand } from './commands/command';
-import { ILogger } from './ILogger';
+import { Command } from './commands/command';
+import type { ILogger } from './ILogger';
 import { ErrorCodes } from './ErrorCodes';
 import { Host } from './Host';
 import { Git } from './Git';
@@ -27,7 +26,6 @@ class CLI implements ILogger {
     this.log(chalk`use {bgGreen help} [command] for specific help`);
     this.log();
   }
-  constructor() { }
   explain(thisrule: any): any {
     const asarr: any[] = thisrule;
     return asarr
@@ -55,7 +53,7 @@ class CLI implements ILogger {
       .filter((x) => x)
       .join(' ');
   }
-  public async run(argsraw: string) {
+  public async run(argsRaw: string) {
     process.stdout.write(chalk`{bgRed.white.bold workitem 2.0.0} `);
     const fs = new Host();
     const git = new Git(fs);
@@ -86,24 +84,24 @@ class CLI implements ILogger {
     }
 
     // short circuit for help
-    if (/^(\-\-help|\-h|help|\/help|\/h)$/i.test(argsraw)) {
+    if (/^(--help|-h|help|\/help|\/h)$/i.test(argsRaw)) {
       this.showHelp();
       process.exit();
     }
-    if (/^(\-\-help|\-h|help|\/help|\/h)\s+(\w+)$/i.test(argsraw)) {
+    if (/^(--help|-h|help|\/help|\/h)\s+(\w+)$/i.test(argsRaw)) {
       // this.log()
       this.log(
-        chalk`{bgGreen help} {bold.hex('#cedaed') ${argsraw.split(' ')[1]}}`
+        chalk`{bgGreen help} {bold.hex('#cedaed') ${argsRaw.split(' ')[1]}}`
       );
       this.log();
-      Command.printhelp(this, argsraw.split(' ')[1]);
+      Command.printhelp(this, argsRaw.split(' ')[1]);
       process.exit();
     }
 
-    const parseok = await Command.run(git, fs, this, argsraw);
+    const parseok = await Command.run(git, fs, this, argsRaw);
 
     if (parseok === false) {
-      if (argsraw.length) {
+      if (argsRaw.length) {
         this.fail(
           ErrorCodes.UnknownCommand,
           `Sorry, that command couldn't be understood`
@@ -120,7 +118,7 @@ new CLI()
     process.argv
       .slice(2)
       .map((s) =>
-        !s.includes(' ') ? s : ['"', s.replace(/\"/g, '\\"'), '"'].join('')
+        !s.includes(' ') ? s : ['"', s.replace(/"/g, '\\"'), '"'].join('')
       )
       .join(' ')
   )

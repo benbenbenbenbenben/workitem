@@ -1,12 +1,12 @@
-import { Input, Result, Tibu } from 'tibu';
-const { parse, rule, optional, many, either, token } = Tibu;
-import { WorkitemManager } from '../WorkitemManager';
-import { Command, Example } from './command';
-import { IGit } from '../IGit';
-import { ILogger } from '../ILogger';
-import { IHost } from '../IHost';
+import { Tibu } from 'tibu';
+const { parse, rule, optional, token } = Tibu;
+import { Command } from './command';
+import type { IGit } from '../IGit';
+import type { ILogger } from '../ILogger';
+import type { IHost } from '../IHost';
 import chalk from 'chalk';
 import { ErrorCodes } from '../ErrorCodes';
+import { execSync } from 'child_process';
 
 export class Init extends Command {
   private logger!: ILogger;
@@ -16,35 +16,34 @@ export class Init extends Command {
     if (result.init) {
       const isGitRepo = await this.git.isRepo();
       const _ =
-        (isGitRepo) ||
-          (result.git && (await this.gitInit(result.force)))
+        isGitRepo || (result.git && (await this.gitInit(result.force)))
           ? (await this.git.isInit())
             ? this.isinitialised()
               ? logger.fail(
-                -1,
-                chalk`{bold Done! This directory is already a workitem repo!}`
-              )
+                  -1,
+                  chalk`{bold Done! This directory is already a workitem repo!}`
+                )
               : this.hasworkitemdir()
-                ? logger.fail(
+              ? logger.fail(
                   -3,
                   'This workitem repository is broken. There is a directory structure but I cannot find the configuration file workitem.json'
                 )
-                : this.isgitclean()
-                  ? this.gotoworkitembranch() && (await this.setupworkitem())
-                    ? logger.log(chalk`{bgBlue.white Done!}`)
-                    : this.revert()
-                  : logger.fail(
-                    -4,
-                    "You have uncommited changes in this repository. Use 'git status' to view these. Once resolved you can initialise this workitem repository."
-                  )
+              : this.isgitclean()
+              ? this.gotoworkitembranch() && (await this.setupworkitem())
+                ? logger.log(chalk`{bgBlue.white Done!}`)
+                : this.revert()
+              : logger.fail(
+                  -4,
+                  "You have uncommited changes in this repository. Use 'git status' to view these. Once resolved you can initialise this workitem repository."
+                )
             : logger.fail(
-              ErrorCodes.NotInitialised,
-              'This directory is a git repository but there are no branches. Please perform an initial commit.'
-            )
+                ErrorCodes.NotInitialised,
+                'This directory is a git repository but there are no branches. Please perform an initial commit.'
+              )
           : logger.fail(
-            ErrorCodes.NotInitialised,
-            'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git [+force]'
-          );
+              ErrorCodes.NotInitialised,
+              'This directory is not a git repository.\n        Please run the command again from a git repository or add +git to your command; i.e. workitem init +git [+force]'
+            );
     }
   }
   async gitInit(force = false): Promise<boolean> {
@@ -132,30 +131,24 @@ export class Init extends Command {
     // branch to a randomised branch
     // const rand = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
     this.branch = `__workitem__`; // _init_${rand}`
-    require('child_process')
-      .execSync(`git checkout -b ${this.branch}`)
-      .toString();
+    execSync(`git checkout -b ${this.branch}`).toString();
     //
     return true;
   }
   revert() {
     if (this.branch) {
-      require('child_process').execSync(`git reset --hard`).toString();
-      require('child_process').execSync(`git clean -fd`).toString();
-      require('child_process').execSync(`git checkout -`).toString();
-      require('child_process')
-        .execSync(`git branch -d ${this.branch}`)
-        .toString();
+      execSync(`git reset --hard`).toString();
+      execSync(`git clean -fd`).toString();
+      execSync(`git checkout -`).toString();
+      execSync(`git branch -d ${this.branch}`).toString();
     }
     return true;
   }
   async commit(): Promise<boolean> {
-    require('child_process').execSync(`git add --all`).toString();
-    require('child_process')
-      .execSync(`git commit -m "[workitem:admin:initialised]"`)
-      .toString();
-    require('child_process').execSync(`git checkout -`).toString();
-    require('child_process').execSync(`git merge ${this.branch}`).toString();
+    execSync(`git add --all`).toString();
+    execSync(`git commit -m "[workitem:admin:initialised]"`).toString();
+    execSync(`git checkout -`).toString();
+    execSync(`git merge ${this.branch}`).toString();
     return true;
   }
   async createdirectories(): Promise<boolean> {
@@ -279,19 +272,25 @@ export class Init extends Command {
   async setupworkitem() {
     this.logger.log(
       'Which workflow would you like?\n' +
-      '[1]: todo -> doing -> done\n' +
-      '[2]: backlog -> analysis -> dev -> test -> review -> done\n' +
-      "[3]: I'll create my own folders"
+        '[1]: todo -> doing -> done\n' +
+        '[2]: backlog -> analysis -> dev -> test -> review -> done\n' +
+        "[3]: I'll create my own folders"
     );
-    while (!(await this.createdirectories())) { }
-    while (!this.updategitignore) { }
+    while (!(await this.createdirectories())) {
+      /* nop */
+    }
+    while (!this.updategitignore) {
+      /* nop */
+    }
     this.logger.log(
       'Would you like to install a git commit hook for workitem?\n' +
-      "[Y]es, let's do that\n" +
-      '[N]o\n' +
-      '[W]hat does the hook do?'
+        "[Y]es, let's do that\n" +
+        '[N]o\n' +
+        '[W]hat does the hook do?'
     );
-    while (!(await this.configurehook())) { }
+    while (!(await this.configurehook())) {
+      /* nop */
+    }
     await this.commit().catch((err) => {
       this.revert();
     });

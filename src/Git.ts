@@ -1,5 +1,5 @@
-import { IGit } from './IGit';
-import { IHost } from './IHost';
+import type { IGit } from './IGit';
+import type { IHost } from './IHost';
 import { Input, Result, Tibu } from 'tibu';
 import { resolve } from 'path';
 import { exec } from 'child_process';

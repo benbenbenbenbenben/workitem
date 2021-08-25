@@ -1,4 +1,4 @@
-import { IWorkitem } from './Workitem';
+import type { IWorkitem } from './Workitem';
 
 interface IStageCollection extends Array<IStage> {
   map(...args: any[]): any;

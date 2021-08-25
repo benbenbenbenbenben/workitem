@@ -1,12 +1,10 @@
-import chalk from 'chalk';
 import crypto from 'crypto';
 import path from 'path';
-import { IStage, IStageCollection } from './Stage';
+import type { IStage, IStageCollection } from './Stage';
 import { Success } from './Success';
-import { IWorkitem } from './Workitem';
-import { IHost } from './IHost';
-import { IGit } from './IGit';
-import { Command } from './commands/command';
+import type { IWorkitem } from './Workitem';
+import type { IHost } from './IHost';
+import type { IGit } from './IGit';
 
 export class WorkitemManager {
   public fs: IHost;
@@ -197,18 +195,8 @@ export class WorkitemManager {
     return workitem;
   }
   isStageTransitionValid(a: string, b: string): boolean {
-    const hash: any = {};
-    for (let i = 0; i < this.config.transitions.length; i++) {
-      hash[this.config.transitions[i]] = i;
-    }
-    const fwd = [a, b];
-    const rev = [b, a];
-
-    if (hash.hasOwnProperty(fwd) || hash.hasOwnProperty(rev)) {
-      //console.log(hash[val]);
-      return true;
-    }
-    return false;
+    const transitions = this.config.transitions as [string, string][];
+    return transitions.some(([from, to]) => from === a && to === b);
   }
   public rename(item: string, newname: string): Success<IWorkitem> {
     const workitem = this.idToWorkitem(item);
@@ -296,10 +284,11 @@ export class WorkitemManager {
                   .split(/\r\n|\r|\n/)
                   .filter((x) => x);
               if (renamed)
-                renamedarr = renamed
-                  .toString()
-                  .match(/^.*\{.*\}[^\|]*/gm)!
-                  .map((m) => m.substring(1).replace(/.$/, ''));
+                renamedarr =
+                  renamed
+                    .toString()
+                    .match(/^.*\{.*\}[^|]*/gm)
+                    ?.map((m) => m.substring(1).replace(/.$/, '')) || [];
               progress({
                 total: branches.length - 1,
                 current: i

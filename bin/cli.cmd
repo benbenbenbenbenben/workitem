@@ -1,1 +1,1 @@
-ts-node --project %~dp0/../tsconfig.json %~dp0/../src/cli.ts %*
+node cli %*

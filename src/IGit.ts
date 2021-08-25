@@ -1,4 +1,4 @@
-import { IHost } from './IHost';
+import type { IHost } from './IHost';
 
 export interface IGit {
   fs: IHost;

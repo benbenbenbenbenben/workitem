@@ -1,3 +1,19 @@
 #!/usr/bin/env node
-require('ts-node').register();
-require("../src/cli.ts");
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+const { pathExistsSync } = require('fs-extra');
+
+if (pathExistsSync(__dirname + '/../dist')) {
+  require(__dirname + '/../dist/cli.js');
+} else {
+  require('ts-node').register({
+    require: [__dirname + '/../src/cli.ts'],
+    compilerOptions: {
+      target: 'ES6',
+      module: 'commonjs',
+      esModuleInterop: true,
+      importsNotUsedAsValues: false
+    }
+  });
+}
