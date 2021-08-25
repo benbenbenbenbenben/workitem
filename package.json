@@ -1,6 +1,6 @@
 {
   "name": "workitem",
-  "version": "2.3.5",
+  "version": "2.3.6",
   "description": "a git based work item tracker",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,8 @@
   "files": [
     "/bin",
     "/src",
-    "/docs"
+    "/docs",
+    "/tsconfig.json"
   ],
   "repository": {
     "type": "git",
