@@ -1,6 +1,6 @@
 {
   "name": "workitem",
-  "version": "2.3.10",
+  "version": "2.3.11",
   "description": "a git based work item tracker",
   "main": "dist/cli.js",
   "scripts": {
