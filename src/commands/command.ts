@@ -1,7 +1,7 @@
 import { IRule, Tibu, Input, Result } from 'tibu';
-import { ILogger } from '../ILogger';
-import { IGit } from '../IGit';
-import { IHost } from '../IHost';
+import type { ILogger } from '../ILogger';
+import type { IGit } from '../IGit';
+import type { IHost } from '../IHost';
 import chalk from 'chalk';
 const { rule, token, either, all, many, optional } = Tibu;
 
@@ -34,9 +34,9 @@ export abstract class Command {
   public static ws: IRule = rule(/\s*/);
   public static msg: IRule = rule(
     either(
-      rule("'", token('msg', /[^\']*/), "'"),
-      rule('"', token('msg', /[^\"]*/), '"'),
-      rule(token('msg', /[^\s\~\+\<\>\+\-\@\#][\w]*/))
+      rule("'", token('msg', /[^']*/), "'"),
+      rule('"', token('msg', /[^"]*/), '"'),
+      rule(token('msg', /[^\s~+<>+\-@#][\w]*/))
     )
   );
   public static EOL: any = (input: Input): Result =>

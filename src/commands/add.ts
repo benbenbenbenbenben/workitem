@@ -1,12 +1,12 @@
-import { Input, Result, Tibu } from 'tibu';
+import { Tibu } from 'tibu';
 const { parse, rule, optional, many, either, token, all } = Tibu;
 import { WorkitemManager } from '../WorkitemManager';
-import { Command, ICommand, Example } from './command';
+import { Command } from './command';
 import { ErrorCodes } from '../ErrorCodes';
 import chalk from 'chalk';
-import { ILogger } from '../ILogger';
-import { IGit } from '../IGit';
-import { IHost } from '../IHost';
+import type { ILogger } from '../ILogger';
+import type { IGit } from '../IGit';
+import type { IHost } from '../IHost';
 
 export class Add extends Command {
   public async run(argsRaw: string, logger: ILogger): Promise<void> {
@@ -32,13 +32,13 @@ export class Add extends Command {
   public parse(argsRaw: string): boolean | any {
     const add = token('add', /^add/i);
     const type = token('type', /\w+/);
-    const xats = rule(Command.ws, token('xats', /\@\w+/));
-    const xtags = rule(Command.ws, token('xtags', /\#\w+/));
-    const xest = rule(Command.ws, token('xest', /\~\w+/));
+    const xats = rule(Command.ws, token('xats', /@\w+/));
+    const xtags = rule(Command.ws, token('xtags', /#\w+/));
+    const xest = rule(Command.ws, token('xest', /~\w+/));
     const xplus = token('xplus', /\+\w+/);
-    const xmin = token('xmin', /\-\w+/);
-    const xbigger = rule(Command.ws, /\>\s*/, token('xbigger', /w+/));
-    const xsmaller = rule(Command.ws, /\<\s*/, token('xsmaller', /\w+/));
+    const xmin = token('xmin', /-\w+/);
+    const xbigger = rule(Command.ws, />\s*/, token('xbigger', /w+/));
+    const xsmaller = rule(Command.ws, /<\s*/, token('xsmaller', /\w+/));
 
     let result: any = false;
     parse(argsRaw)(
@@ -56,7 +56,7 @@ export class Add extends Command {
           ).yields((r, c) => {
             result = {
               description: r.one('msg')?.value,
-              tags: r.get('xtags')?.map(x => x.value),
+              tags: r.get('xtags')?.map((x) => x.value),
               type: r.one('type')?.value,
               location: r.one('xats')?.value,
               estimate: r.one('xest')?.value,

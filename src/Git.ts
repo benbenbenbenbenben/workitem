@@ -21,7 +21,7 @@ export class Git implements IGit {
     let branch = '';
     parse(gitout)(
       rule('* ', token('branch', /\w+/)).yields((r) => {
-        branch = r.one('branch')?.value!;
+        branch = r.raw('branch').raw.trim();
       })
     );
     return branch;

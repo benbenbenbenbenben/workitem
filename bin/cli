@@ -12,8 +12,7 @@ if (pathExistsSync(__dirname + '/../dist')) {
     compilerOptions: {
       target: 'ES6',
       module: 'commonjs',
-      esModuleInterop: true,
-      importsNotUsedAsValues: false
+      esModuleInterop: true
     }
   });
 }

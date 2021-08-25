@@ -1,10 +1,9 @@
-import { Input, Result, Tibu } from 'tibu';
-const { parse, rule, optional, many, either, token } = Tibu;
-import { WorkitemManager } from '../WorkitemManager';
-import { Command, ICommand, Example } from './command';
-import { ILogger } from '../ILogger';
-import { IGit } from '../IGit';
-import { IHost } from '../IHost';
+import { Tibu } from 'tibu';
+const { parse, rule, optional, token } = Tibu;
+import { Command } from './command';
+import type { ILogger } from '../ILogger';
+import type { IGit } from '../IGit';
+import type { IHost } from '../IHost';
 
 export class Collate extends Command {
   public async run(argsraw: string, logger: ILogger): Promise<void> {

@@ -1,10 +1,10 @@
-import { Input, Result, Tibu } from 'tibu';
-const { parse, rule, optional, many, either, token, all } = Tibu;
+import { Tibu } from 'tibu';
+const { parse, rule, optional, either, token, all } = Tibu;
 import { WorkitemManager } from '../WorkitemManager';
-import { Command, Example } from './command';
-import { IHost } from '../IHost';
-import { ILogger } from '../ILogger';
-import { IGit } from '../IGit';
+import { Command } from './command';
+import type { IHost } from '../IHost';
+import type { ILogger } from '../ILogger';
+import type { IGit } from '../IGit';
 import { ErrorCodes } from '../ErrorCodes';
 import chalk from 'chalk';
 
@@ -22,16 +22,23 @@ export class Show extends Command {
       if (result.item) {
         const itemSuccess = wim.idToWorkitem(result.item);
         if (!itemSuccess.success) {
-          logger.fail(ErrorCodes.UnknownIdentifier, itemSuccess.error!);
+          logger.fail(
+            ErrorCodes.UnknownIdentifier,
+            itemSuccess.error || 'missing error'
+          );
         }
         const item: any = itemSuccess.value;
         if (item.type) {
           logger.log(
-            chalk`{bgBlue.white.bold @${wim.workitemToStage(item.id)} #${item.id}} {bgYellow.bold ${item.type}} ${item.description}`
+            chalk`{bgBlue.white.bold @${wim.workitemToStage(item.id)} #${
+              item.id
+            }} {bgYellow.bold ${item.type}} ${item.description}`
           );
         } else {
           logger.log(
-            chalk`{bgBlue.white.bold @${wim.workitemToStage(item.id)} #${item.id}} ${item.description}`
+            chalk`{bgBlue.white.bold @${wim.workitemToStage(item.id)} #${
+              item.id
+            }} ${item.description}`
           );
         }
         if (result.more) {
@@ -74,7 +81,10 @@ export class Show extends Command {
         const logs = wim.show();
         const top = result.more || result.stage ? undefined : 3;
         logs.forEach((l, j) => {
-          if ([null, undefined].includes(result.stage) || l.stage === result.stage) {
+          if (
+            [null, undefined].includes(result.stage) ||
+            l.stage === result.stage
+          ) {
             logger.log(chalk`{bgBlueBright.yellowBright ${l.stage}}`);
             l.items.slice(0, top).forEach((i, k) => {
               logger.log(
@@ -103,18 +113,23 @@ export class Show extends Command {
   public parse(argsRaw: string) {
     const show = token('show', 'show');
     const more = token('more', 'more');
-    const item = token('item', /((\d+\.)+(\d+))|(\#?([a-f0-9]{3,7}))/i);
+    const item = token('item', /((\d+\.)+(\d+))|(#?([a-f0-9]{3,7}))/i);
     const stage = token('stage', /[\w_-]+/);
 
     let result: any = false;
     parse(argsRaw)(
       rule(
         optional(
-          either(all(show, Command.ws, more), all(optional(show, Command.ws), '@', stage), show, more)
+          either(
+            all(show, Command.ws, more),
+            all(optional(show, Command.ws), '@', stage),
+            show,
+            more
+          )
         ),
         optional(Command.ws, item),
         Command.EOL
-      ).yields((r, c) => {
+      ).yields((r) => {
         result = {
           show: true,
           more: r.one('more')?.value === 'more',

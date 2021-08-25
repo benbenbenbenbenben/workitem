@@ -1,10 +1,10 @@
-import { Input, Result, Tibu } from 'tibu';
-const { parse, rule, optional, many, either, token } = Tibu;
+import { Tibu } from 'tibu';
+const { parse, rule, token } = Tibu;
 import { WorkitemManager } from '../WorkitemManager';
-import { Command, Example } from './command';
-import { IHost } from '../IHost';
-import { ILogger } from '../ILogger';
-import { IGit } from '../IGit';
+import { Command } from './command';
+import type { IHost } from '../IHost';
+import type { ILogger } from '../ILogger';
+import type { IGit } from '../IGit';
 import { ErrorCodes } from '../ErrorCodes';
 import chalk from 'chalk';
 
@@ -25,7 +25,7 @@ export class Rename extends Command {
   }
   public parse(argsraw: string) {
     const rename = token('rename', 'rename');
-    const item = token('item', /((\d+\.)+(\d+))|(\#?([a-f0-9]{3,7}))/i);
+    const item = token('item', /((\d+\.)+(\d+))|(#?([a-f0-9]{3,7}))/i);
 
     let result: any = false;
     parse(argsraw)(
@@ -36,7 +36,7 @@ export class Rename extends Command {
         Command.ws,
         Command.msg,
         Command.EOL
-      ).yields((r, c) => {
+      ).yields((r) => {
         result = {
           item: r.one('item')?.value,
           newname: r.one('msg')?.value

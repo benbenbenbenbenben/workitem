@@ -123,4 +123,7 @@ new CLI()
       .join(' ')
   )
   .then((x) => process.exit())
-  .catch((x) => process.exit(ErrorCodes.UnknownError));
+  .catch((x) => {
+    console.error(x);
+    process.exit(ErrorCodes.UnknownError);
+  });
